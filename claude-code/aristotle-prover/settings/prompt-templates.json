@@ -1,0 +1,92 @@
+{
+  "domains": {
+    "probability": {
+      "keywords": ["prior", "posterior", "likelihood", "bayesian", "distribution", "expectation", "variance", "convergence in probability", "law of large numbers", "central limit"],
+      "template": "Let {variables}. Prove that {statement}.",
+      "hints": [
+        "State random variables and their distributions explicitly",
+        "Specify the sample space and sigma-algebra when relevant",
+        "Use Mathlib's MeasureTheory and ProbabilityTheory namespaces"
+      ]
+    },
+    "optimization": {
+      "keywords": ["regret", "convergence rate", "bound", "optimal", "minimize", "maximize", "convex", "gradient", "bandit", "thompson sampling"],
+      "template": "Consider {setup}. Prove that {bound_or_property}.",
+      "hints": [
+        "State the objective function and constraints precisely",
+        "Specify whether bounds are asymptotic (Big-O) or finite-sample",
+        "Define the regret as cumulative or simple"
+      ]
+    },
+    "statistics": {
+      "keywords": ["estimator", "unbiased", "consistent", "efficient", "sufficient", "MLE", "BLUE", "confidence interval", "hypothesis test"],
+      "template": "Let {model}. Define the estimator {estimator}. Prove that {property}.",
+      "hints": [
+        "State the statistical model (parametric family) explicitly",
+        "Define what 'unbiased' or 'consistent' means in your context",
+        "Specify whether convergence is in probability, a.s., or in distribution"
+      ]
+    },
+    "algorithm_correctness": {
+      "keywords": ["algorithm", "sorting", "correct", "terminates", "invariant", "complexity", "implementation", "verify"],
+      "template": "Define the following algorithm: {algorithm}. Prove that {correctness_property}.",
+      "hints": [
+        "Provide the algorithm as pseudocode or a Lean function definition",
+        "State the loop invariant explicitly",
+        "Separate termination from partial correctness"
+      ]
+    },
+    "real_analysis": {
+      "keywords": ["continuous", "differentiable", "integral", "limit", "series", "uniform convergence", "compact", "bounded"],
+      "template": "Let {function_or_sequence}. Prove that {analytic_property}.",
+      "hints": [
+        "Specify the domain and codomain precisely",
+        "State whether convergence is pointwise or uniform",
+        "Use Mathlib's Analysis and Topology namespaces"
+      ]
+    },
+    "finance": {
+      "keywords": ["arbitrage", "martingale", "black-scholes", "volatility", "option", "risk-neutral", "no-arbitrage", "pricing", "hedging", "stochastic"],
+      "template": "In a {market_model}, prove that {financial_property}.",
+      "hints": [
+        "Define the filtration and probability space",
+        "State the no-arbitrage condition precisely",
+        "Specify discrete vs continuous time"
+      ]
+    },
+    "linear_algebra": {
+      "keywords": ["matrix", "eigenvalue", "determinant", "rank", "invertible", "positive definite", "orthogonal", "decomposition"],
+      "template": "Let {matrix_or_operator}. Prove that {linear_algebra_property}.",
+      "hints": [
+        "Specify the field (real, complex, finite)",
+        "State dimensions explicitly",
+        "Use Mathlib's LinearAlgebra namespace"
+      ]
+    },
+    "general": {
+      "keywords": [],
+      "template": "Prove that {statement}.",
+      "hints": [
+        "Be as precise and unambiguous as possible",
+        "Define all non-standard notation",
+        "If the statement might be false, say so -- Aristotle will find a counterexample"
+      ]
+    }
+  },
+  "translation_rules": [
+    "Convert vague quantifiers ('for large n') into precise statements ('there exists N such that for all n >= N')",
+    "Replace informal notation with standard mathematical notation",
+    "Make implicit assumptions explicit (e.g., 'positive' -> 'strictly positive real number')",
+    "When the user says 'show' or 'demonstrate', convert to 'Prove that'",
+    "When the user references a well-known theorem by name, include the full statement",
+    "If the problem involves real numbers, specify the field explicitly",
+    "For probabilistic statements, specify the probability space",
+    "For algorithmic claims, separate the algorithm definition from the property to prove"
+  ],
+  "output_preferences": {
+    "include_english_explanation": true,
+    "include_lean_code": true,
+    "highlight_counterexamples": true,
+    "suggest_related_theorems": true
+  }
+}

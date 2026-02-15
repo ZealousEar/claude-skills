@@ -1,0 +1,152 @@
+id: obsidian-notes-validator
+version: "1.0.0"
+
+sharp_edges:
+  - id: mermaid-link-syntax
+    title: "Invalid Mermaid link syntax"
+    severity: high
+    symptom: "Unsupported markdown error in Obsidian"
+    cause: |
+      Using malformed link syntax like `---|----| ` between nodes.
+      Mermaid expects either plain links or links with text.
+    detection:
+      pattern: '---\|.*\|'
+      context: "Inside ```mermaid blocks"
+    fix: |
+      ```markdown
+      # BAD
+      A ---|----| B
+
+      # GOOD - plain link
+      A ---- B
+
+      # GOOD - link with label
+      A ---|label|--- B
+      A -->|label| B
+      ```
+    prevention: "Use simple link syntax: `A --> B` or `A ---|text|--- B`"
+
+  - id: mermaid-br-tags
+    title: "HTML br tags in Mermaid labels"
+    severity: medium
+    symptom: "Diagram shows <br/> as text or fails to render"
+    cause: |
+      Obsidian's Mermaid may not support <br/> in node labels.
+    detection:
+      pattern: '<br/>'
+      context: "Inside Mermaid node labels"
+    fix: |
+      Option 1: Remove line breaks
+      ```markdown
+      A[Line 1 Line 2]
+      ```
+
+      Option 2: Use subgraph for grouping
+      ```markdown
+      subgraph Label
+        A[Line 1]
+        B[Line 2]
+      end
+      ```
+    prevention: "Keep node labels short; use tables below diagram for details"
+
+  - id: mermaid-timeline
+    title: "Unsupported Mermaid diagram type"
+    severity: high
+    symptom: "Diagram shows raw code or 'unsupported' error"
+    cause: |
+      Obsidian's bundled Mermaid version may not support newer diagram types:
+      - timeline
+      - mindmap
+      - sankey
+      - zenuml
+    detection:
+      pattern: '^(timeline|mindmap|sankey|zenuml)$'
+      context: "First line after ```mermaid"
+    fix: |
+      Replace with supported alternatives:
+      - timeline → markdown table
+      - mindmap → flowchart with subgraphs
+      - sankey → description + values table
+    prevention: "Stick to: flowchart, sequenceDiagram, classDiagram, stateDiagram, erDiagram, gantt, pie"
+
+  - id: mermaid-numbered-labels
+    title: "Numbered lists in Mermaid labels"
+    severity: medium
+    symptom: "Parse error or unexpected rendering"
+    cause: |
+      Numbers followed by periods can confuse Mermaid parser.
+    detection:
+      pattern: '\[\d+\.\s'
+      context: "Inside Mermaid node definitions"
+    fix: |
+      ```markdown
+      # BAD
+      A[1. Import data]
+
+      # GOOD
+      A[Import data]
+      ```
+    prevention: "Don't use numbered lists inside node labels; describe steps in text below"
+
+  - id: tikz-arrows-meta
+    title: "TikZ arrows.meta library not supported"
+    severity: high
+    symptom: "TikZ diagram fails to render in Obsidian"
+    cause: |
+      TikZJax (Obsidian plugin) doesn't support arrows.meta library.
+    detection:
+      pattern: 'arrows\.meta|\\usetikzlibrary\{.*arrows\.meta'
+    fix: |
+      ```latex
+      # BAD
+      \usetikzlibrary{arrows.meta}
+      \draw[-Stealth] (a) -- (b);
+
+      # GOOD
+      \draw[-latex] (a) -- (b);
+      \draw[->] (a) -- (b);
+      ```
+    prevention: "Use basic arrow styles: ->, -latex, -stealth (lowercase)"
+
+  - id: frontmatter-missing
+    title: "Missing or invalid frontmatter"
+    severity: medium
+    symptom: "Note not appearing in Dataview queries, missing metadata"
+    cause: |
+      YAML frontmatter missing or malformed.
+    detection:
+      pattern: "File doesn't start with ---"
+    fix: |
+      Add frontmatter at very top of file:
+      ```yaml
+      ---
+      tags:
+        - module-code
+        - weekN
+      date: YYYY-MM-DD
+      source: Source Name
+      ---
+      ```
+    prevention: "Always start notes with frontmatter; use templates"
+
+  - id: wiki-link-spaces
+    title: "Wiki-links with unusual characters"
+    severity: low
+    symptom: "Links don't resolve to files"
+    cause: |
+      File names with special characters may not match wiki-links.
+    detection:
+      pattern: '\[\[.*[<>:"/\\|?*].*\]\]'
+    fix: |
+      Ensure file names match wiki-link text exactly.
+      Avoid special characters in file names.
+    prevention: "Use simple file names with hyphens instead of special characters"
+
+validation_checklist:
+  - "Run grep for `---\\|` in Mermaid blocks"
+  - "Check for <br/> tags in diagrams"
+  - "Verify no timeline/mindmap diagrams"
+  - "Check TikZ for arrows.meta"
+  - "Verify frontmatter exists"
+  - "Test wiki-links resolve"

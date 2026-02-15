@@ -1,0 +1,22 @@
+{
+  "local_corpus": {
+    "enabled": true,
+    "papers_dir": "~/Code/Agentic Obsidian Vault/Agentic/10 School/Dissertation Research/papers/",
+    "abstracts_cache": "~/Code/Agentic Obsidian Vault/Agentic/10 School/Dissertation Research/papers/abstracts_cache.json",
+    "bibtex_file": null,
+    "note": "MVP mode: scan local paper files (JSON/markdown with title, abstract, keywords)"
+  },
+  "semantic_scholar": {
+    "enabled": false,
+    "api_key": null,
+    "rate_limit_per_second": 1,
+    "cache_ttl_days": 30,
+    "cache_dir": "/tmp/geps_ss_cache",
+    "note": "Optional: enable with S2 API key for broader retrieval"
+  },
+  "manual_injection": {
+    "enabled": true,
+    "file": null,
+    "note": "Pass --retrieved-json with pre-prepared paper summaries"
+  }
+}

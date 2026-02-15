@@ -1,0 +1,37 @@
+{
+  "rounds_1_to_3": {
+    "judges_per_match": 1,
+    "model_tier": "cheap",
+    "note": "screening rounds — single judge per match"
+  },
+  "rounds_4_to_5": {
+    "judges_per_match": 2,
+    "model_tier": "mixed",
+    "note": "mid-tournament — two judges, escalate on disagreement"
+  },
+  "round_6_plus": {
+    "judges_per_match": 3,
+    "model_tier": "best",
+    "note": "final rounds — full panel"
+  },
+  "top_k_playoff": {
+    "judges_per_match": 3,
+    "model_tier": "best",
+    "note": "playoff for finalists"
+  },
+  "low_confidence_escalation": {
+    "threshold": 0.6,
+    "add_judges": 1,
+    "note": "if any judge confidence < threshold, add one more judge"
+  },
+  "disagreement_escalation": {
+    "enabled": true,
+    "max_judges": 3,
+    "note": "if 2 judges split 1-1, call a 3rd from a different provider"
+  },
+  "early_stop": {
+    "unanimous_at": 2,
+    "skip_third_judge": true,
+    "note": "if first 2 judges agree unanimously, skip 3rd"
+  }
+}

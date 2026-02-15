@@ -1,0 +1,94 @@
+{
+  "_version": "2.0",
+  "_description": "CodexCode swarm orchestration configuration",
+
+  "model": "gpt-5.3-codex",
+  "model_fallback": "gpt-5.2-codex",
+  "reasoning_effort": "xhigh",
+
+  "limits": {
+    "max_agents": 50,
+    "wave_size": 10,
+    "wave_completion_threshold": 0.5,
+    "default_timeout_ms": 600000,
+    "extended_timeout_ms": 900000,
+    "max_prompt_size_bytes": 131072,
+    "max_retries_per_agent": 2
+  },
+
+  "sandbox": {
+    "default_policy": "workspace-write",
+    "network_access": false,
+    "network_access_keywords": ["install", "fetch", "download", "npm", "pip", "curl", "api"],
+    "use_worktrees": true,
+    "worktree_base": "/tmp/codex_worktrees"
+  },
+
+  "output": {
+    "use_json_events": true,
+    "use_output_schema": true,
+    "schema_path": "~/.claude/skills/codex-code/settings/agent-output-schema.json",
+    "capture_stdout": true,
+    "capture_result": true
+  },
+
+  "codex_flags": {
+    "always": ["--full-auto", "--skip-git-repo-check"],
+    "optional": {
+      "--add-dir": "When agents need cross-directory read/write access",
+      "--image": "When task involves UI/design work with mockups",
+      "--search": "When agents need live web search (not cached)",
+      "--color never": "For clean parseable output in automation"
+    }
+  },
+
+  "preflight": {
+    "check_auth": true,
+    "check_codex_installed": true,
+    "check_disk_space": false,
+    "check_git_clean": false
+  },
+
+  "session": {
+    "enable_resume": true,
+    "resume_on_timeout": true,
+    "resume_on_partial": true,
+    "session_id_source": "jsonl_events"
+  },
+
+  "strategies": {
+    "A": {
+      "name": "Parallel Independent",
+      "description": "All agents work on separate, non-overlapping subtasks",
+      "use_worktrees": true,
+      "merge_method": "diff-apply"
+    },
+    "B": {
+      "name": "Parallel + Sequential Phases",
+      "description": "Phased execution where later agents depend on earlier ones",
+      "use_worktrees": true,
+      "merge_method": "sequential-merge"
+    },
+    "C": {
+      "name": "Swarm Review",
+      "description": "Multiple agents analyze same code from different angles (read-only)",
+      "use_worktrees": false,
+      "merge_method": "none"
+    },
+    "D": {
+      "name": "Competitive (best-of-N)",
+      "description": "Same task, N different approaches — orchestrator picks winner",
+      "use_worktrees": true,
+      "merge_method": "pick-winner"
+    },
+    "E": {
+      "name": "Assembly Line",
+      "description": "Sequential pipeline stages in parallel batches",
+      "use_worktrees": true,
+      "merge_method": "sequential-merge"
+    }
+  },
+
+  "temp_dir": "/tmp",
+  "file_prefix": "codex_swarm"
+}

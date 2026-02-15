@@ -1,0 +1,70 @@
+id: media-transcript
+name: Media Transcript Extractor
+
+validations:
+  - id: valid-url
+    description: URL must be valid and accessible
+    check: |
+      - URL starts with http:// or https://
+      - URL is reachable (not 404)
+      - For local files, path exists
+
+  - id: transcript-not-empty
+    description: Extracted transcript must contain content
+    check: |
+      - Transcript length > 100 characters
+      - Contains actual text, not just metadata
+
+  - id: frontmatter-complete
+    description: Obsidian frontmatter must be properly formatted
+    check: |
+      - Has opening and closing ---
+      - Contains source field with original URL
+      - Contains type field set to "transcript"
+      - Contains date field in YYYY-MM-DD format
+      - Contains tags array with at least "transcript"
+
+  - id: filename-valid
+    description: Output filename must be filesystem-safe
+    check: |
+      - No special characters: / \ : * ? " < > |
+      - Length <= 200 characters
+      - Ends with .md extension
+
+  - id: folder-exists
+    description: Transcripts folder must exist before save
+    check: |
+      - Transcripts/ directory exists
+      - Write permissions available
+
+  - id: no-duplicate
+    description: Check for existing file with same name
+    check: |
+      - If file exists, warn user before overwriting
+      - Optionally append number suffix (e.g., "Title (2).md")
+
+quality_checks:
+  - id: content-structure
+    description: Transcript should have proper markdown structure
+    criteria:
+      - Has H1 heading with title
+      - Paragraphs are properly separated
+      - No broken markdown syntax
+
+  - id: metadata-accuracy
+    description: Metadata should accurately reflect source
+    criteria:
+      - Source URL matches input
+      - Date is current date
+      - Content type tag matches URL type
+
+pre_execution:
+  - Verify summarize CLI is installed
+  - Verify URL is accessible
+  - Create Transcripts folder if needed
+
+post_execution:
+  - Verify file was created
+  - Verify file contains expected frontmatter
+  - Verify transcript content is present
+  - Report file path to user

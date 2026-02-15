@@ -1,0 +1,347 @@
+id: online-research
+name: Online Research Collaboration
+
+# Prerequisites - skills that should be loaded before this one
+prerequisites: []
+
+# Delegation rules - when to hand off to other skills
+delegates:
+  - to: browser-automation
+    when:
+      - "Page requires JavaScript rendering"
+      - "Login/authentication required"
+      - "Need to interact with forms"
+      - "Content behind CAPTCHA"
+    handoff_context: |
+      WebFetch cannot access this content. Need browser automation to:
+      - Navigate to: {url}
+      - Goal: {extraction_goal}
+      - Expected data: {expected_fields}
+
+  - to: semantic-search
+    when:
+      - "Need to find relevant sections in large documents"
+      - "Searching across multiple fetched pages"
+      - "Looking for conceptually similar content"
+    handoff_context: |
+      Have gathered content from multiple pages, need semantic search to:
+      - Find: {search_query}
+      - Across: {document_list}
+
+  - to: documentation-engineer
+    when:
+      - "Research complete, need to document findings"
+      - "Creating structured report from gathered data"
+      - "Need to format for sharing"
+    handoff_context: |
+      Research complete on: {topic}
+      Findings: {key_findings}
+      Need documentation format: {output_format}
+
+  - to: data-engineer
+    when:
+      - "Need to store extracted data in database"
+      - "Building data pipeline from web sources"
+      - "Transforming unstructured to structured data"
+    handoff_context: |
+      Extracted data needs structuring:
+      - Source: {source_urls}
+      - Data type: {data_type}
+      - Target schema: {schema}
+
+# External tools to consider (hand off to user)
+external_tools:
+  - name: Elicit
+    url: https://elicit.org
+    use_when: "Academic paper search, systematic reviews, extracting data from papers"
+    strengths: "126M paper index, table-based comparison, citation tracking"
+    limitations: "Academic only, open access or user-uploaded PDFs"
+
+  - name: Perplexity AI
+    url: https://perplexity.ai
+    use_when: "Quick answers with citations, exploring topics"
+    strengths: "Real-time web search, academic focus mode, fast synthesis"
+    limitations: "Less control over search strategy, citation quality varies"
+
+  - name: Consensus
+    url: https://consensus.app
+    use_when: "Scientific questions, finding research consensus"
+    strengths: "Shows % agreement across studies, peer-reviewed only"
+    limitations: "Limited to questions with research literature"
+
+  - name: Semantic Scholar
+    url: https://semanticscholar.org
+    use_when: "Academic paper discovery, citation graphs"
+    strengths: "Free API, 200M+ papers, citation context"
+    limitations: "Abstracts only for most paywalled content"
+
+  - name: Connected Papers
+    url: https://connectedpapers.com
+    use_when: "Finding related papers, literature mapping"
+    strengths: "Visual citation graph, discovers hidden connections"
+    limitations: "5 graphs/month free"
+
+  - name: Playwright MCP
+    url: https://github.com/microsoft/playwright-mcp
+    use_when: "JavaScript-rendered content, login-protected pages, interactive content"
+    strengths: "Uses accessibility tree (fast, LLM-friendly), cross-browser, visible mode for auth"
+    limitations: "Higher resource usage than WebFetch, requires setup"
+    setup: "claude mcp add playwright npx '@playwright/mcp@latest'"
+
+  - name: OpenAlex API
+    url: https://openalex.org
+    use_when: "Academic paper search, author discovery, citation data, h-index lookup, institution research"
+    strengths: "240M works indexed, completely free, no API key, better than Google Scholar, structured JSON output"
+    limitations: "Slight delay in indexing new papers (days, not hours)"
+    setup: "No setup needed - direct API calls via WebFetch"
+    examples: |
+      # Search works by author:
+      https://api.openalex.org/works?filter=author.display_name:Dave%20Cliff
+
+      # Search by institution:
+      https://api.openalex.org/works?filter=institutions.display_name:University%20of%20Bristol
+
+      # Get author details (including h-index):
+      https://api.openalex.org/authors?filter=display_name:Dave%20Cliff
+
+      # Bristol theses:
+      https://api.openalex.org/works?filter=institutions.ror:https://ror.org/0524sp257&type:thesis
+
+  - name: CORE API
+    url: https://core.ac.uk/services/api
+    use_when: "Full-text open access papers, institutional repository search"
+    strengths: "230M open access papers, full text available, good for preprints"
+    limitations: "Requires free API key registration"
+    setup: "Register at core.ac.uk for API key"
+
+  - name: Crawl4AI
+    url: https://github.com/unclecode/crawl4ai
+    use_when: "Complex multi-page crawling, sites with anti-bot detection, need structured output"
+    strengths: "6x faster than alternatives, LLM-optimized markdown output, handles JavaScript, async crawling"
+    limitations: "Requires local installation, more complex than WebFetch"
+    setup: "pip install crawl4ai && playwright install chromium"
+
+  - name: Wayback Machine
+    url: https://web.archive.org
+    use_when: "Current page blocked or unavailable, need historical snapshots"
+    strengths: "Historical internet archive, often has blocked content cached"
+    limitations: "May not have recent content, snapshots can be incomplete"
+    setup: "Direct access via web.archive.org/web/*/[URL]"
+
+# Receives handoffs from these skills
+receives_from:
+  - from: documentation-engineer
+    when: "Need to gather source material for documentation"
+    expect: "URL or topic to research"
+
+  - from: data-engineer
+    when: "Need to fetch data from web sources"
+    expect: "Target URLs and extraction requirements"
+
+# Cross-domain insights
+cross_domain_insights:
+  - domain: Academic Websites (Universities)
+    insights:
+      - "Use programme/course catalogue pages as entry points"
+      - "Unit codes often appear in URLs (e.g., SEMTM0014)"
+      - "Credits usually follow regional standards (UK: 10 hrs/credit)"
+      - "Academic year codes in URLs (25/26 = 2025-2026)"
+      - "Look for 'unit details' or 'module specification' links"
+
+  - domain: University of Bristol Specific
+    insights:
+      - "URL pattern: bris.ac.uk/unit-programme-catalogue/"
+      - "Programme pages: RouteStructure.jsa?programmeCode=CODE"
+      - "Unit pages: UnitDetails.jsa?unitCode=CODE"
+      - "Year parameter: ayrCode=25%2F26 (URL-encoded 25/26)"
+      - "Unit codes: SEMTM = Engineering Maths, EMATM = Eng Maths"
+      - "Teaching Block 1 (TB-1): weeks 1-12"
+      - "Teaching Block 2 (TB-2): weeks 13-24"
+      - "AYEAR: full academic year"
+      - "Level M/7 = Masters level, pass mark 50%"
+      - "10 hours study per credit (20 credits = 200 hrs)"
+      - "Staff shown as 'Dr. [Last Name]' only"
+      - "Resource lists via Talis: bristol.rl.talis.com"
+      - "Some prerequisites are 'assumed' not formal - check text"
+      - "Group projects separate individual vs group components"
+
+  - domain: Documentation Sites
+    insights:
+      - "Start with getting-started or overview pages"
+      - "API reference usually has consistent URL patterns"
+      - "Look for version numbers in URLs"
+      - "Changelog/release notes for recent updates"
+      - "GitHub links often have more detail than docs"
+
+  - domain: E-commerce Sites
+    insights:
+      - "Product IDs in URLs for direct access"
+      - "Prices may vary by region/session"
+      - "Reviews often on separate pages"
+      - "Specifications sometimes in separate tabs"
+      - "Stock/availability may be dynamic"
+
+  - domain: News/Media Sites
+    insights:
+      - "Article dates critical for relevance"
+      - "Watch for paywalls and truncation"
+      - "Author pages for more context"
+      - "Related articles often useful"
+      - "Archive pages for historical content"
+
+  - domain: Government/Official Sites
+    insights:
+      - "Look for official document numbers/references"
+      - "Policy pages may have effective dates"
+      - "Forms and applications often PDF"
+      - "FAQ sections often most useful"
+      - "Contact information for verification"
+
+  - domain: Blocked Academic Sites (403 Recovery)
+    insights:
+      - "Google Scholar: Use OpenAlex API instead (240M works, free)"
+      - "ResearchGate: Use OpenAlex or author's university page"
+      - "Bristol thesis repo: OpenAlex filter=institutions.ror:https://ror.org/0524sp257"
+      - "Paywalled papers: Check arXiv, author website, CORE for open access"
+      - "Citation metrics: OpenAlex returns h_index, i10_index, cited_by_count"
+      - "Author discovery: OpenAlex /authors endpoint with institution filter"
+      - "Semantic Scholar: Good for citation context and related papers"
+      - "Always have API fallback ready for common academic sites"
+      - "Wayback Machine often has cached versions of blocked pages"
+      - "Playwright MCP (headless browser) bypasses most JavaScript blocks"
+
+# Common workflows
+workflows:
+  - name: Academic Programme Research
+    steps:
+      - "Fetch programme overview page"
+      - "Extract list of all modules/units with codes"
+      - "Fetch each unit detail page (parallel)"
+      - "Synthesize into structured summary"
+      - "Note prerequisites and progression paths"
+
+  - name: Documentation Deep Dive
+    steps:
+      - "Fetch main documentation index"
+      - "Identify relevant sections"
+      - "Fetch each section page"
+      - "Look for code examples and gotchas"
+      - "Check GitHub issues for known problems"
+
+  - name: Competitive Research
+    steps:
+      - "Identify target URLs (company sites, product pages)"
+      - "Extract features, pricing, positioning"
+      - "Find press releases and announcements"
+      - "Check review sites for user perspectives"
+      - "Document strengths/weaknesses"
+
+  - name: Bristol University Programme Research
+    steps:
+      - "Fetch RouteStructure.jsa?programmeCode=CODE&ayrCode=25%2F26"
+      - "Extract all unit codes from programme page"
+      - "Construct unit URLs: UnitDetails.jsa?unitCode=CODE&ayrCode=25%2F26"
+      - "Fetch all unit pages in parallel (batch of 5-6)"
+      - "Use 10-category structured prompt for each unit"
+      - "Map prerequisites (formal + assumed)"
+      - "Calculate total study hours (credits × 10)"
+      - "Synthesize into complete programme summary"
+
+  - name: Deep Research (Complex Questions)
+    description: Agent-based approach for multi-faceted queries
+    steps:
+      - "DECOMPOSE: Break query into 3-5 sub-questions"
+      - "PLAN: Create research strategy for each sub-question"
+      - "ITERATE: For each sub-question:"
+      - "  - Search multiple sources"
+      - "  - Read and extract relevant info"
+      - "  - Reason about gaps"
+      - "  - Search again if needed"
+      - "VERIFY: Apply SIFT to key claims"
+      - "TRIANGULATE: Find 3+ sources for critical info"
+      - "SYNTHESIZE: Combine findings into coherent report"
+      - "CITE: Include verified citations with source types"
+
+  - name: PRISMA-Style Systematic Research
+    description: Academic rigor for comprehensive coverage
+    steps:
+      - "DEFINE: Establish inclusion/exclusion criteria"
+      - "IDENTIFY: Search multiple sources, record all results"
+      - "SCREEN: Review titles/abstracts against criteria"
+      - "RETRIEVE: Fetch full content for included sources"
+      - "EXTRACT: Apply schema-driven extraction"
+      - "ASSESS: Evaluate source quality and relevance"
+      - "SYNTHESIZE: Aggregate findings with quality weights"
+      - "REPORT: Document flow (identified → screened → included)"
+
+  - name: Fact-Checking Workflow
+    description: Rigorous verification for claims
+    steps:
+      - "IDENTIFY: Note specific claim to verify"
+      - "TRACE: Follow citation chain to primary source"
+      - "VERIFY: Confirm claim appears in original"
+      - "CONTEXTUALIZE: Check if claim is conditional/limited"
+      - "TRIANGULATE: Find independent corroboration"
+      - "ASSESS: Rate confidence (verified/likely/uncertain)"
+      - "REPORT: Include confidence and sources"
+
+  - name: Playwright MCP Research Workflow
+    description: Using headless browser for dynamic content
+    steps:
+      - "ASSESS: Try WebFetch first - if content incomplete, escalate"
+      - "CHECK API: Look for XHR/JSON endpoints in Network tab"
+      - "SETUP: Ensure Playwright MCP installed (claude mcp add playwright...)"
+      - "INVOKE: 'Use playwright mcp to open browser to URL'"
+      - "AUTH: If login needed, manually enter credentials in visible browser"
+      - "NAVIGATE: Direct Claude to click, scroll, interact as needed"
+      - "WAIT: Ensure content loaded before extracting"
+      - "EXTRACT: Ask Claude to extract data from accessibility tree"
+      - "CLOSE: End browser session when done"
+
+  - name: WebFetch vs Playwright Decision Tree
+    description: Choosing the right tool for web research
+    steps:
+      - "1. Is the page static HTML? → Use WebFetch"
+      - "2. Does content appear with JS disabled? → Use WebFetch"
+      - "3. Is there a public API? → Use direct API call"
+      - "4. Is login required? → Use Playwright MCP (visible mode)"
+      - "5. Does content load dynamically? → Use Playwright MCP"
+      - "6. Need to interact (click, scroll)? → Use Playwright MCP"
+      - "7. High volume research? → Prefer WebFetch (faster)"
+      - "8. Anti-bot detection present? → Use Playwright MCP with stealth"
+
+  - name: 403 Error Recovery Workflow
+    description: Systematic approach to recover from access blocks
+    steps:
+      - "1. IDENTIFY: Confirm 403/access denied (not just slow/timeout)"
+      - "2. ALTERNATIVE URL: Try mobile version, API endpoint, print view"
+      - "3. CHECK API: Most sites have APIs - OpenAlex for academic, Wikipedia REST, etc."
+      - "4. WAYBACK: Try web.archive.org/web/*/[URL] for cached version"
+      - "5. PLAYWRIGHT: If content exists but blocked, try headless browser"
+      - "6. WEBSEARCH: Use WebSearch to find alternative sources for same info"
+      - "7. DOCUMENT: Note what couldn't be accessed and why"
+      - "8. SUGGEST: If all fails, suggest user try manually or with VPN"
+
+  - name: Academic Research Without Google Scholar
+    description: Complete academic research using free APIs
+    steps:
+      - "1. START WITH OPENALEX: api.openalex.org - 240M works, free, no key"
+      - "2. GET AUTHOR PROFILE: /authors?filter=display_name:[name]"
+      - "3. GET WORKS: /works?filter=author.id:[author_id]"
+      - "4. CITATION METRICS: h_index, i10_index, cited_by_count in author response"
+      - "5. CROSS-REFERENCE: Semantic Scholar for additional citation context"
+      - "6. OPEN ACCESS: Filter for open access versions (is_oa:true)"
+      - "7. FULL TEXT: Check arXiv, CORE, or author website for PDF"
+      - "8. SYNTHESIZE: Combine data from multiple APIs for complete picture"
+
+  - name: Bristol University Research Workflow
+    description: Researching Bristol without hitting blocks
+    steps:
+      - "1. COURSE CATALOGUE: WebFetch works on RouteStructure.jsa, UnitDetails.jsa"
+      - "2. THESIS REPO: Use OpenAlex with Bristol ROR filter instead"
+      - "   API: api.openalex.org/works?filter=institutions.ror:https://ror.org/0524sp257"
+      - "3. STAFF PROFILES: Individual profile pages usually accessible"
+      - "4. PUBLICATIONS: Use OpenAlex/SSRN instead of Bristol repo"
+      - "5. STUDENT WORK: Search GitHub for Bristol student projects"
+      - "6. IF BLOCKED: Playwright MCP as last resort"
+      - "7. DOCUMENT: Note any content that required alternative sources"

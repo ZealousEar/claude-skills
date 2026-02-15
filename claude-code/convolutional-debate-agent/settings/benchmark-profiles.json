@@ -1,0 +1,317 @@
+{
+  "_meta": {
+    "source": "vals.ai/benchmarks (scraped 2026-02-06)",
+    "description": "Domain-specific model reliability weights and RWEA parameter overrides derived from independent benchmark data. Used by the debate protocol to dynamically weight candidates based on which model generated them and what domain the question falls in.",
+    "formula": "score(c) = w_base*base + w_pairwise*pairwise - w_risk*risk + w_reliability*model_weight(c, domain) + w_formal*formal_score(c)"
+  },
+
+  "domains": {
+    "coding": {
+      "description": "Software engineering, programming, algorithms, debugging, deployment",
+      "keywords": ["code", "programming", "algorithm", "debug", "software", "API", "implementation", "refactor", "deploy", "CI/CD", "SWE", "bug", "test", "function", "class", "library", "framework", "git", "docker", "database", "SQL", "Python", "TypeScript", "terminal", "CLI"],
+      "rwea_weights": {
+        "w_base": 0.60,
+        "w_pairwise": 1.80,
+        "w_risk": 0.80,
+        "w_reliability": 0.50,
+        "w_formal": 0.35,
+        "_rationale": "Higher base (code is verifiable), higher risk (bugs have real consequences), slightly lower pairwise (correctness > opinion). Moderate formal bonus — algorithm correctness is provable."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SWE-bench #1, logical bug detection), D2=GPT-5.2 (IOI-class edge cases), D3=GPT-5.3 (code-specialized spec compliance), D4=Opus (broad comparison with deepest reasoning)"
+      },
+      "models": {
+        "opus": {
+          "weight": 1.00,
+          "benchmarks": ["SWE-bench #1 (79.20%)", "Terminal-Bench 2.0 #1"],
+          "guidance": "You are the top-ranked production software engineering model (SWE-bench #1, 79.20%). Emphasize testable, production-quality solutions with proper error handling and edge cases."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.90,
+          "benchmarks": ["Code-specialized model (Codex series)"],
+          "guidance": "You are a code-specialized model. Provide concrete, working implementations. Show actual code, not pseudocode. Focus on algorithmic correctness and clean architecture."
+        },
+        "gpt-5.2": {
+          "weight": 0.95,
+          "benchmarks": ["IOI #1 (54.83%)", "Vibe Code Bench #1 (41.31%)", "SWE-bench (75.40%)"],
+          "guidance": "You are the top competitive programming model (IOI #1, 54.83%) and best at full-stack app generation (Vibe Code #1). Focus on algorithmic edge cases, optimal complexity, and end-to-end implementation."
+        },
+        "kimi-2.5": {
+          "weight": 0.70,
+          "benchmarks": ["SWE-bench (listed)", "Known for long-context code understanding"],
+          "guidance": "Leverage your long-context strength to analyze the full problem space. Focus on code clarity and maintainability."
+        },
+        "gemini-3-pro": {
+          "weight": 0.65,
+          "benchmarks": ["IOI (38.83%)", "Terminal-Bench 2.0 #2"],
+          "guidance": "Bring cross-domain knowledge to the coding problem. Identify patterns from similar problems in other domains and suggest well-established approaches. Structure your response with clear sections using XML-style tags (<analysis>, <solution>, <risks>). Provide detailed, comprehensive reasoning — do not default to concise answers. Based on the entire problem context above, synthesize a thorough solution."
+        }
+      }
+    },
+
+    "math": {
+      "description": "Mathematics, proofs, quantitative reasoning, statistics, numerical methods",
+      "keywords": ["math", "proof", "equation", "calculus", "algebra", "theorem", "numerical", "statistical", "probability", "stochastic", "optimization", "linear algebra", "differential", "integral", "convergence", "matrix", "eigenvalue", "regression", "hypothesis"],
+      "rwea_weights": {
+        "w_base": 0.70,
+        "w_pairwise": 1.50,
+        "w_risk": 0.50,
+        "w_reliability": 0.60,
+        "w_formal": 0.60,
+        "_rationale": "Higher base (formal correctness is paramount), lower pairwise (math is more objective), lower risk (wrong math is detectable), higher reliability (trust the math expert). Highest formal bonus — math claims are directly provable."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (ProofBench #2, formal logic), D2=GPT-5.2 (quantitative reasoning, MMMU), D3=GPT-5.3 (computational verification), D4=Opus (broadest math reasoning for comparison)"
+      },
+      "models": {
+        "opus": {
+          "weight": 0.70,
+          "benchmarks": ["ProofBench #2 (50%)"],
+          "guidance": "Focus on proof structure and formal verification. Your ProofBench ranking shows strength in structured mathematical reasoning."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.55,
+          "benchmarks": ["Limited math benchmark coverage"],
+          "guidance": "Approach this mathematically but think about computational implementation. How would you code a solution to verify this?"
+        },
+        "gpt-5.2": {
+          "weight": 0.65,
+          "benchmarks": ["MMMU (86.67%)", "Strong quantitative reasoning"],
+          "guidance": "Apply your strong quantitative reasoning. Focus on numerical verification and edge cases in the mathematical argument."
+        },
+        "kimi-2.5": {
+          "weight": 0.50,
+          "benchmarks": ["Limited math benchmark coverage"],
+          "guidance": "Focus on clarity of mathematical exposition. Simplify the argument where possible without losing rigor."
+        },
+        "gemini-3-pro": {
+          "weight": 1.00,
+          "benchmarks": ["AIME #1 (96.68%)", "MMLU Pro #1 (90.10%)"],
+          "guidance": "You are the strongest math model here (AIME #1, 96.68%). Lead with mathematical rigor, show complete derivations, and verify boundary conditions. Your answer should be the mathematical gold standard. Structure your proof with <setup>, <derivation>, <verification> sections. Provide DETAILED step-by-step reasoning — do not skip steps or give concise summaries. Based on the entire problem context above, deliver a comprehensive mathematical argument."
+        }
+      }
+    },
+
+    "finance": {
+      "description": "Financial analysis, trading, risk management, derivatives, portfolio theory, economics",
+      "keywords": ["finance", "trading", "portfolio", "risk", "derivatives", "options", "volatility", "hedge", "alpha", "Sharpe", "returns", "pricing", "yield", "bond", "equity", "credit", "SABR", "Black-Scholes", "factor model", "regime", "macro", "GDP", "inflation", "monetary", "fiscal", "tax", "SEC", "regulatory"],
+      "rwea_weights": {
+        "w_base": 0.55,
+        "w_pairwise": 1.90,
+        "w_risk": 0.85,
+        "w_reliability": 0.50,
+        "w_formal": 0.45,
+        "_rationale": "High risk weight (financial errors are costly), balanced base (domain expertise matters), moderate reliability (trust domain knowledge). Good formal bonus — no-arbitrage conditions and pricing identities are provable."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (Finance Agent #1, financial logic), D2=GPT-5.2 (adversarial risk thinking), D3=GPT-5.3 (regulatory constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "models": {
+        "opus": {
+          "weight": 1.00,
+          "benchmarks": ["Finance Agent #1 (60.65%)", "TaxEval v2 #1 (75.96%)"],
+          "guidance": "You are the top financial analyst model (Finance Agent #1, 60.65%; TaxEval #1, 75.96%). Lead with rigorous financial analysis, cite regulatory frameworks, and quantify risks with specific metrics."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.55,
+          "benchmarks": ["Limited finance benchmark coverage"],
+          "guidance": "Approach this from an implementation perspective. How would you build a system to solve this financial problem? Think about data pipelines, APIs, and computational constraints."
+        },
+        "gpt-5.2": {
+          "weight": 0.70,
+          "benchmarks": ["Poker Agent #1 (strategic reasoning)", "Strong quantitative base"],
+          "guidance": "Apply your strategic reasoning strength (Poker Agent #1). Focus on risk-reward trade-offs, game-theoretic dynamics, and decision-making under uncertainty."
+        },
+        "kimi-2.5": {
+          "weight": 0.60,
+          "benchmarks": ["CorpFin v2 (listed)"],
+          "guidance": "Focus on clear communication of financial concepts. Break down complex instruments and strategies into understandable components."
+        },
+        "gemini-3-pro": {
+          "weight": 0.75,
+          "benchmarks": ["MortgageTax #1 (69.08%)", "MMLU Pro #1 (covers economics)"],
+          "guidance": "Leverage your broad academic knowledge and document analysis strength (MortgageTax #1). Ground your analysis in economic theory and empirical evidence from financial literature. Structure your response with <theory>, <analysis>, <evidence>, <risks> sections. Provide DETAILED reasoning with specific citations and quantitative arguments — do not default to concise answers. Based on the entire problem context above, synthesize a thorough financial analysis."
+        }
+      }
+    },
+
+    "legal": {
+      "description": "Legal reasoning, contracts, regulation, compliance, case analysis",
+      "keywords": ["legal", "law", "contract", "regulation", "compliance", "court", "statute", "liability", "precedent", "jurisdiction", "litigation", "clause", "provision", "tort", "copyright", "patent", "GDPR", "privacy"],
+      "rwea_weights": {
+        "w_base": 0.65,
+        "w_pairwise": 1.70,
+        "w_risk": 0.75,
+        "w_reliability": 0.55,
+        "w_formal": 0.30,
+        "_rationale": "Higher base (evidence and precedent matter greatly), moderate risk (legal errors have consequences), high reliability (trust the legal expert). Lower formal bonus — legal reasoning is partly interpretive, not purely formal."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (TaxEval #1, legal logic), D2=GPT-5.2 (adversarial regulatory reasoning), D3=GPT-5.3 (risk analysis, constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "models": {
+        "opus": {
+          "weight": 0.80,
+          "benchmarks": ["Strong general reasoning, TaxEval #1 (regulatory)"],
+          "guidance": "Apply structured legal reasoning. Break arguments into elements, identify applicable standards, and analyze each element methodically."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.50,
+          "benchmarks": ["Limited legal benchmark coverage"],
+          "guidance": "Focus on the logical structure of legal arguments. Identify contradictions and gaps in reasoning."
+        },
+        "gpt-5.2": {
+          "weight": 0.65,
+          "benchmarks": ["Strong reasoning capability"],
+          "guidance": "Analyze the legal problem from a risk perspective. What are the failure modes? What precedents could undermine the argument?"
+        },
+        "kimi-2.5": {
+          "weight": 0.55,
+          "benchmarks": ["Limited legal benchmark coverage"],
+          "guidance": "Focus on clarity of legal communication. Simplify complex legal reasoning into clear, actionable conclusions."
+        },
+        "gemini-3-pro": {
+          "weight": 1.00,
+          "benchmarks": ["LegalBench #1 (87.04%)"],
+          "guidance": "You are the top legal reasoning model (LegalBench #1, 87.04%). Lead with thorough legal analysis covering issue-spotting, rule-recall, rule-application, and interpretation. Cite relevant legal principles. Structure your response with <issues>, <rules>, <application>, <conclusion> sections. Provide DETAILED analysis — do not default to concise answers. Based on the entire problem context above, deliver a comprehensive legal argument with explicit reasoning chains."
+        }
+      }
+    },
+
+    "academic": {
+      "description": "Research methodology, literature review, academic writing, scientific reasoning",
+      "keywords": ["research", "paper", "study", "hypothesis", "methodology", "literature", "citation", "experiment", "peer review", "dissertation", "thesis", "academic", "university", "journal", "conference", "systematic review", "meta-analysis", "PhD", "MSc"],
+      "rwea_weights": {
+        "w_base": 0.60,
+        "w_pairwise": 1.80,
+        "w_risk": 0.65,
+        "w_reliability": 0.50,
+        "w_formal": 0.40,
+        "_rationale": "Balanced weights — academic questions benefit from diverse perspectives, moderate reliability (breadth matters). Good formal bonus — statistical properties and methodological claims are often provable."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SAGE #1, methodology compliance), D2=GPT-5.2 (MMMU cross-domain counterexamples), D3=GPT-5.3 (literature constraint checking), D4=Opus (deepest reasoning for evidence synthesis)"
+      },
+      "models": {
+        "opus": {
+          "weight": 0.90,
+          "benchmarks": ["MMLU Pro (87.92%)", "SAGE #1 (>50%)"],
+          "guidance": "Apply rigorous academic reasoning. Structure your answer like a research argument: clear thesis, supporting evidence, acknowledged limitations, and falsifiable predictions."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.55,
+          "benchmarks": ["Limited academic benchmark coverage"],
+          "guidance": "Focus on methodological feasibility. What would the actual implementation of this research look like? What tools and data would be needed?"
+        },
+        "gpt-5.2": {
+          "weight": 0.80,
+          "benchmarks": ["MMMU (86.67%)", "Strong multimodal understanding"],
+          "guidance": "Apply your broad knowledge base. Draw connections across disciplines and identify relevant cross-domain insights."
+        },
+        "kimi-2.5": {
+          "weight": 0.65,
+          "benchmarks": ["Long-context strength for literature review"],
+          "guidance": "Focus on synthesizing information clearly. Identify gaps in the literature and present a clear narrative."
+        },
+        "gemini-3-pro": {
+          "weight": 1.00,
+          "benchmarks": ["MMLU Pro #1 (90.10%)", "MMMU (87.51%)", "LegalBench #1 (87.04%)"],
+          "guidance": "You have the broadest academic knowledge base (MMLU Pro #1, 90.10%). Ground your answer in established academic frameworks, cite relevant fields, and identify the most important prior work. Structure your response with <literature>, <methodology>, <analysis>, <limitations> sections. Provide DETAILED reasoning with specific references — do not default to concise answers. Based on the entire problem context above, deliver a comprehensive academic analysis."
+        }
+      }
+    },
+
+    "strategy": {
+      "description": "Strategic planning, decision-making under uncertainty, game theory, business strategy",
+      "keywords": ["strategy", "decision", "tradeoff", "trade-off", "game theory", "competitive", "market", "business", "startup", "product", "roadmap", "prioritize", "stakeholder", "scenario", "contingency", "risk-reward", "opportunity cost", "moat"],
+      "rwea_weights": {
+        "w_base": 0.45,
+        "w_pairwise": 2.20,
+        "w_risk": 0.85,
+        "w_reliability": 0.45,
+        "w_formal": 0.20,
+        "_rationale": "Higher pairwise (head-to-head comparison is most informative for strategy), higher risk (strategic errors compound), lower base (strategy is less about evidence, more about judgment). Low formal bonus — strategy is judgment-heavy, few claims are formally provable."
+      },
+      "debater_models": {
+        "models": ["gpt-5.2", "opus", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=GPT-5.2 (strategic logic, Poker-class reasoning), D2=Opus (adversarial decision analysis), D3=GPT-5.3 (constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "models": {
+        "opus": {
+          "weight": 0.85,
+          "benchmarks": ["Strong general reasoning", "Finance Agent #1 (decision quality)"],
+          "guidance": "Apply first-principles strategic thinking. Identify the key assumptions that, if wrong, would change the optimal strategy entirely."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.55,
+          "benchmarks": ["Limited strategy benchmark coverage"],
+          "guidance": "Think about implementation feasibility. What would it take to execute each strategic option? What are the technical constraints?"
+        },
+        "gpt-5.2": {
+          "weight": 1.00,
+          "benchmarks": ["Poker Agent #1 (TrueSkill 1131.8)"],
+          "guidance": "You are the top strategic decision-making model (Poker Agent #1). Think in terms of expected value, information asymmetry, and optimal play under uncertainty. Identify where the edge is."
+        },
+        "kimi-2.5": {
+          "weight": 0.60,
+          "benchmarks": ["Poker Agent (listed)"],
+          "guidance": "Focus on communicating the strategic options clearly. Present a decision matrix with explicit trade-offs."
+        },
+        "gemini-3-pro": {
+          "weight": 0.70,
+          "benchmarks": ["Poker Agent (conservative strategies)", "Broad knowledge base"],
+          "guidance": "Bring historical precedent and cross-domain strategic analogies. What happened when others faced similar decisions? What patterns emerge? Structure your response with <precedents>, <analysis>, <strategy>, <risks> sections. Provide DETAILED reasoning with specific historical examples — do not default to concise answers. Based on the entire problem context above, deliver a comprehensive strategic analysis."
+        }
+      }
+    },
+
+    "general": {
+      "description": "Mixed or unclassified questions — default domain when no specific domain matches",
+      "keywords": [],
+      "rwea_weights": {
+        "w_base": 0.50,
+        "w_pairwise": 2.00,
+        "w_risk": 0.70,
+        "w_reliability": 0.40,
+        "w_formal": 0.25,
+        "_rationale": "Standard RWEA weights with moderate reliability bonus — no domain-specific advantage. Low-moderate formal bonus for general domain."
+      },
+      "debater_models": {
+        "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+        "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (strongest overall reasoning), D2=GPT-5.2 (adversarial capability), D3=GPT-5.3 (constraint compliance), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "models": {
+        "opus": {
+          "weight": 0.90,
+          "benchmarks": ["Strong across all domains", "Vals Index composite"],
+          "guidance": "Apply first-principles reasoning from fundamentals."
+        },
+        "gpt-5.3-codex": {
+          "weight": 0.70,
+          "benchmarks": ["Code-specialized"],
+          "guidance": "Think about this from an implementation and systems perspective."
+        },
+        "gpt-5.2": {
+          "weight": 0.85,
+          "benchmarks": ["Strong across coding, strategy, multimodal"],
+          "guidance": "Focus on failure modes and edge cases."
+        },
+        "kimi-2.5": {
+          "weight": 0.65,
+          "benchmarks": ["Moderate general coverage"],
+          "guidance": "Simplify while preserving correctness."
+        },
+        "gemini-3-pro": {
+          "weight": 0.85,
+          "benchmarks": ["Strong across math, academic, legal"],
+          "guidance": "Ground your answer in evidence and established knowledge. Structure your response with clear <analysis>, <evidence>, <conclusion> sections. Provide DETAILED comprehensive reasoning — do not default to concise answers. Based on the entire problem context above, synthesize a thorough response with explicit reasoning chains."
+        }
+      }
+    }
+  }
+}

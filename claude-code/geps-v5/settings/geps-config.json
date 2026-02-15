@@ -1,0 +1,114 @@
+{
+  "generation": {
+    "channels": {
+      "graph_explorer": {
+        "model": "opus",
+        "weight": 0.30,
+        "prompt": "solver_structural_hole_explorer.md",
+        "description": "Concept-pair recombination from structural holes"
+      },
+      "analogy_transfer": {
+        "model": "gpt-5.3-codex",
+        "weight": 0.25,
+        "prompt": "solver_analogy_transfer.md",
+        "description": "Cross-domain method import into finance"
+      },
+      "exploit_refiner": {
+        "model": "gpt-5.2",
+        "weight": 0.25,
+        "prompt": "solver_exploit_refiner.md",
+        "description": "Sharpen promising ideas addressing gate failures"
+      },
+      "constraint_injection": {
+        "model": "kimi-2.5",
+        "weight": 0.20,
+        "prompt": "solver_identification_engineer.md",
+        "description": "Force underused skill/method constraints"
+      }
+    },
+    "ideas_per_channel": 10,
+    "forbidden_methods": [],
+    "forbidden_topics": []
+  },
+  "mechanical_gates": {
+    "data_gate": {
+      "enabled": true,
+      "require_named_sources": true,
+      "require_known_access": true
+    },
+    "complexity_gate": {
+      "enabled": true,
+      "threshold": 8,
+      "scoring": {
+        "gpu_required": 3,
+        "proprietary_data": 3,
+        "manual_labeling": 3,
+        "web_scraping": 2,
+        "hpc_cluster": 3,
+        "novel_data_construction": 2,
+        "multiple_external_apis": 1,
+        "cross_institutional": 2
+      }
+    },
+    "identifiability_gate": {
+      "enabled": true,
+      "keywords": ["IV", "instrumental variable", "diff-in-diff", "difference-in-differences", "regression discontinuity", "RDD", "structural model", "calibration", "GMM", "maximum likelihood", "Bayesian estimation", "natural experiment", "quasi-experimental", "event study", "propensity score"]
+    },
+    "novelty_gate": {
+      "enabled": true,
+      "max_similarity": 0.90,
+      "method": "tfidf_cosine"
+    },
+    "ethics_gate": {
+      "enabled": true,
+      "red_flags": ["insider trading", "front-running", "market manipulation", "PII", "personally identifiable", "scrape private", "GDPR violation"]
+    }
+  },
+  "tournament": {
+    "rounds": 6,
+    "judge_pool": ["opus", "gpt-5.3-codex", "gpt-5.2", "gemini-3-pro", "kimi-2.5"],
+    "max_same_provider_per_match": 1,
+    "position_swap_fraction": 0.3,
+    "judge_schedule": "judging_schedule.json",
+    "field_cuts": {
+      "after_round_3": 30,
+      "after_round_5": 20
+    },
+    "seed": 42
+  },
+  "bradley_terry": {
+    "rho_source": "calibration",
+    "theta_constraint": "sum_zero",
+    "pi_regularization": "l2",
+    "pi_lambda": 0.1,
+    "em_iterations": 100,
+    "bootstrap_samples": 200,
+    "min_matches_per_idea": 3
+  },
+  "verification": {
+    "top_k": 5,
+    "free_mad_style": true,
+    "bracket": "round_robin",
+    "bracket_star_threshold": 7,
+    "verifier_models": ["opus", "gpt-5.3-codex"],
+    "use_aristotle": false
+  },
+  "portfolio": {
+    "K": 5,
+    "lambda_uncertainty": 0.3,
+    "lambda_risk": 0.2,
+    "lambda_redundancy": 0.4,
+    "lambda_evidence": 0.1,
+    "taxonomy_file": "taxonomy.json"
+  },
+  "feedback": {
+    "algorithm": "thompson_sampling",
+    "reward_definition": "bernoulli_threshold",
+    "success_quantile": 0.5,
+    "exploration_floor": 0.10
+  },
+  "paths": {
+    "llm_runner": "~/.claude/skills/convolutional-debate-agent/scripts/llm_runner.py",
+    "model_settings": "~/.claude/skills/convolutional-debate-agent/settings/model-settings.json"
+  }
+}

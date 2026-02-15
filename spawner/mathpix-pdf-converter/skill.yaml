@@ -1,0 +1,178 @@
+id: mathpix-pdf-converter
+name: Mathpix PDF to Markdown Converter
+version: "1.0.0"
+category: pattern
+layer: 2
+
+description: |
+  Converts PDF documents (and other formats like EPUB, DOCX) to Mathpix Markdown (.mmd)
+  using the Mathpix API. Handles complex mathematical formulas, tables, diagrams, and
+  preserves document structure. Works with both URLs and local files.
+
+triggers:
+  - convert pdf
+  - mathpix convert
+  - pdf to markdown
+  - extract pdf mathpix
+  - ocr pdf
+  - pdf with math
+
+owns:
+  - pdf to markdown conversion
+  - mathematical formula extraction
+  - table extraction from pdfs
+  - diagram recognition
+  - academic paper conversion
+
+tags:
+  - pdf
+  - mathpix
+  - markdown
+  - ocr
+  - latex
+  - math
+  - academic
+  - conversion
+
+instructions: |
+  ## Mathpix PDF to Markdown Converter
+
+  You convert PDF documents (and EPUB, DOCX, etc.) to Mathpix Markdown format using
+  the Mathpix API. This is ideal for academic papers, textbooks, and technical documents
+  with mathematical formulas, tables, and diagrams.
+
+  ### Prerequisites
+
+  - Mathpix API credentials in `.env` file:
+    ```
+    MATHPIX_APP_ID=your_app_id_here
+    MATHPIX_APP_KEY=your_app_key_here
+    ```
+  - Get credentials at: https://console.mathpix.com
+  - Load with `source .env` before running
+
+  ### Output Location
+
+  Save converted files to: `Transcripts/<Document Title>/`
+  ```
+  Transcripts/
+  └── <Document Title>/
+      └── <Document Title>.mmd
+  ```
+
+  ### Core Workflow
+
+  **For URL-based PDFs:**
+
+  1. **Submit the PDF** to Mathpix API:
+     ```bash
+     # .mmd format is available by default - no conversion_formats needed
+     curl -X POST https://api.mathpix.com/v3/pdf \
+     -H "app_id: $MATHPIX_APP_ID" \
+     -H "app_key: $MATHPIX_APP_KEY" \
+     -H "Content-Type: application/json" \
+     --data '{"url": "<PDF_URL>"}' | jq -r '.pdf_id'
+     ```
+
+  2. **Poll for completion status**:
+     ```bash
+     curl -X GET "https://api.mathpix.com/v3/pdf/$PDF_ID" \
+     -H "app_id: $MATHPIX_APP_ID" \
+     -H "app_key: $MATHPIX_APP_KEY" | jq -r '.status'
+     ```
+
+     Wait until `status == "completed"` (check every 5-10 seconds)
+
+  3. **Download the .mmd file**:
+     ```bash
+     curl -X GET "https://api.mathpix.com/v3/pdf/$PDF_ID.mmd" \
+     -H "app_id: $MATHPIX_APP_ID" \
+     -H "app_key: $MATHPIX_APP_KEY" > output.mmd
+     ```
+
+  **For local PDF files:**
+
+  1. **Upload the file**:
+     ```bash
+     # .mmd format is available by default
+     curl -X POST https://api.mathpix.com/v3/pdf \
+     -H "app_id: $MATHPIX_APP_ID" \
+     -H "app_key: $MATHPIX_APP_KEY" \
+     --form 'file=@"document.pdf"' | jq -r '.pdf_id'
+     ```
+
+  2. Follow steps 2-3 above to poll and download
+
+  ### Advanced Options
+
+  **Process specific pages only:**
+  ```json
+  {
+    "url": "<PDF_URL>",
+    "page_ranges": "2,4-6,10-15"
+  }
+  ```
+
+  **Customize math delimiters:**
+  ```json
+  {
+    "url": "<PDF_URL>",
+    "math_inline_delimiters": ["$", "$"],
+    "math_display_delimiters": ["$$", "$$"]
+  }
+  ```
+
+  **Enable advanced table processing:**
+  ```json
+  {
+    "url": "<PDF_URL>",
+    "enable_tables_fallback": true
+  }
+  ```
+
+  ### Mathpix Markdown (.mmd) Format
+
+  The output uses Mathpix Markdown which includes:
+  - **LaTeX formulas**: Inline `\( formula \)` and display `\[ formula \]`
+  - **Tables**: Standard markdown tables
+  - **Diagrams**: Converted to text descriptions or preserved as images
+  - **Chemistry**: SMILES notation for chemical structures
+  - **Structured content**: Headers, lists, code blocks
+
+  ### Example Interaction
+
+  User: "Convert this PDF to markdown: https://example.com/paper.pdf"
+
+  1. Submit PDF to API, get `pdf_id`
+  2. Poll status every 5 seconds until completed
+  3. Extract title from PDF metadata or use filename
+  4. Create folder: `mkdir -p "Transcripts/<title>"`
+  5. Download .mmd file to `Transcripts/<title>/<title>.mmd`
+  6. Report completion with file path and page count
+
+  ### Error Handling
+
+  - **401 Unauthorized**: Check API credentials in `.env`
+  - **413 Too Large**: File exceeds 1GB limit
+  - **Processing failed**: Check PDF is not password-protected or corrupted
+  - **Timeout**: Large documents may take several minutes
+
+  ### Supported Input Formats
+
+  - PDF (up to 1GB)
+  - EPUB, AZW, AZW3, KFX, MOBI (ebooks)
+  - DOCX, DOC, ODT (documents)
+  - PPTX (presentations)
+  - DJVU
+  - WPD
+
+prerequisites:
+  - Mathpix API credentials (app_id and app_key)
+  - curl for API requests
+  - jq for JSON parsing (brew install jq)
+  - Source .env file before use
+
+pairs_with:
+  - media-transcript
+  - lecture-notes-sync
+  - obsidian-notes

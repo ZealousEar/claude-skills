@@ -1,0 +1,287 @@
+id: mathpix-pdf-converter
+name: Mathpix PDF to Markdown Converter
+
+sharp_edges:
+  - id: conversion-formats-error
+    trigger: "Unknown: [\"mmd\"]"
+    symptom: |
+      API returns error: "Unknown: [\"mmd\"]" when submitting PDF
+    cause: |
+      Using conversion_formats parameter with "mmd" - this format is not supported
+      in the initial submission, but is available by default via the .mmd endpoint
+    fix: |
+      Remove conversion_formats from your request:
+      ```bash
+      # WRONG - causes error
+      --data '{"url": "...", "conversion_formats": {"mmd": true}}'
+
+      # CORRECT - .mmd available by default
+      --data '{"url": "..."}'
+      ```
+      Then download with: curl .../pdf/{pdf_id}.mmd
+
+  - id: env-file-spacing
+    trigger: "command not found: your_app_id"
+    symptom: |
+      Shell tries to execute the app_id as a command when sourcing .env
+    cause: |
+      Space after = in .env file: MATHPIX_APP_ID= your_app_id
+    fix: |
+      Remove the space after the equals sign:
+      ```bash
+      # WRONG
+      MATHPIX_APP_ID= farhadchichgar_07f92a_077ff7
+
+      # CORRECT
+      MATHPIX_APP_ID=farhadchichgar_07f92a_077ff7
+      ```
+
+  - id: missing-api-credentials
+    trigger: "401 Unauthorized"
+    symptom: |
+      API requests fail with 401 Unauthorized error
+    cause: |
+      MATHPIX_APP_ID or MATHPIX_APP_KEY not set or invalid
+    fix: |
+      1. Get credentials from https://console.mathpix.com
+      2. Add to .env file:
+         ```bash
+         MATHPIX_APP_ID=your_app_id_here
+         MATHPIX_APP_KEY=your_app_key_here
+         ```
+      3. Load environment: source .env
+      4. Verify they're set: echo $MATHPIX_APP_ID
+
+  - id: file-too-large
+    trigger: "413 Payload Too Large"
+    symptom: |
+      API rejects PDF with file size error
+    cause: |
+      PDF exceeds 1GB limit
+    fix: |
+      1. Compress PDF using tools like:
+         ```bash
+         gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
+            -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH \
+            -sOutputFile=compressed.pdf input.pdf
+         ```
+      2. Or split large PDFs into smaller sections
+      3. Use page_ranges to process in chunks
+
+  - id: password-protected-pdf
+    trigger: "Processing failed - encrypted"
+    symptom: |
+      Conversion fails for password-protected PDFs
+    cause: |
+      Mathpix cannot process encrypted/password-protected PDFs
+    fix: |
+      1. Remove password protection first:
+         ```bash
+         qpdf --password=PASSWORD --decrypt input.pdf output.pdf
+         ```
+      2. Then submit the decrypted version
+
+  - id: corrupted-pdf
+    trigger: "Processing failed - invalid PDF"
+    symptom: |
+      API returns error about invalid or corrupted PDF
+    cause: |
+      PDF file is malformed or corrupted
+    fix: |
+      1. Try opening PDF in Adobe Reader to verify it works
+      2. Re-download if from a URL
+      3. Use PDF repair tools:
+         ```bash
+         gs -o repaired.pdf -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress input.pdf
+         ```
+
+  - id: polling-timeout
+    trigger: "Status stuck at 'processing'"
+    symptom: |
+      PDF status never reaches 'completed', stays in processing
+    cause: |
+      - Very large document taking longer than expected
+      - Processing actually failed but status not updated
+    fix: |
+      1. Wait longer - large docs can take 5-10 minutes
+      2. Check percent_done to see if still progressing
+      3. If stuck at same percent for >5 minutes, cancel and retry
+      4. Check status endpoint for error messages:
+         ```bash
+         curl -s "https://api.mathpix.com/v3/pdf/$PDF_ID" \
+           -H "app_id: $MATHPIX_APP_ID" \
+           -H "app_key: $MATHPIX_APP_KEY" | jq
+         ```
+
+  - id: rate-limiting
+    trigger: "429 Too Many Requests"
+    symptom: |
+      API returns rate limit error
+    cause: |
+      Exceeded API rate limits for your plan
+    fix: |
+      1. Add delays between requests:
+         ```bash
+         sleep 3
+         ```
+      2. Process PDFs in smaller batches
+      3. Check your plan limits at console.mathpix.com
+      4. Upgrade plan if needed
+
+  - id: network-timeout
+    trigger: "Connection timeout"
+    symptom: |
+      Curl request times out during upload
+    cause: |
+      Large file upload taking too long
+    fix: |
+      Increase curl timeout:
+      ```bash
+      curl --max-time 300 ...  # 5 minutes
+      ```
+
+  - id: invalid-url
+    trigger: "URL not accessible"
+    symptom: |
+      API cannot download PDF from provided URL
+    cause: |
+      - URL requires authentication
+      - URL is behind a firewall
+      - URL is incorrect or expired
+    fix: |
+      1. Verify URL is publicly accessible
+      2. Download PDF locally first, then upload as file:
+         ```bash
+         curl -o paper.pdf "URL"
+         # Then upload file instead of URL
+         ```
+
+  - id: jq-not-installed
+    trigger: "command not found: jq"
+    symptom: |
+      JSON parsing fails in examples
+    cause: |
+      jq command line JSON processor not installed
+    fix: |
+      Install jq:
+      ```bash
+      brew install jq
+      ```
+
+  - id: math-rendering-issues
+    trigger: "LaTeX not rendering in Obsidian"
+    symptom: |
+      Math formulas show as raw LaTeX code
+    cause: |
+      - Obsidian settings for LaTeX not enabled
+      - Wrong delimiter format
+      - .mmd extension not recognized
+    fix: |
+      1. Rename .mmd to .md if needed
+      2. Enable LaTeX in Obsidian Settings → Editor
+      3. If using custom delimiters, ensure they match Obsidian config
+      4. Check Settings → Files & Links → Default location for new notes
+
+  - id: empty-output
+    trigger: "Downloaded file is empty"
+    symptom: |
+      .mmd file downloaded but has 0 bytes
+    cause: |
+      - Downloaded before processing completed
+      - PDF had no extractable content
+      - API error during generation
+    fix: |
+      1. Verify status is "completed" before downloading
+      2. Check percent_done is 100
+      3. Inspect status response for errors
+      4. Try re-processing with different options
+
+  - id: table-extraction-poor
+    trigger: "Tables not properly formatted"
+    symptom: |
+      Complex tables come out mangled or poorly structured
+    cause: |
+      Default table extraction struggling with complex layouts
+    fix: |
+      Enable advanced table processing:
+      ```json
+      {
+        "url": "...",
+        "conversion_formats": {"mmd": true},
+        "enable_tables_fallback": true
+      }
+      ```
+
+  - id: unsupported-format
+    trigger: "Unsupported file type"
+    symptom: |
+      API rejects file format
+    cause: |
+      File is not in a supported format
+    fix: |
+      Supported formats:
+      - PDF, EPUB, DOCX, PPTX, AZW/AZW3/KFX, MOBI, DJVU, DOC, WPD, ODT
+
+      Convert unsupported formats first:
+      - Use Calibre for ebook conversions
+      - Use LibreOffice for document conversions
+
+  - id: env-not-sourced
+    trigger: "MATHPIX_APP_ID: unbound variable"
+    symptom: |
+      Script fails with unbound variable error
+    cause: |
+      .env file not sourced in current shell
+    fix: |
+      Always source .env before running:
+      ```bash
+      source .env
+      # or
+      source /path/to/Vault/.env
+      ```
+
+      Or add to script:
+      ```bash
+      #!/bin/bash
+      set -a  # automatically export all variables
+      source .env
+      set +a
+      ```
+
+  - id: quota-exceeded
+    trigger: "Quota exceeded"
+    symptom: |
+      API returns quota/limit exceeded error
+    cause: |
+      Used up monthly page limit for your plan
+    fix: |
+      1. Check usage at console.mathpix.com
+      2. Wait for monthly reset
+      3. Upgrade plan if needed
+      4. Use page_ranges to process only needed pages
+
+  - id: special-chars-filename
+    trigger: "File save failed"
+    symptom: |
+      Cannot save .mmd file due to invalid filename
+    cause: |
+      Document title contains filesystem-illegal characters
+    fix: |
+      Sanitize title before creating folder:
+      ```bash
+      # Remove illegal characters
+      title=$(echo "$title" | tr '/:*?"<>|' '-')
+      # Remove consecutive spaces/hyphens
+      title=$(echo "$title" | tr -s ' -')
+      ```
+
+  - id: image-heavy-pdf
+    trigger: "Processing very slow"
+    symptom: |
+      PDFs with many images take extremely long to process
+    cause: |
+      High-resolution images require more processing time
+    fix: |
+      1. Be patient - image-heavy docs can take 10+ minutes
+      2. Pre-process PDF to reduce image resolution if possible
+      3. Consider if you need all pages or just text sections

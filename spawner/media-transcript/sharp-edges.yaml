@@ -1,0 +1,130 @@
+id: media-transcript
+name: Media Transcript Extractor
+
+sharp_edges:
+  - id: summarize-not-installed
+    trigger: "command not found: summarize"
+    symptom: |
+      Running the summarize command returns "command not found" or similar error
+    cause: |
+      The summarize CLI tool is not installed globally
+    fix: |
+      Install the summarize CLI:
+      ```bash
+      npm i -g @steipete/summarize
+      ```
+      Requires Node.js 22 or higher.
+
+  - id: missing-api-keys
+    trigger: "API key not configured"
+    symptom: |
+      Summarize fails with authentication or API key errors
+    cause: |
+      The required API keys for transcription services are not set
+    fix: |
+      Set the appropriate environment variables:
+      ```bash
+      export OPENAI_API_KEY="your-key"
+      # or
+      export ANTHROPIC_API_KEY="your-key"
+      # or
+      export GEMINI_API_KEY="your-key"
+      ```
+      Add to your shell profile (~/.zshrc or ~/.bashrc) for persistence.
+
+  - id: youtube-no-transcript
+    trigger: "No transcript available"
+    symptom: |
+      YouTube video extraction fails or returns empty content
+    cause: |
+      - Video has no captions/subtitles
+      - Video is private or age-restricted
+      - Region-locked content
+    fix: |
+      - Check if the video has captions enabled
+      - Try a different video
+      - Use --youtube auto flag to attempt Whisper transcription
+
+  - id: filename-special-chars
+    trigger: "Invalid filename"
+    symptom: |
+      File creation fails due to special characters in title
+    cause: |
+      Video/document titles often contain characters not allowed in filenames
+    fix: |
+      Sanitize the title by removing/replacing:
+      - / \ : * ? " < > |
+      Replace with hyphens or remove entirely
+
+  - id: long-filename
+    trigger: "Filename too long"
+    symptom: |
+      File creation fails due to filename length
+    cause: |
+      Some video titles are extremely long (250+ characters)
+    fix: |
+      Truncate filename to 200 characters max while keeping it meaningful
+
+  - id: timeout-long-video
+    trigger: "timeout"
+    symptom: |
+      Extraction times out on long videos
+    cause: |
+      Default timeout (2 minutes) is too short for lengthy content
+    fix: |
+      Use the --timeout flag:
+      ```bash
+      summarize "URL" --extract --timeout 10m
+      ```
+
+  - id: pdf-scanned-image
+    trigger: "No text extracted from PDF"
+    symptom: |
+      PDF extraction returns empty or minimal content
+    cause: |
+      PDF contains scanned images rather than selectable text
+    fix: |
+      The summarize tool should handle this with OCR, but results may vary.
+      For better results, use a dedicated OCR tool first.
+
+  - id: transcript-folder-missing
+    trigger: "No such file or directory"
+    symptom: |
+      File save fails because Transcripts folder doesn't exist
+    cause: |
+      First-time use, folder not created yet
+    fix: |
+      Always create the folder before saving:
+      ```bash
+      mkdir -p Transcripts
+      ```
+
+  - id: yt-dlp-outdated
+    trigger: "yt-dlp version is older than 90 days"
+    symptom: |
+      Slide extraction fails with errors like "Requested format is not available",
+      "nsig extraction failed", or "Some formats may be missing"
+    cause: |
+      yt-dlp is outdated. YouTube frequently changes their API and an outdated
+      yt-dlp cannot properly download videos for slide extraction.
+    fix: |
+      Update yt-dlp to the latest version:
+      ```bash
+      brew upgrade yt-dlp
+      ```
+      This is a common issue - always update yt-dlp first when slide extraction fails.
+
+  - id: youtube-bot-detection
+    trigger: "Sign in to confirm you're not a bot"
+    symptom: |
+      yt-dlp fails with bot detection error when trying to download video for slides
+    cause: |
+      YouTube detected automated access and is blocking the download
+    fix: |
+      Use browser cookies to authenticate. For Brave browser:
+      ```bash
+      yt-dlp --cookies-from-browser brave "URL"
+      ```
+      Other browsers: chrome, firefox, edge, safari
+
+      Note: Usually updating yt-dlp fixes this issue without needing cookies.

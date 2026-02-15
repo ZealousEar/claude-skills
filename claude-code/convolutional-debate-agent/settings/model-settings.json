@@ -1,0 +1,135 @@
+{
+  "active_profile": "multi_model",
+
+  "token_budgets": {
+    "small":  5000,
+    "medium": 10000,
+    "high":   30000
+  },
+
+  "providers": {
+    "claude-code":  { "note": "Native Claude Code Task tool — no key needed" },
+    "codex":        { "note": "Codex CLI — uses your ChatGPT login, no key needed", "api_style": "codex" },
+    "kimi-cli":     { "note": "Kimi CLI — uses your Kimi login, no key needed", "api_style": "kimi-cli" },
+    "claude-cli":   { "note": "Claude Code CLI — uses your Claude login, no key needed", "api_style": "claude-cli" },
+    "openrouter":   { "base_url": "https://openrouter.ai/api/v1", "env_key": "OPENROUTER_API_KEY", "api_style": "openai" },
+    "google":       { "base_url": "https://generativelanguage.googleapis.com/v1beta", "env_key": "GOOGLE_API_KEY", "api_style": "google" },
+    "moonshot":     { "base_url": "https://api.moonshot.cn/v1", "env_key": "MOONSHOT_API_KEY", "api_style": "openai" },
+    "aristotle":    { "note": "Harmonic Aristotle formal theorem prover — requires ARISTOTLE_API_KEY", "api_style": "aristotle", "env_key": "ARISTOTLE_API_KEY" }
+  },
+
+  "models": {
+    "opus": {
+      "route": "claude-cli",
+      "routes": {
+        "claude-cli":   { "api_model": "opus" },
+        "claude-code":  { "task_model": "opus" },
+        "openrouter":   { "api_model": "anthropic/claude-opus-4-6" }
+      }
+    },
+    "sonnet": {
+      "route": "claude-code",
+      "routes": {
+        "claude-code":  { "task_model": "sonnet" },
+        "openrouter":   { "api_model": "anthropic/claude-sonnet-4-5-20250929" }
+      }
+    },
+    "haiku": {
+      "route": "claude-code",
+      "routes": {
+        "claude-code":  { "task_model": "haiku" },
+        "openrouter":   { "api_model": "anthropic/claude-haiku-4-5-20251001" }
+      }
+    },
+    "gpt-5.3-codex": {
+      "route": "codex",
+      "reasoning_effort": "high",
+      "routes": {
+        "codex":        { "api_model": "gpt-5.3-codex" },
+        "openrouter":   { "api_model": "openai/gpt-5.3" }
+      },
+      "_note": "Uses reasoning_effort=high via codex CLI (-c reasoning_effort=\"high\")."
+    },
+    "gpt-5.2": {
+      "route": "codex",
+      "reasoning_effort": "xhigh",
+      "routes": {
+        "codex":        { "api_model": "gpt-5.2" },
+        "openrouter":   { "api_model": "openai/gpt-5.2" }
+      },
+      "_note": "Uses reasoning_effort=xhigh via codex CLI (-c reasoning_effort=\"xhigh\")."
+    },
+    "gemini-3-pro": {
+      "route": "google",
+      "thinking_level": "HIGH",
+      "routes": {
+        "google":       { "api_model": "gemini-3-pro-preview" },
+        "openrouter":   { "api_model": "google/gemini-3-pro-preview" }
+      },
+      "_note": "Uses thinkingConfig.thinkingLevel=HIGH in Google API generationConfig."
+    },
+    "kimi-2.5": {
+      "route": "kimi-cli",
+      "thinking": true,
+      "routes": {
+        "kimi-cli":     { "api_model": "kimi-code/kimi-for-coding" },
+        "openrouter":   { "api_model": "moonshot/kimi-2.5" },
+        "moonshot":     { "api_model": "kimi-2.5" }
+      },
+      "_note": "Uses --thinking flag via Kimi CLI for extended reasoning."
+    },
+    "aristotle": {
+      "route": "aristotle",
+      "routes": {
+        "aristotle":    { "api_model": "aristotle", "script": "~/.claude/skills/aristotle-prover/scripts/aristotle_submit.py" }
+      },
+      "_note": "Formal theorem prover — not a solver, used as verification layer in Step 3.5"
+    }
+  },
+
+  "profiles": {
+    "multi_model": {
+      "_description": "Maximum diversity — each solver is a different provider, debaters standardized at 2×Opus + 2×GPT",
+      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "synthesizer_model": "opus"
+    },
+    "multi_model_full": {
+      "_description": "Different providers for solvers, standardized 2×Opus + 2×GPT debaters",
+      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "synthesizer_model": "opus"
+    },
+    "balanced": {
+      "_description": "All Claude via native Task tool",
+      "solver_models":  ["opus", "opus", "opus", "opus", "opus"],
+      "debater_models": ["opus", "opus", "opus", "opus"],
+      "synthesizer_model": "opus"
+    },
+    "cost_optimized": {
+      "_description": "Cheapest — sonnet solvers, haiku debaters",
+      "solver_models":  ["sonnet", "sonnet", "sonnet", "sonnet", "sonnet"],
+      "debater_models": ["haiku", "haiku", "haiku", "haiku"],
+      "synthesizer_model": "sonnet"
+    },
+    "max_quality": {
+      "_description": "Best from each provider — 2×Opus + 2×GPT debaters for standardized intelligence",
+      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "synthesizer_model": "opus"
+    }
+  },
+
+  "formal_verification": {
+    "_description": "Aristotle formal verification layer (Step 3.5). Runs IN PARALLEL with debaters — adds zero latency to critical path.",
+    "enabled": true,
+    "formalizer_model": "opus",
+    "verifier": "aristotle",
+    "max_claims_per_candidate": 1,
+    "polling_interval_seconds": 10,
+    "max_polling_failures": 12,
+    "skip_domains": [],
+    "_note_speed": "Aristotle is SLOW (1-15 min per proof). That's why Step 3.5 runs as background tasks alongside debaters. max_claims=1 keeps it to ~5 proofs max. Each proof gets 10s×12=2min before timeout. Claims still running at RWEA time are marked INCONCLUSIVE.",
+    "_note_disable": "Set enabled=false to skip formal verification entirely. skip_domains can list domains where formalization adds little value (e.g. ['strategy'])."
+  }
+}

@@ -1,0 +1,195 @@
+id: lecture-notes-sync
+name: Lecture Notes Synthesizer
+version: "1.0.0"
+category: pattern
+layer: 2
+
+description: |
+  Synthesizes lecture slides and transcripts into comprehensive, LLM-readable markdown notes.
+  Uses vision models (via OpenRouter) to extract slide content including text, math (LaTeX),
+  and diagrams (Mermaid/ASCII). Syncs slides with transcript timestamps to create unified notes.
+
+triggers:
+  - sync slides
+  - create lecture notes
+  - extract slides to markdown
+  - synthesize lecture
+  - process lecture
+
+owns:
+  - slide content extraction
+  - transcript-slide synchronization
+  - diagram to mermaid conversion
+  - lecture note synthesis
+
+tags:
+  - lecture
+  - slides
+  - transcript
+  - vision
+  - openrouter
+  - gemini
+  - mermaid
+  - latex
+  - notes
+
+instructions: |
+  ## Lecture Notes Synthesizer
+
+  You synthesize lecture slides and transcripts into comprehensive markdown notes
+  that are optimized for LLM consumption and human study.
+
+  ### Prerequisites
+
+  - OpenRouter API key in `.env` file:
+    ```
+    OPENROUTER_API_KEY=sk-or-v1-...
+    OPENROUTER_MODEL=google/gemini-3-flash-preview
+    ```
+  - Load with `source .env` before running
+  - Slide images in `Transcripts/<Title>/slides/`
+  - Transcript at `Transcripts/<Title>/<Title> - Transcript.md`
+
+  ### Output Format
+
+  Single markdown file: `Transcripts/<Title>/<Title> - Notes.md`
+
+  Each slide section separated by `---`:
+  ```markdown
+  ## Slide 1 (0:03)
+
+  ### Content
+  [Extracted text, math in LaTeX, diagrams as Mermaid/ASCII]
+
+  ### Transcript
+  > [Corresponding transcript section]
+
+  ### Key Insights
+  [LLM inference about what's being taught]
+
+  ---
+
+  ## Slide 2 (1:56)
+  ...
+  ```
+
+  ### Core Workflow
+
+  1. **List slides** from the slides/ folder, sorted by timestamp
+  2. **For each slide**:
+     a. Send image to OpenRouter vision model (gemini-2.0-flash-001)
+     b. Extract with this prompt:
+        ```
+        Analyze this lecture slide and extract:
+        1. All text content (preserve formatting)
+        2. Mathematical formulas in LaTeX (use $...$ for inline, $$...$$ for display)
+        3. Diagrams - convert to:
+           - Mermaid if it's a flowchart, sequence diagram, or tree
+           - ASCII art if it's a simple diagram
+           - Detailed text description for complex figures
+        4. Any code snippets (with language specified)
+
+        Output as clean markdown.
+        ```
+     c. Parse slide timestamp from filename (e.g., slide_0002_116.18s.png → 1:56)
+  3. **Match with transcript**:
+     - Find transcript section between this slide's timestamp and the next
+  4. **Generate insights**:
+     - Ask the model to summarize key concepts being taught
+  5. **Combine** into single markdown file with dividers
+
+  ### OpenRouter API Call
+
+  ```bash
+  curl https://openrouter.ai/api/v1/chat/completions \
+    -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "google/gemini-2.0-flash-001",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {"type": "text", "text": "Analyze this lecture slide..."},
+            {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}}
+          ]
+        }
+      ]
+    }'
+  ```
+
+  ### Timestamp Parsing
+
+  Slide filenames contain timestamps:
+  - `slide_0001_3.50s.png` → 0:03
+  - `slide_0002_116.18s.png` → 1:56
+  - `slide_0010_1091.96s.png` → 18:11
+
+  Parse with: `seconds = float(filename.split('_')[2].replace('s.png', ''))`
+
+  ### Diagram Conversion Guidelines
+
+  **Use Mermaid for:**
+  - Flowcharts (boxes with arrows)
+  - Sequence diagrams (interactions)
+  - Tree structures (hierarchies)
+  - State diagrams
+
+  **Use ASCII for:**
+  - Simple diagrams with few elements
+  - Tables or matrices
+  - Simple graphs
+
+  **Use Text Description for:**
+  - Complex figures with many elements
+  - Photos or screenshots
+  - Graphs with specific data points
+
+  ### Example Output Section
+
+  ```markdown
+  ## Slide 5 (7:56)
+
+  ### Content
+
+  **Cryptographic Hash Functions**
+
+  A hash function has three key properties:
+
+  1. **Collision-free**: Nobody can find $x \neq y$ where $H(x) = H(y)$
+  2. **Hiding**: Given $H(x)$, infeasible to find $x$
+  3. **Puzzle-friendly**: For any $k$ and target $y$, hard to find $x$ where $H(k \| x) = y$
+
+  ```mermaid
+  graph LR
+    A[Input x] --> B[Hash Function H]
+    B --> C[Fixed-size output H(x)]
+  ```
+
+  ### Transcript
+
+  > So a cryptographic hash function is a mathematical function and it has three
+  > attributes that we need to start with. First of all, a hash function can take
+  > any string as input, absolutely any string of any size. It produces a fixed
+  > size output. We'll use 256 bits in this series of lectures because that's
+  > what Bitcoin uses...
+
+  ### Key Insights
+
+  This slide introduces the three essential properties of cryptographic hash functions
+  that make them suitable for use in cryptocurrencies. The collision-free property
+  ensures data integrity, hiding enables commitment schemes, and puzzle-friendliness
+  is crucial for proof-of-work mining.
+
+  ---
+  ```
+
+prerequisites:
+  - OpenRouter API key (export OPENROUTER_API_KEY="...")
+  - Existing slides in Transcripts/<Title>/slides/
+  - Existing transcript at Transcripts/<Title>/<Title> - Transcript.md
+  - curl or similar HTTP client for API calls
+
+pairs_with:
+  - media-transcript
+  - obsidian-notes

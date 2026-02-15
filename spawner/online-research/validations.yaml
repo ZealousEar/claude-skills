@@ -1,0 +1,237 @@
+id: online-research
+name: Online Research Validations
+
+validations:
+  - id: structured-prompt
+    name: Use Structured Extraction Prompts
+    description: Prompts should use numbered categories for systematic extraction
+    severity: warning
+    check: |
+      When using WebFetch, prompts should include:
+      - Numbered list items (1), 2), etc.)
+      - Specific categories to extract
+      - Clear scope of information needed
+
+  - id: url-validation
+    name: Validate URLs Before Fetching
+    description: Check URL format and encoding before WebFetch
+    severity: error
+    check: |
+      Before WebFetch:
+      - URL is complete (includes https://)
+      - Special characters are encoded
+      - No spaces in URL
+      - Path matches expected site structure
+
+  - id: hierarchy-navigation
+    name: Follow Site Hierarchy
+    description: Navigate from overview to detail pages for complete information
+    severity: warning
+    check: |
+      For structured content:
+      - Start with index/overview page
+      - Identify links to detail pages
+      - Fetch detail pages for complete data
+      - Don't rely on single page for complex topics
+
+  - id: missing-data-documentation
+    name: Document Missing Information
+    description: Explicitly note when expected information is not available
+    severity: info
+    check: |
+      Output should:
+      - Include all expected categories
+      - Mark unavailable info as "Not specified" or similar
+      - Not silently omit categories
+
+  - id: cross-reference
+    name: Cross-Reference Critical Information
+    description: Verify important data across multiple sources when possible
+    severity: info
+    check: |
+      For critical information:
+      - Check multiple pages if available
+      - Note source of each piece of data
+      - Flag inconsistencies
+
+  - id: parallel-fetching
+    name: Fetch Independent Pages in Parallel
+    description: Use parallel WebFetch calls for independent pages
+    severity: warning
+    check: |
+      When fetching multiple pages:
+      - Identify independent vs dependent fetches
+      - Batch independent fetches in single tool call
+      - Sequential only when output of one informs next
+
+  - id: source-attribution
+    name: Include Source URLs
+    description: Always note which URL provided which information
+    severity: warning
+    check: |
+      Output should:
+      - Reference source URL for each section
+      - Enable user to verify information
+      - Support future updates
+
+  - id: citation-verification
+    name: Verify All Citations
+    description: Every citation must be verified to exist and support the claim
+    severity: error
+    check: |
+      For each citation:
+      - URL must be accessible
+      - Author names must match actual source
+      - Paper/article title must match
+      - Cited claim must actually appear in source
+      - Do NOT include unverified citations
+
+  - id: source-type-labeling
+    name: Label Source Authority Level
+    description: Distinguish between peer-reviewed, official, and informal sources
+    severity: warning
+    check: |
+      Sources should be labeled:
+      - [Academic] - peer-reviewed journals, conference papers
+      - [Official] - government, university, organization
+      - [Secondary] - textbooks, review articles, documentation
+      - [Informal] - blogs, forums, social media, tutorials
+
+  - id: query-decomposition
+    name: Decompose Complex Queries
+    description: Break multi-part questions into sub-questions
+    severity: info
+    check: |
+      For complex queries:
+      - Identify distinct sub-questions
+      - Research each sub-question
+      - Synthesize findings
+      - Don't try to answer everything in one search
+
+  - id: temporal-context
+    name: Note Publication Dates
+    description: Always include when information was published
+    severity: warning
+    check: |
+      Output should include:
+      - Publication/last updated date for each source
+      - Note if date is unknown
+      - Flag if information may be outdated
+      - Prefer recent sources for evolving topics
+
+  - id: sift-verification
+    name: Apply SIFT Method for Claims
+    description: Use Stop-Investigate-Find-Trace for important claims
+    severity: info
+    check: |
+      For critical claims:
+      - S: Stop and evaluate before including
+      - I: Investigate the source's credibility
+      - F: Find corroborating sources
+      - T: Trace back to primary sources
+
+  - id: triangulation
+    name: Triangulate Critical Information
+    description: Verify important claims across 3+ sources
+    severity: warning
+    check: |
+      For critical information:
+      - Find at least 3 independent sources
+      - Note agreement/disagreement
+      - Flag if only single source available
+      - Prefer primary over secondary sources
+
+  - id: research-audit-trail
+    name: Document Research Process
+    description: Track what was searched, found, and included
+    severity: info
+    check: |
+      Research output should include:
+      - Search queries used
+      - Number of sources identified
+      - Number included/excluded
+      - Reasons for exclusions
+
+  # Headless Browser Validations
+
+  - id: webfetch-first
+    name: Try WebFetch Before Playwright
+    description: Always attempt lightweight approach first
+    severity: warning
+    check: |
+      Before using Playwright MCP:
+      - Verify WebFetch returns incomplete/empty content
+      - Check if JavaScript is required for content
+      - Look for API endpoints as alternative
+      - Document why escalation needed
+
+  - id: playwright-mcp-installed
+    name: Verify Playwright MCP Setup
+    description: Ensure MCP is properly configured before use
+    severity: error
+    check: |
+      Before using Playwright:
+      - Run: claude mcp list (verify playwright present)
+      - If missing: claude mcp add playwright npx '@playwright/mcp@latest'
+      - Use explicit "playwright mcp" in requests
+
+  - id: auth-security
+    name: Secure Authentication Handling
+    description: Never store credentials in config, use visible mode for login
+    severity: error
+    check: |
+      For authenticated content:
+      - Use visible browser mode (default)
+      - Enter credentials manually
+      - Use storage-state for cookie persistence
+      - Never put passwords in config files
+      - Protect auth.json if using storage-state
+
+  - id: resource-efficiency
+    name: Minimize Browser Resource Usage
+    description: Use browser efficiently, close when done
+    severity: info
+    check: |
+      When using Playwright:
+      - Block unnecessary resources if possible
+      - Don't leave browsers open
+      - Batch similar pages in one session
+      - Prefer WebFetch for bulk operations
+
+quality_checklist:
+  # Planning Phase
+  - "Complex query decomposed into sub-questions"
+  - "Site structure mapped before deep extraction"
+  - "Extraction schema defined for consistent data"
+  - "Tool selection justified (WebFetch vs Playwright)"
+
+  # Execution Phase
+  - "Structured prompts used with numbered categories"
+  - "Independent pages fetched in parallel"
+  - "Iterative search-read-reason loops until gaps filled"
+  - "URL patterns analyzed for related resources"
+  - "WebFetch tried before escalating to Playwright"
+  - "API endpoints checked before using headless browser"
+
+  # Headless Browser Phase (when applicable)
+  - "Playwright MCP installed and verified"
+  - "Visible mode used for authentication"
+  - "Waited for dynamic content to load"
+  - "Browser closed after session"
+  - "No credentials stored in config files"
+
+  # Verification Phase
+  - "All citations verified to exist"
+  - "Citations verified to support stated claims"
+  - "Source authority levels labeled (academic/official/informal)"
+  - "Critical claims triangulated across 3+ sources"
+  - "SIFT method applied for important claims"
+  - "Publication dates noted for all sources"
+
+  # Documentation Phase
+  - "All expected categories addressed (even if missing)"
+  - "Missing data explicitly noted"
+  - "Source URLs documented for each section"
+  - "Research audit trail included (identified → screened → included)"
+  - "Uncertainties and limitations flagged"
+  - "Tool used documented (WebFetch/Playwright/API)"

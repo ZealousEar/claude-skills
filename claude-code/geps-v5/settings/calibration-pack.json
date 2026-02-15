@@ -1,0 +1,221 @@
+{
+  "description": "Calibration pack for judge reliability estimation. 30 normalized paper summaries across 3 quality tiers.",
+  "tiers": {
+    "high": [
+      {
+        "id": "CAL-H01",
+        "title": "Continuous Auctions and Insider Trading",
+        "text": "Title: Continuous Auctions and Insider Trading. Research Question: How does a single informed trader optimally exploit private information in a continuous auction? Hypothesis: The informed trader trades gradually, revealing information linearly over time, and market depth is constant in equilibrium. Identification: Structural model with Nash equilibrium derivation. The informed trader maximizes expected profit given the market maker's pricing rule; market maker sets prices efficiently given order flow. Data: Theoretical model with closed-form solution. Testable predictions on price impact, trading volume, and information revelation. Contribution: Foundational model of strategic informed trading showing that prices follow a Brownian bridge and that market depth is invariant to the amount of private information. Introduces the lambda (price impact) parameter used throughout microstructure.",
+        "tier": "high",
+        "source": "Kyle (1985) Econometrica"
+      },
+      {
+        "id": "CAL-H02",
+        "title": "Common Risk Factors in the Returns on Stocks and Bonds",
+        "text": "Title: Common Risk Factors in the Returns on Stocks and Bonds. Research Question: Can a parsimonious factor model with market, size, and value factors explain the cross-section of average stock returns? Hypothesis: A three-factor model (market excess return, SMB, HML) captures most of the variation in average returns across portfolios sorted on size, book-to-market, and other characteristics. Identification: Time-series regressions of portfolio excess returns on three factors. Cross-sectional tests via GRS statistic. Fama-MacBeth regressions for robustness. Data: CRSP monthly stock returns (1963-1991), Compustat book equity, US Treasury yields. Contribution: Establishes the three-factor model as the benchmark asset pricing model, showing that size and value premiums are pervasive and not captured by the CAPM.",
+        "tier": "high",
+        "source": "Fama and French (1993) JFE"
+      },
+      {
+        "id": "CAL-H03",
+        "title": "Illiquidity and Stock Returns: Cross-Section and Time-Series Effects",
+        "text": "Title: Illiquidity and Stock Returns. Research Question: Does aggregate market liquidity predict cross-sectional stock returns, and is the illiquidity premium compensation for systematic risk? Hypothesis: Expected stock returns are an increasing function of expected illiquidity (measured by price impact), and unexpected illiquidity shocks cause negative contemporaneous returns. Identification: Fama-MacBeth cross-sectional regressions with illiquidity beta as a priced factor. VAR model for expected vs unexpected illiquidity decomposition. Instrumental variable approach using lagged illiquidity. Data: NYSE/AMEX daily stock data from CRSP (1964-1997). Illiquidity measured as average daily |return|/volume ratio (ILLIQ). Contribution: Introduces the Amihud ILLIQ measure as a tractable proxy for price impact. Shows illiquidity is priced in the cross-section and market-wide liquidity is a state variable.",
+        "tier": "high",
+        "source": "Amihud (2002) JFM"
+      },
+      {
+        "id": "CAL-H04",
+        "title": "Large-Block Transactions, Speed of Response, and Permanent and Temporary Stock-Price Effects",
+        "text": "Title: Price Impact of Block Trades on the NYSE. Research Question: How do institutional block trades affect stock prices, and is the price impact permanent or temporary? Hypothesis: Block purchases have permanent positive price impact (information) and temporary impact (liquidity premium), while block sales show asymmetric effects due to short-sale constraints. Identification: Event study around block trades identified from TORQ dataset. Decomposition of total price impact into permanent (information) and temporary (liquidity) components using pre/post-trade price comparison. Data: NYSE TAQ and TORQ datasets (1988-1992). All block trades exceeding 10,000 shares. Matched control sample. Contribution: First clean empirical decomposition of price impact into information and liquidity components. Establishes the asymmetry between buy-side and sell-side impacts.",
+        "tier": "high",
+        "source": "Holthausen, Leftwich, Mayers (1990) JFE"
+      },
+      {
+        "id": "CAL-H05",
+        "title": "Returns to Buying Winners and Selling Losers: Implications for Stock Market Efficiency",
+        "text": "Title: Returns to Buying Winners and Selling Losers. Research Question: Do strategies that buy past winners and sell past losers generate abnormal returns over 3-12 month horizons? Hypothesis: Momentum strategies earn significant profits not explained by systematic risk, market microstructure effects, or lead-lag effects from delayed reaction to common factors. Identification: Calendar-time portfolio approach. Decile portfolios formed on past 6-month returns, held for 6 months with 1-month skip. Risk adjustment via CAPM and industry controls. Sub-period analysis for robustness. Data: NYSE and AMEX stocks from CRSP (1965-1989). Monthly returns, market cap, and industry classifications. Contribution: Establishes momentum as a robust anomaly not explained by size, beta, or industry effects. The 12-1 month formation period becomes standard.",
+        "tier": "high",
+        "source": "Jegadeesh and Titman (1993) JF"
+      },
+      {
+        "id": "CAL-H06",
+        "title": "Bid, Ask and Transaction Prices in a Specialist Market with Heterogeneously Informed Traders",
+        "text": "Title: Bid, Ask and Transaction Prices with Heterogeneously Informed Traders. Research Question: How does the bid-ask spread arise from adverse selection when a market maker faces both informed and uninformed traders? Hypothesis: The bid-ask spread reflects the market maker's expected losses to informed traders, and prices converge to full-information value through sequential trade. Identification: Sequential trade model with Bayesian updating. Market maker sets bid and ask prices to earn zero expected profit conditional on trade direction. Closed-form expressions for spreads as a function of information asymmetry. Data: Purely theoretical model with testable implications for how spreads vary with information events and trading frequency. Contribution: Provides the canonical adverse selection model of the bid-ask spread. Shows that the spread is a direct measure of information asymmetry.",
+        "tier": "high",
+        "source": "Glosten and Milgrom (1985) JFE"
+      },
+      {
+        "id": "CAL-H07",
+        "title": "A Closed-Form Solution for Options with Stochastic Volatility",
+        "text": "Title: Closed-Form Option Pricing with Stochastic Volatility. Research Question: Can a stochastic volatility model with correlation between asset returns and volatility produce closed-form option prices that fit the observed volatility smile? Hypothesis: A mean-reverting square-root volatility process correlated with the underlying produces a volatility skew consistent with equity option markets and can be efficiently calibrated. Identification: Characteristic function approach for option pricing under stochastic volatility. Semi-analytical solution via Fourier inversion. Calibration to observed option prices across strikes and maturities using least-squares. Data: S&P 500 index options, currency options (DEM/USD), and bond options for validation. Contribution: First tractable stochastic volatility model with correlation. Becomes the industry standard for derivatives pricing.",
+        "tier": "high",
+        "source": "Heston (1993) RFS"
+      },
+      {
+        "id": "CAL-H08",
+        "title": "Does the Stock Market Overreact?",
+        "text": "Title: Does the Stock Market Overreact? Research Question: Do stocks that have performed poorly over 3-5 years subsequently earn higher returns, consistent with investor overreaction? Hypothesis: Long-term past losers outperform long-term past winners by a significant margin, consistent with the overreaction hypothesis where investors extrapolate past performance too far. Identification: Portfolio formation on 3-5 year cumulative returns. Winner and loser decile portfolios tracked for 3-5 years post-formation. CAPM risk adjustment. January effect decomposition. Sub-period robustness. Data: NYSE monthly stock returns from CRSP (1926-1982). All stocks with sufficient return history for formation period. Contribution: First systematic evidence of long-term return reversal. Launches the behavioral finance literature on investor overreaction and contrarian strategies.",
+        "tier": "high",
+        "source": "De Bondt and Thaler (1985) JF"
+      },
+      {
+        "id": "CAL-H09",
+        "title": "An Intertemporal Capital Asset Pricing Model",
+        "text": "Title: An Intertemporal Capital Asset Pricing Model. Research Question: How should assets be priced when investors face time-varying investment opportunities and hedge against changes in state variables? Hypothesis: Expected returns are determined by covariance with the market and covariance with state variables that forecast changes in the investment opportunity set. Multiple betas arise from multiple sources of systematic risk. Identification: Continuous-time portfolio optimization with stochastic investment opportunities. Derive equilibrium pricing via market clearing. Data: Theoretical model. Empirical predictions testable using variables that predict market returns (term spread, default spread, dividend yield) as state variable proxies. Contribution: Provides theoretical foundation for multi-factor asset pricing. Justifies factor models beyond the CAPM on economic grounds.",
+        "tier": "high",
+        "source": "Merton (1973) Econometrica"
+      },
+      {
+        "id": "CAL-H10",
+        "title": "The Cross-Section of Expected Stock Returns",
+        "text": "Title: The Cross-Section of Expected Stock Returns. Research Question: Do size and book-to-market equity jointly explain the cross-section of average stock returns better than market beta alone? Hypothesis: Size and book-to-market ratio absorb the roles of E/P, leverage, and beta in Fama-MacBeth regressions. Beta alone does not explain average returns after controlling for size. Identification: Fama-MacBeth two-pass regressions. Portfolios double-sorted on size and beta to break their correlation. Data: NYSE, AMEX, NASDAQ stocks from CRSP and Compustat (1963-1990). Monthly returns, market cap, book equity, earnings, leverage. Contribution: Demonstrates that beta is not priced in the cross-section once size is controlled for. Establishes size and B/M as the primary cross-sectional determinants.",
+        "tier": "high",
+        "source": "Fama and French (1992) JF"
+      }
+    ],
+    "mid": [
+      {
+        "id": "CAL-M01",
+        "title": "Machine Learning Predictions of Order Flow Imbalance in Equity Markets",
+        "text": "Title: ML Predictions of Order Flow Imbalance. Research Question: Can gradient boosting models predict short-term order flow imbalance and generate tradeable signals in US equity markets? Hypothesis: LOB features (depth ratios, spread dynamics, trade arrival rates) predict 1-minute ahead order flow imbalance with moderate accuracy, generating positive Sharpe after transaction costs. Identification: Walk-forward out-of-sample validation with 6-month training windows. SHAP feature importance. Realistic transaction cost modeling (spread + impact). No look-ahead bias. Data: LOBSTER L3 order book data for 50 S&P 500 stocks (2019-2022). 1-second snapshots. Contribution: Shows tree models extract short-lived microstructure signals but economic magnitude is modest (Sharpe ~0.8 after costs) and decays rapidly.",
+        "tier": "mid",
+        "source": "Representative applied ML microstructure paper"
+      },
+      {
+        "id": "CAL-M02",
+        "title": "Regime-Switching GARCH Models for Cryptocurrency Volatility Forecasting",
+        "text": "Title: MS-GARCH for Crypto Volatility. Research Question: Does a Markov-switching GARCH model outperform standard GARCH for volatility forecasting in Bitcoin and Ethereum? Hypothesis: Crypto returns exhibit distinct low/high volatility regimes, and MS-GARCH produces superior forecasts via QLIKE and MSE loss functions. Identification: MLE of MS-GARCH. Diebold-Mariano test on out-of-sample loss differentials. Rolling 1-year window. Multiple loss functions. Data: Daily BTC and ETH prices from multiple exchanges (2015-2023). Realized volatility from 5-min returns. Contribution: Regime-switching improves forecasts 8-15% during transitions but little during stable regimes.",
+        "tier": "mid",
+        "source": "Representative crypto volatility paper"
+      },
+      {
+        "id": "CAL-M03",
+        "title": "Social Media Sentiment and Retail Trading: Evidence from Reddit WallStreetBets",
+        "text": "Title: WSB Sentiment and Retail Trading. Research Question: Does sentiment from WallStreetBets predict retail order flow and short-term stock returns? Hypothesis: Positive WSB sentiment predicts next-day retail buying pressure and positive returns for small-cap high-short-interest stocks, reversing within 5 days. Identification: Difference-in-differences around WSB attention spikes. Propensity-score matched controls on size, momentum, short interest. Placebo date robustness checks. Data: Scraped WSB posts (2020-2022), FinBERT sentiment, TAQ for retail flow (BJZZ algorithm), CRSP returns. Contribution: Documents the WSB-retail flow-return channel with causal identification. Effect concentrated in high-short-interest, low-cap stocks.",
+        "tier": "mid",
+        "source": "Representative social media finance paper"
+      },
+      {
+        "id": "CAL-M04",
+        "title": "Tail Risk in Multi-Asset Portfolios: A Copula-GARCH Approach",
+        "text": "Title: Copula-GARCH Tail Risk. Research Question: How well do different copula specifications capture tail dependence across equity, bond, and commodity markets during stress? Hypothesis: Time-varying Clayton-Gumbel mixture copula with GARCH marginals provides superior ES estimates vs Gaussian, t-copula, or static alternatives. Identification: Out-of-sample ES backtesting over 2008-2020 crises. Kupiec, Christoffersen, DQ tests. Model confidence set. Data: Daily S&P 500, 10Y UST, Gold, WTI (2000-2022). Rolling 500-day window. Contribution: Mixture copulas with time-varying parameters significantly improve tail risk during crises.",
+        "tier": "mid",
+        "source": "Representative risk management paper"
+      },
+      {
+        "id": "CAL-M05",
+        "title": "ETF Arbitrage and Cross-Sectional Return Predictability of Constituent Stocks",
+        "text": "Title: ETF Arbitrage and Return Predictability. Research Question: Does ETF creation/redemption activity create predictable short-term return patterns in underlying stocks? Hypothesis: Stocks with abnormal ETF trading pressure show 1-5 day return predictability from slow price adjustment, stronger for less liquid constituents. Identification: IV approach using ETF fund flow shocks as instruments. Fama-MacBeth with stock fixed effects. Placebo test with non-ETF constituents. Data: DTCC ETF creation/redemption (2010-2022), TAQ intraday, CRSP/Compustat. Contribution: Identifies ETF-driven demand shocks as a predictability source. ETF arbitrage creates temporary dislocations in illiquid constituents.",
+        "tier": "mid",
+        "source": "Representative ETF microstructure paper"
+      },
+      {
+        "id": "CAL-M06",
+        "title": "Central Bank Communication and Bond Market Volatility: A Text-as-Data Approach",
+        "text": "Title: FOMC Text and Bond Volatility. Research Question: Can NLP measures of FOMC statement complexity predict Treasury yield volatility around announcements? Hypothesis: Higher semantic complexity (perplexity, readability) associates with higher post-announcement bond volatility, controlling for policy decisions. Identification: Event study around FOMC dates. OLS with Newey-West SE, controlling for policy surprise (fed funds futures) and macro conditions. Data: All FOMC statements (2000-2023), FRED yield curves, CME fed funds futures. LM sentiment, GPT perplexity, Flesch-Kincaid. Contribution: Communication style affects market uncertainty. Framework for real-time central bank clarity monitoring.",
+        "tier": "mid",
+        "source": "Representative text-as-data finance paper"
+      },
+      {
+        "id": "CAL-M07",
+        "title": "Deep Hedging of Exotic Options Under Transaction Costs",
+        "text": "Title: Deep RL Hedging for Barrier Options. Research Question: Can RL agents learn hedging strategies for barrier options that outperform delta-gamma under realistic transaction costs? Hypothesis: Deep RL trained on calibrated LSV paths reduces hedging PnL variance 15-25% vs BS delta, mainly by reducing overhedging near barriers. Identification: Controlled simulation: train on LSV, evaluate on held-out and historical paths. Benchmark against delta, delta-gamma, Whalley-Wilmott. Data: EUR/USD barrier option data for calibration (2018-2022). 100K simulated training paths. Contribution: Main benefit is adaptive rebalancing frequency not better greeks, saving 30% transaction costs.",
+        "tier": "mid",
+        "source": "Representative deep hedging paper"
+      },
+      {
+        "id": "CAL-M08",
+        "title": "Factor Timing with Machine Learning: Evidence from International Markets",
+        "text": "Title: ML Factor Timing International. Research Question: Can ensemble ML models time factor exposures (value, momentum, quality) to improve portfolio performance out-of-sample? Hypothesis: ML timing generates alpha over static factor portfolios in US but underperforms internationally due to higher costs and lower factor persistence. Identification: Nested CV with purged/embargoing. Walk-forward 10yr train / 1yr test. Random timing bootstrap baseline. Transaction cost sensitivity. Data: Ken French factor returns US/Europe/Japan/Asia-Pacific (1990-2023). FRED macro predictors. Contribution: Honest assessment: modest US improvement (Sharpe +0.15) but not robust internationally. Warns against overfitting.",
+        "tier": "mid",
+        "source": "Representative ML factor investing paper"
+      },
+      {
+        "id": "CAL-M09",
+        "title": "Stablecoin Runs and DeFi Contagion: Evidence from Terra-Luna",
+        "text": "Title: Terra-Luna DeFi Contagion. Research Question: How did the Terra/UST de-peg propagate through DeFi, and which protocol characteristics predicted vulnerability? Hypothesis: Protocols with higher TVL in Terra-linked yield strategies had larger outflows; contagion followed the cross-protocol lending graph. Identification: Event study on May 2022 de-peg. Cross-sectional regression of outflows on Terra exposure, controlling for age, TVL, token beta. Network analysis of lending links. Data: On-chain data from Dune Analytics and DeFi Llama (Jan-Jul 2022). Hourly TVL, prices, txn counts for top 50 protocols. Contribution: Network centrality in cross-protocol lending predicts contagion better than direct Terra exposure.",
+        "tier": "mid",
+        "source": "Representative DeFi contagion paper"
+      },
+      {
+        "id": "CAL-M10",
+        "title": "Optimal Market Making with Inventory Risk and Adverse Selection",
+        "text": "Title: Market Making with Inventory + Adverse Selection. Research Question: How should a market maker optimally set quotes facing both inventory risk and adverse selection? Hypothesis: Optimal strategy widens spreads asymmetrically: more on excess inventory side and more when informed trading probability is high. Reduces to Avellaneda-Stoikov with no adverse selection. Identification: HJB stochastic control. Numerical general solution, asymptotic small-inventory approximation. Backtested on LOBSTER against fixed-spread and AS baselines. Data: LOBSTER L3 for 10 NASDAQ stocks (2020-2021). Simulated LOB for training. Contribution: Extends AS model. Closed-form approximation for optimal spread as function of PIN estimate and inventory.",
+        "tier": "mid",
+        "source": "Representative optimal market making paper"
+      }
+    ],
+    "low": [
+      {
+        "id": "CAL-L01",
+        "title": "Predicting Stock Prices Using LSTM Neural Networks",
+        "text": "Title: LSTM Stock Price Prediction. Research Question: Can LSTM networks predict next-day closing prices of S&P 500 stocks? Hypothesis: LSTM trained on historical prices achieves high R-squared, outperforming ARIMA and random forest. Identification: Train-test split (80/20, not time-aware). Hyperparameters tuned on full dataset. R-squared and RMSE evaluation. No transaction costs. Data: Yahoo Finance daily closing prices for 10 large-cap stocks (2015-2023). Features: OHLCV only. Contribution: LSTM achieves R-squared above 0.95 on stock price prediction, suggesting deep learning superiority for financial forecasting.",
+        "tier": "low",
+        "source": "Representative flawed ML finance paper"
+      },
+      {
+        "id": "CAL-L02",
+        "title": "Bitcoin Price Prediction Using Twitter Sentiment",
+        "text": "Title: Twitter Sentiment Predicts Bitcoin. Research Question: Does Twitter sentiment predict Bitcoin returns? Hypothesis: Positive Twitter sentiment about Bitcoin predicts positive next-day returns. Identification: OLS regression of daily BTC returns on contemporaneous and lagged sentiment. No controls for market conditions, volume, or other cryptos. Standard errors assume iid residuals. Data: 100K scraped tweets over 6 months in 2021 bull market. VADER sentiment. CoinGecko BTC prices. Contribution: Statistically significant positive relationship with t-stat of 2.3.",
+        "tier": "low",
+        "source": "Representative crypto-sentiment paper"
+      },
+      {
+        "id": "CAL-L03",
+        "title": "A Novel Hybrid CNN-Transformer Model for High-Frequency Trading",
+        "text": "Title: CNN-Transformer for HFT. Research Question: Can a hybrid CNN-Transformer generate profitable HFT signals from order book images? Hypothesis: Converting LOB snapshots to 2D images achieves over 60% directional accuracy and positive PnL. Identification: In-sample optimization with cross-validation. Balanced accuracy on manufactured labels. Simulated trading with zero latency and no queue position modeling. Data: Binance BTC/USDT order book (3 months, 2023). 100ms resolution. Contribution: 62% directional accuracy, simulated 847% annual return, demonstrating hybrid architecture superiority.",
+        "tier": "low",
+        "source": "Representative DL-HFT paper"
+      },
+      {
+        "id": "CAL-L04",
+        "title": "Portfolio Optimization with Genetic Algorithms vs Mean-Variance",
+        "text": "Title: GA vs Mean-Variance Portfolio Optimization. Research Question: Do genetic algorithms produce better portfolios than Markowitz mean-variance? Hypothesis: GA handles non-convex constraints and non-normal distributions, achieving higher Sharpe. Identification: In-sample only comparison on 10 years. Sharpe as sole metric. No statistical significance test. Data: Monthly returns for 30 DJIA stocks from Yahoo Finance (2013-2023). Raw returns used for Sharpe (no risk-free rate). Contribution: GA achieves Sharpe 0.05-0.10 higher than MVO, proving evolutionary algorithm superiority.",
+        "tier": "low",
+        "source": "Representative evolutionary algorithm finance paper"
+      },
+      {
+        "id": "CAL-L05",
+        "title": "Impact of Federal Reserve Interest Rate Decisions on Stock Markets",
+        "text": "Title: Fed Rates and Stock Markets. Research Question: How do Federal Reserve rate changes affect the S&P 500? Hypothesis: Rate increases lead to stock declines and vice versa. Identification: Correlation analysis between Fed Funds Rate changes and S&P 500 monthly returns. Simple OLS with no controls. Full calendar month event window. Data: Monthly S&P 500 returns and Fed Funds Rate from FRED (2000-2023). Contribution: Confirms negative correlation between rate changes and stock returns, supporting textbook predictions.",
+        "tier": "low",
+        "source": "Representative undergraduate-level paper"
+      },
+      {
+        "id": "CAL-L06",
+        "title": "ESG Scores and Stock Returns: Evidence from European Markets",
+        "text": "Title: ESG and European Stock Returns. Research Question: Do higher ESG scores predict higher stock returns in Europe? Hypothesis: Higher ESG associates with higher risk-adjusted returns due to lower cost of capital and better operations. Identification: Cross-sectional regression of annual returns on Refinitiv ESG scores. Controls: size and sector only. No adjustment for ESG changes vs levels. Pooled OLS, no firm fixed effects. Data: Refinitiv ESG for STOXX 600 (2015-2022). Annual Bloomberg returns. Contribution: Positive significant relationship, suggesting ESG generates alpha.",
+        "tier": "low",
+        "source": "Representative ESG-alpha paper"
+      },
+      {
+        "id": "CAL-L07",
+        "title": "Blockchain-Based DEX Protocol for Fair Price Discovery",
+        "text": "Title: Blockchain DEX Fair Pricing. Research Question: Can a novel blockchain protocol improve DEX price discovery? Hypothesis: Commit-reveal mechanism eliminates MEV, achieving fairer prices than Uniswap V3. Identification: Simulation on synthetic Poisson order flow. Price deviation from known centralized exchange reference price. No game-theoretic analysis. Data: Synthetic orders. Reference price assumed known. 1000 simulation runs. Contribution: 35% reduction in price deviation in simulation.",
+        "tier": "low",
+        "source": "Representative blockchain protocol paper"
+      },
+      {
+        "id": "CAL-L08",
+        "title": "Using GPT-4 to Generate Alpha: Automated Trading with LLMs",
+        "text": "Title: GPT-4 Alpha Generation. Research Question: Can GPT-4 generate profitable trading signals from news headlines? Hypothesis: GPT-4 outperforms sentiment and technical baselines on trading returns. Identification: Prompt GPT-4 for BUY/SELL/HOLD. Backtest with perfect fills at closing prices. Cumulative returns (not risk-adjusted) vs buy-and-hold. Data: Reuters headlines for S&P 500 (8 months, 2023 only). Daily closing prices. Contribution: 23% cumulative return vs 15% buy-and-hold, demonstrating LLM alpha from news.",
+        "tier": "low",
+        "source": "Representative LLM-trading paper"
+      },
+      {
+        "id": "CAL-L09",
+        "title": "Wavelet Analysis of Stock Market Cycles and Optimal Timing",
+        "text": "Title: Wavelet Market Timing. Research Question: Can wavelet decomposition identify stock market cycles for optimal timing? Hypothesis: DWT decomposes S&P 500 into cycle components; trading the reconstructed trend achieves superior returns. Identification: Apply DWT to FULL sample (including future), extract trend, generate signals. Evaluate on same full sample (in-sample only). Data: Daily S&P 500 (2000-2020). Daubechies-4 wavelet, 5-level. Contribution: Sharpe of 1.8 vs 0.4 buy-and-hold, proving wavelet timing dramatically outperforms.",
+        "tier": "low",
+        "source": "Representative look-ahead bias paper"
+      },
+      {
+        "id": "CAL-L10",
+        "title": "Fractal Dimension and Stock Market Predictability",
+        "text": "Title: Fractal Dimension Predicts Stocks. Research Question: Does fractal dimension predict future volatility and returns? Hypothesis: Lower Hurst exponent stocks earn higher future returns; aggregate Hurst predicts crashes. Identification: Rolling 200-day R/S Hurst exponent. Sort into quintiles. Compare future 1-month returns. No risk adjustment or factor controls. Data: Daily prices for 500 US stocks from Yahoo Finance (2010-2022). Contribution: Low-Hurst outperforms high-Hurst by 3% annually; aggregate Hurst drops before crashes (2015, 2018, 2020).",
+        "tier": "low",
+        "source": "Representative complexity-finance paper"
+      }
+    ]
+  }
+}
