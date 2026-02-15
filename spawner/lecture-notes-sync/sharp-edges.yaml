@@ -1,0 +1,160 @@
+id: lecture-notes-sync
+name: Lecture Notes Synthesizer
+
+sharp_edges:
+  - id: missing-openrouter-key
+    trigger: "401 Unauthorized"
+    symptom: |
+      API calls to OpenRouter fail with authentication error
+    cause: |
+      OPENROUTER_API_KEY environment variable not set
+    fix: |
+      Set the API key:
+      ```bash
+      export OPENROUTER_API_KEY="your-key-here"
+      ```
+      Get a key at: https://openrouter.ai/keys
+      Add to ~/.zshrc for persistence.
+
+  - id: image-too-large
+    trigger: "Request entity too large"
+    symptom: |
+      API rejects the image because it's too large
+    cause: |
+      Base64 encoded image exceeds API limits (usually ~20MB)
+    fix: |
+      Resize the image before encoding:
+      ```bash
+      # Resize to max 1920px width
+      convert slide.png -resize 1920x\> slide_resized.png
+      ```
+      Or use ImageMagick to compress:
+      ```bash
+      convert slide.png -quality 85 slide_compressed.png
+      ```
+
+  - id: rate-limiting
+    trigger: "429 Too Many Requests"
+    symptom: |
+      API returns rate limit error when processing many slides
+    cause: |
+      Too many requests in short time period
+    fix: |
+      Add delays between requests:
+      ```bash
+      sleep 2  # Wait 2 seconds between slides
+      ```
+      Or use batch processing with longer delays for free tiers.
+
+  - id: math-extraction-errors
+    trigger: "LaTeX rendering fails"
+    symptom: |
+      Extracted math doesn't render properly in Obsidian
+    cause: |
+      - Unescaped special characters
+      - Missing $ delimiters
+      - Incorrect LaTeX syntax from vision model
+    fix: |
+      Post-process LaTeX:
+      - Ensure all inline math has $...$
+      - Ensure display math has $$...$$
+      - Escape underscores in non-math text
+      - Review complex equations manually
+
+  - id: mermaid-syntax-errors
+    trigger: "Mermaid diagram not rendering"
+    symptom: |
+      Generated Mermaid code has syntax errors
+    cause: |
+      Vision model generated invalid Mermaid syntax
+    fix: |
+      Common fixes:
+      - Add missing semicolons
+      - Quote node labels with special characters
+      - Check arrow syntax (-->, --->, -.->, etc.)
+      - Validate at: https://mermaid.live
+
+  - id: timestamp-mismatch
+    trigger: "Transcript sections don't match slides"
+    symptom: |
+      Transcript excerpts don't correspond to slide content
+    cause: |
+      - Slide timestamps extracted incorrectly
+      - Transcript doesn't have timestamps
+      - Time zones or offset issues
+    fix: |
+      1. Verify slide timestamp parsing from filenames
+      2. Re-extract transcript with timestamps:
+         ```bash
+         summarize "URL" --extract --timestamps
+         ```
+      3. Manually adjust offsets if needed
+
+  - id: empty-slide-extraction
+    trigger: "No content extracted from slide"
+    symptom: |
+      Vision model returns minimal or no content for a slide
+    cause: |
+      - Slide is mostly visual (photo, complex diagram)
+      - Low resolution image
+      - Model couldn't interpret content
+    fix: |
+      1. Try a different model (gemini-1.5-pro for complex slides)
+      2. Increase image resolution
+      3. Fall back to text description:
+         ```
+         "Describe what you see in this slide in detail"
+         ```
+
+  - id: high-api-costs
+    trigger: "Unexpected API charges"
+    symptom: |
+      Processing many slides results in high costs
+    cause: |
+      Vision model calls are expensive, especially with high-res images
+    fix: |
+      Cost reduction strategies:
+      1. Use cheaper model (gemini-2.0-flash vs gemini-1.5-pro)
+      2. Resize images to reduce token count
+      3. Process in batches during off-peak hours
+      4. Cache results to avoid re-processing
+
+      Approximate costs (OpenRouter):
+      - gemini-2.0-flash: ~$0.001-0.002 per slide
+      - gemini-1.5-pro: ~$0.005-0.01 per slide
+      - 30 slides ≈ $0.03-0.30 depending on model
+
+  - id: transcript-no-timestamps
+    trigger: "Cannot sync slides with transcript"
+    symptom: |
+      Transcript doesn't have timestamp markers
+    cause: |
+      Transcript was extracted without --timestamps flag
+    fix: |
+      Re-extract with timestamps:
+      ```bash
+      summarize "URL" --extract --timestamps --format md
+      ```
+      Or manually add timestamps based on slide times.
+
+  - id: base64-encoding-issues
+    trigger: "Invalid image data"
+    symptom: |
+      API rejects the image as invalid
+    cause: |
+      - Incorrect base64 encoding
+      - Missing or wrong data URL prefix
+      - Newlines in base64 string
+    fix: |
+      Proper encoding:
+      ```bash
+      # macOS
+      base64 -i image.png | tr -d '\n'
+
+      # Linux
+      base64 -w 0 image.png
+      ```
+      Ensure prefix is correct:
+      ```
+      data:image/png;base64,<base64_string>
+      ```

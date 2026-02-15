@@ -1,0 +1,82 @@
+{
+  "templates": {
+    "mcp_servers": {
+      "description": "Search for MCP server solutions",
+      "queries": [
+        "Claude Code MCP server {keyword} 2026",
+        "Model Context Protocol server {keyword} github",
+        "best MCP server for {keyword} Claude",
+        "anthropic MCP {keyword} setup guide"
+      ]
+    },
+    "cli_tools": {
+      "description": "Search for CLI tool alternatives or install instructions",
+      "queries": [
+        "{keyword} CLI tool install macOS 2026",
+        "best {keyword} command line tool",
+        "brew install {keyword} alternative"
+      ]
+    },
+    "api_keys": {
+      "description": "Search for API providers and setup guides",
+      "queries": [
+        "{keyword} API free tier pricing 2026",
+        "{keyword} API key setup guide",
+        "best {keyword} API for developers"
+      ]
+    },
+    "skills": {
+      "description": "Search for Claude Code skills or automation patterns",
+      "queries": [
+        "Claude Code skill {keyword} 2026",
+        "Claude Code slash command {keyword}",
+        "AI coding assistant {keyword} automation"
+      ]
+    },
+    "web_scraping": {
+      "description": "Search for web scraping and data extraction tools",
+      "queries": [
+        "Claude Code web scraping MCP server 2026",
+        "Firecrawl vs Browserless vs Tavily comparison",
+        "best web scraping API for AI agents",
+        "MCP server web fetch crawl 2026"
+      ]
+    },
+    "paper_search": {
+      "description": "Search for academic paper search and retrieval tools",
+      "queries": [
+        "Semantic Scholar API MCP server Claude",
+        "arXiv API tool for AI coding assistant",
+        "academic paper search API free 2026",
+        "research paper retrieval MCP server"
+      ]
+    },
+    "database": {
+      "description": "Search for database access tools",
+      "queries": [
+        "Claude Code database MCP server 2026",
+        "SQLite MCP server setup",
+        "PostgreSQL MCP server Claude",
+        "best database tool for AI coding"
+      ]
+    },
+    "testing": {
+      "description": "Search for automated testing tools and skills",
+      "queries": [
+        "Claude Code automated test generation 2026",
+        "AI test generation Python pytest",
+        "Claude Code testing skill slash command"
+      ]
+    },
+    "code_review": {
+      "description": "Search for code review automation",
+      "queries": [
+        "Claude Code PR review automation 2026",
+        "AI code review tool best practices",
+        "automated code review Claude slash command"
+      ]
+    }
+  },
+  "max_queries_per_gap": 4,
+  "max_fetch_per_query": 3
+}

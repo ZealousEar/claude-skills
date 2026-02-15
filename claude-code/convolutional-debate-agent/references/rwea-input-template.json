@@ -1,0 +1,63 @@
+{
+  "candidates": [
+    {
+      "id": "A",
+      "model": "opus",
+      "wins": 2,
+      "formal_score": 0.67,
+      "reviews": [
+        {"support": 2, "evidence": 1, "major_risks": 0, "critical_fail": 0},
+        {"support": 1, "evidence": 2, "major_risks": 1, "critical_fail": 0},
+        {"support": 2, "evidence": 1, "major_risks": 0, "critical_fail": 0},
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0}
+      ]
+    },
+    {
+      "id": "B",
+      "model": "chatgpt-5.3",
+      "wins": 1,
+      "formal_score": -0.50,
+      "reviews": [
+        {"support": 1, "evidence": 1, "major_risks": 1, "critical_fail": 0},
+        {"support": 1, "evidence": 1, "major_risks": 1, "critical_fail": 0},
+        {"support": 2, "evidence": 1, "major_risks": 1, "critical_fail": 0},
+        {"support": 1, "evidence": 1, "major_risks": 1, "critical_fail": 0}
+      ]
+    },
+    {
+      "id": "C",
+      "model": "chatgpt-5.2-extra-high",
+      "wins": 3,
+      "formal_score": 1.00,
+      "reviews": [
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0},
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0},
+        {"support": 2, "evidence": 1, "major_risks": 0, "critical_fail": 0},
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0}
+      ]
+    },
+    {
+      "id": "D",
+      "model": "kimi-2.5",
+      "wins": 0,
+      "reviews": [
+        {"support": 1, "evidence": 0, "major_risks": 2, "critical_fail": 1},
+        {"support": 1, "evidence": 1, "major_risks": 2, "critical_fail": 1},
+        {"support": 1, "evidence": 0, "major_risks": 2, "critical_fail": 0},
+        {"support": 0, "evidence": 1, "major_risks": 2, "critical_fail": 0}
+      ]
+    },
+    {
+      "id": "E",
+      "model": "gemini-3-pro",
+      "wins": 2,
+      "formal_score": 0.33,
+      "reviews": [
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0},
+        {"support": 1, "evidence": 2, "major_risks": 1, "critical_fail": 0},
+        {"support": 2, "evidence": 2, "major_risks": 0, "critical_fail": 0},
+        {"support": 2, "evidence": 1, "major_risks": 1, "critical_fail": 0}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+id: arxiv-pdf-reader
+name: arXiv PDF to Markdown Reader
+version: "1.0.0"
+category: pattern
+layer: 2
+
+description: |
+  Fetches PDF documents (especially from arXiv and other academic sources) and converts them
+  to markdown using Mathpix API. Works with both URLs and local files. Optimized for academic
+  papers with math, tables, and complex formatting.
+
+triggers:
+  - fetch arxiv pdf
+  - convert academic pdf
+  - read arxiv paper
+  - pdf to markdown mathpix
+  - fetch paper
+  - extract paper
+
+owns:
+  - academic pdf extraction
+  - arxiv paper fetching
+  - pdf to markdown conversion
+  - research paper preprocessing
+
+tags:
+  - pdf
+  - arxiv
+  - academic
+  - research
+  - markdown
+  - mathpix
+  - conversion
+  - papers
+
+instructions: |
+  ## arXiv PDF to Markdown Reader
+
+  You fetch and convert academic PDFs (especially from arXiv) to markdown format using
+  Mathpix API. Optimized for papers with mathematical formulas, tables, and figures.
+
+  ### Prerequisites
+
+  - Mathpix API credentials in `.env` file at repository root:
+    ```
+    MATHPIX_APP_ID=your_app_id_here
+    MATHPIX_APP_KEY=your_app_key_here
+    ```
+  - curl for API requests
+  - jq for JSON parsing (brew install jq)
+
+  ### Output Location
+
+  Save converted papers to: `Papers/<Paper-Title>/`
+  ```
+  Papers/
+  └── <Paper Title>/
+      ├── <Paper-Title>.md
+      └── <Paper-Title>.pdf
+  ```
+
+  ### Core Workflow
+
+  **Step 1: Load environment variables**
+  ```bash
+  cd "/path/to/vault/10 School/Dissertation Research"
+  source .env
+  ```
+
+  **Step 2: For arXiv URLs, construct PDF URL**
+
+  From: `https://arxiv.org/abs/2301.12345`
+  To: `https://arxiv.org/pdf/2301.12345.pdf`
+
+  arXiv ID: `2301.12345`
+
+  **Step 3: Submit PDF to Mathpix API**
+
+  For URL-based PDFs:
+  ```bash
+  curl -X POST https://api.mathpix.com/v3/pdf \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" \
+    -H "Content-Type: application/json" \
+    --data "{\"url\": \"$PDF_URL\"}" | jq -r '.pdf_id'
+  ```
+
+  For local PDFs:
+  ```bash
+  curl -X POST https://api.mathpix.com/v3/pdf \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" \
+    --form "file=@\"$PDF_PATH\"" | jq -r '.pdf_id'
+  ```
+
+  Save the returned `pdf_id`.
+
+  **Step 4: Poll for completion**
+  ```bash
+  while true; do
+    STATUS=$(curl -s -X GET "https://api.mathpix.com/v3/pdf/$PDF_ID" \
+      -H "app_id: $MATHPIX_APP_ID" \
+      -H "app_key: $MATHPIX_APP_KEY" | jq -r '.status')
+
+    echo "Status: $STATUS"
+
+    if [ "$STATUS" = "completed" ]; then
+      break
+    elif [ "$STATUS" = "error" ]; then
+      echo "Error processing PDF"
+      exit 1
+    fi
+
+    sleep 5
+  done
+  ```
+
+  **Step 5: Download markdown**
+  ```bash
+  curl -X GET "https://api.mathpix.com/v3/pdf/$PDF_ID.mmd" \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" > temp_output.mmd
+  ```
+
+  **Step 6: Extract title and organize**
+
+  Parse the first heading from the markdown to get the title.
+
+  Sanitize title for folder name:
+  - Remove special characters: / \ : * ? " < > |
+  - Replace spaces with hyphens
+  - Truncate to 100 characters
+  - Convert to lowercase
+
+  **Step 7: Create folder and save PDF**
+  ```bash
+  PAPER_DIR="Papers/$SANITIZED_TITLE"
+  mkdir -p "$PAPER_DIR"
+
+  # Save the PDF file
+  cp temp_paper.pdf "$PAPER_DIR/$SANITIZED_TITLE.pdf"
+  ```
+
+  **Step 8: Add frontmatter and save markdown**
+
+  For arXiv papers:
+  ```markdown
+  ---
+  source: https://arxiv.org/abs/$ARXIV_ID
+  arxiv_id: $ARXIV_ID
+  type: research-paper
+  date: $YYYY-MM-DD
+  tags:
+    - arxiv
+    - research
+    - quant-finance
+  ---
+
+  [Mathpix markdown content]
+  ```
+
+  For other PDFs:
+  ```markdown
+  ---
+  source: $PDF_URL or local
+  type: research-paper
+  date: $YYYY-MM-DD
+  tags:
+    - research
+  ---
+
+  [Mathpix markdown content]
+  ```
+
+  Save to: `$PAPER_DIR/$SANITIZED_TITLE.md`
+
+  **Step 9: Report completion**
+  ```
+  ✓ Converted to Papers/$SANITIZED_TITLE/$SANITIZED_TITLE.md
+  ```
+
+  ### Full Example Workflow
+
+  **User: "Fetch and convert this arXiv paper: https://arxiv.org/abs/2502.07766"**
+
+  1. Load .env: `source .env`
+  2. Extract arXiv ID: `2502.07766`
+  3. Construct PDF URL: `https://arxiv.org/pdf/2502.07766.pdf`
+  4. Submit to Mathpix:
+     ```bash
+     PDF_ID=$(curl -X POST https://api.mathpix.com/v3/pdf \
+       -H "app_id: $MATHPIX_APP_ID" \
+       -H "app_key: $MATHPIX_APP_KEY" \
+       -H "Content-Type: application/json" \
+       --data '{"url": "https://arxiv.org/pdf/2502.07766.pdf"}' | jq -r '.pdf_id')
+     ```
+  5. Poll until completed
+  6. Download: `curl ... > output.mmd`
+  7. Extract title from first heading
+  8. Create: `Papers/mean-reverting-sabr-models/`
+  9. Save PDF: `Papers/mean-reverting-sabr-models/mean-reverting-sabr-models.pdf`
+  10. Add frontmatter with arXiv metadata
+  11. Save markdown: `Papers/mean-reverting-sabr-models/mean-reverting-sabr-models.md`
+  12. Report: "✓ Converted arXiv:2502.07766 to Papers/mean-reverting-sabr-models/"
+
+  ### Error Handling
+
+  - **401 Unauthorized**: Check API credentials in .env
+  - **413 Too Large**: PDF exceeds 1GB limit
+  - **Processing failed**: Check PDF is not password-protected
+  - **Timeout**: Large papers may take 2-3 minutes
+  - **Invalid URL**: Verify arXiv URL format
+
+  ### Folder Organization
+
+  ```
+  Papers/
+  ├── mean-reverting-sabr-models/
+  │   ├── mean-reverting-sabr-models.md
+  │   └── mean-reverting-sabr-models.pdf
+  ├── volatility-surface-calibration/
+  │   ├── volatility-surface-calibration.md
+  │   └── volatility-surface-calibration.pdf
+  └── regime-detection-methods/
+      ├── regime-detection-methods.md
+      └── regime-detection-methods.pdf
+  ```
+
+  Each paper gets its own folder containing:
+  - Markdown file (converted from PDF with Mathpix)
+  - Original PDF file
+  - Future: extracted figures, tables, supplementary materials
+
+prerequisites:
+  - Mathpix API credentials (app_id and app_key) in .env
+  - curl for API requests
+  - jq for JSON parsing (brew install jq)
+
+pairs_with:
+  - media-transcript
+  - mathpix-pdf-converter
+  - obsidian-notes

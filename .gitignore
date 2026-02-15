@@ -1,0 +1,20 @@
+# Secrets
+*.env
+!*.env.example
+api-keys/*.env
+!api-keys/*.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Editor
+.vscode/
+.idea/
+*.swp

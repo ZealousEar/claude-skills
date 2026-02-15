@@ -1,0 +1,124 @@
+{
+  "method_classes": {
+    "ABM": {
+      "keywords": ["ABM", "agent-based", "multi-agent simulation", "zero-intelligence", "ZI", "ZIP", "PRZI"],
+      "max_quota": 3
+    },
+    "gradient_boosting": {
+      "keywords": ["XGBoost", "LightGBM", "gradient boosting", "GBDT", "random forest", "ensemble tree"],
+      "max_quota": 3
+    },
+    "deep_learning": {
+      "keywords": ["neural network", "deep learning", "LSTM", "transformer", "attention mechanism", "CNN", "GAN", "autoencoder", "VAE"],
+      "max_quota": 3
+    },
+    "bayesian": {
+      "keywords": ["Bayesian", "posterior", "prior", "MCMC", "variational inference", "Bayesian estimation", "hierarchical model"],
+      "max_quota": 3
+    },
+    "reinforcement_learning": {
+      "keywords": ["reinforcement learning", "RL", "Q-learning", "policy gradient", "PPO", "DQN", "reward shaping", "multi-agent RL"],
+      "max_quota": 3
+    },
+    "econometrics": {
+      "keywords": ["regression", "GMM", "IV", "instrumental variable", "diff-in-diff", "panel data", "fixed effects", "event study", "RDD"],
+      "max_quota": 3
+    },
+    "time_series": {
+      "keywords": ["ARIMA", "GARCH", "VAR", "state-space", "Kalman", "regime-switching", "hidden Markov", "dynamic factor"],
+      "max_quota": 3
+    },
+    "SABR_SVI": {
+      "keywords": ["SABR", "SVI", "stochastic volatility", "volatility surface", "implied volatility", "local volatility", "Heston"],
+      "max_quota": 3
+    },
+    "network_analysis": {
+      "keywords": ["network", "graph neural", "centrality", "contagion", "systemic risk", "interconnectedness", "topology"],
+      "max_quota": 3
+    },
+    "NLP_LLM": {
+      "keywords": ["NLP", "LLM", "large language model", "GPT", "sentiment", "text mining", "embedding", "fine-tuning"],
+      "max_quota": 3
+    },
+    "mechanism_design": {
+      "keywords": ["mechanism design", "auction", "market design", "matching", "incentive compatible"],
+      "max_quota": 3
+    },
+    "monte_carlo": {
+      "keywords": ["Monte Carlo", "simulation", "bootstrap", "stochastic simulation", "variance reduction"],
+      "max_quota": 3
+    },
+    "optimization": {
+      "keywords": ["convex optimization", "portfolio optimization", "mean-variance", "Black-Litterman", "risk parity"],
+      "max_quota": 3
+    },
+    "causal_inference": {
+      "keywords": ["causal", "counterfactual", "treatment effect", "propensity score", "synthetic control", "natural experiment"],
+      "max_quota": 3
+    }
+  },
+  "data_classes": {
+    "high_frequency_LOB": {
+      "keywords": ["LOB", "limit order book", "tick data", "high-frequency", "HFT", "order flow", "LOBSTER", "level 2"]
+    },
+    "BSE_simulation": {
+      "keywords": ["BSE", "Bristol Stock Exchange", "simulated exchange", "artificial market"]
+    },
+    "macro_FRED": {
+      "keywords": ["FRED", "macro", "macroeconomic", "GDP", "CPI", "unemployment", "treasury", "yield curve", "FRED-MD"]
+    },
+    "options_derivatives": {
+      "keywords": ["options", "derivatives", "volatility surface", "implied vol", "OptionMetrics", "CBOE", "VIX"]
+    },
+    "equity_CRSP": {
+      "keywords": ["CRSP", "equity", "stock returns", "Compustat", "firm-level", "cross-section"]
+    },
+    "crypto_DeFi": {
+      "keywords": ["crypto", "DeFi", "blockchain", "Ethereum", "DEX", "AMM", "on-chain"]
+    },
+    "betting_markets": {
+      "keywords": ["betting", "prediction market", "odds", "Betfair", "bookmaker", "sports"]
+    },
+    "text_news": {
+      "keywords": ["text", "news", "SEC filing", "earnings call", "social media", "Reddit", "Twitter"]
+    },
+    "FX_rates": {
+      "keywords": ["FX", "foreign exchange", "currency", "exchange rate", "carry trade"]
+    },
+    "fixed_income": {
+      "keywords": ["fixed income", "bond", "credit", "CDS", "spread", "corporate bond", "sovereign"]
+    }
+  },
+  "contribution_classes": {
+    "theory": {
+      "keywords": ["theorem", "equilibrium", "model", "proof", "mechanism", "theoretical framework"]
+    },
+    "empirical": {
+      "keywords": ["backtest", "empirical", "out-of-sample", "walk-forward", "historical data", "statistical test"]
+    },
+    "methodology": {
+      "keywords": ["new method", "algorithm", "estimator", "novel approach", "pipeline", "framework"]
+    },
+    "measurement": {
+      "keywords": ["measure", "metric", "indicator", "index", "proxy", "quantify"]
+    },
+    "engineering": {
+      "keywords": ["system", "platform", "tool", "dashboard", "API", "production", "real-time"]
+    },
+    "replication": {
+      "keywords": ["replicate", "reproduce", "extension", "robustness check"]
+    },
+    "survey": {
+      "keywords": ["survey", "review", "meta-analysis", "taxonomy", "comparison"]
+    },
+    "policy": {
+      "keywords": ["policy", "regulation", "welfare", "market design recommendation"]
+    }
+  },
+  "quotas": {
+    "max_per_method_class": 3,
+    "min_method_coverage": 4,
+    "min_data_coverage": 3,
+    "min_contribution_coverage": 2
+  }
+}

@@ -1,0 +1,694 @@
+id: obsidian-cli
+version: "1.0.0"
+
+sharp_edges:
+  - id: uri-encoding-spaces
+    summary: Unencoded spaces in obsidian:// URIs cause silent failures
+    severity: high
+    situation: |
+      When constructing obsidian:// URIs programmatically, spaces in vault names,
+      folder paths, or note titles are left unencoded. The vault name "Agentic" has
+      no spaces, but paths like "00 Inbox/My Note" contain spaces that must be
+      percent-encoded. The URI silently fails to open the correct note or opens
+      nothing at all — with no error message from Obsidian.
+    why: |
+      The obsidian:// URI scheme follows standard URI encoding rules. Spaces and
+      other reserved characters must be percent-encoded (%20 for spaces). macOS
+      open command and browser handlers will truncate or misparse URIs at the first
+      unencoded space. This is especially insidious because the failure is silent —
+      Obsidian may open but not navigate to the intended note, or may open the
+      vault root with no indication that anything went wrong.
+    solution: |
+      Always percent-encode path components in obsidian:// URIs:
+      - Use encodeURIComponent() in JavaScript/TypeScript for each path segment
+      - Use urllib.parse.quote() in Python
+      - Replace spaces with %20 manually if no encoding library is available
+      - Encode the full path after the parameter key (vault=, file=), not the
+        entire URI including the scheme and parameter separators
+
+      Example:
+        Bad:  obsidian://open?vault=Agentic&file=00 Inbox/My Note
+        Good: obsidian://open?vault=Agentic&file=00%20Inbox%2FMy%20Note
+
+      Note: The vault name "Agentic" needs no encoding, but always encode
+      folder names from the PARA structure (00 Inbox, 01 Projects, etc.)
+      since they all contain spaces.
+    symptoms:
+      - "Obsidian opens but does not navigate to the expected note"
+      - "open command completes successfully but nothing visible happens"
+      - "URI works for some notes but not others (those with spaces)"
+      - "Note creation via URI creates a note with truncated name"
+    detection_pattern: 'obsidian://.*\s'
+
+  - id: frontmatter-corruption
+    summary: YAML frontmatter broken by improper editing destroys metadata
+    severity: critical
+    situation: |
+      When creating or modifying notes programmatically, the YAML frontmatter
+      block (delimited by --- on its own line) is malformed. Common corruption
+      modes include: missing or extra --- delimiters, using tabs instead of
+      spaces for indentation, unquoted strings containing colons or special
+      YAML characters, duplicate keys, or injecting content between the
+      opening --- and the first frontmatter key.
+    why: |
+      Obsidian parses frontmatter to populate its metadata cache, which drives
+      search, graph view, Dataview queries, template variable resolution, and
+      plugin functionality. Corrupted frontmatter causes Obsidian to either
+      ignore all metadata for that note or, worse, display the raw YAML as
+      note content. Templater relies on frontmatter for template variables.
+      If the metadata cache is corrupted, it can cascade to affect other notes
+      that reference the broken one. Recovery requires manually fixing the
+      frontmatter and forcing a cache rebuild.
+    solution: |
+      1. Always read existing frontmatter before modifying a note:
+         - Parse the file, extract content between first --- and second ---
+         - Use a proper YAML parser (yaml.safe_load in Python, js-yaml in JS)
+         - Preserve all existing keys you are not intentionally changing
+
+      2. When writing frontmatter:
+         - Ensure exactly one --- on line 1 and one --- after the last key
+         - Use spaces only (2-space indent), never tabs
+         - Quote strings containing colons, brackets, or special chars
+         - Use yaml.safe_dump() or YAML.stringify() for serialization
+         - Validate the output parses correctly before writing to disk
+
+      3. Frontmatter template for this vault:
+         ---
+         created: "YYYY-MM-DD"
+         modified: "YYYY-MM-DD"
+         tags:
+           - tag-name
+         status: active
+         type: note
+         ---
+
+      4. After writing, verify: read back the file and confirm YAML parses
+    symptoms:
+      - "Raw YAML text visible at top of note in reading view"
+      - "Tags, aliases, or other metadata not appearing in Obsidian search"
+      - "Dataview queries return no results for notes with valid-looking data"
+      - "Templater throws errors when processing note with frontmatter"
+      - "Graph view shows broken or missing connections"
+    detection_pattern: 'frontmatter|---\n|yaml\.dump|yaml\.safe_dump|matter\('
+
+  - id: rest-api-self-signed-cert
+    summary: Local REST API plugin HTTPS cert rejected by HTTP clients
+    severity: high
+    situation: |
+      The Local REST API plugin for Obsidian serves its API over HTTPS using
+      a self-signed certificate. When making requests via curl, fetch, axios,
+      or Python requests, the TLS handshake fails because the certificate is
+      not signed by a trusted CA. This blocks all programmatic access to the
+      REST API, which is otherwise a powerful way to interact with Obsidian.
+      Note: This plugin is NOT currently installed in this vault.
+    why: |
+      Modern HTTP clients enforce certificate validation by default as a
+      security measure. Self-signed certificates are not in the system trust
+      store, so any HTTPS request to localhost:27124 (the default REST API
+      port) will fail with SSL/TLS errors. The plugin generates a unique
+      certificate on first run, stored in the plugin's data directory.
+      Simply ignoring SSL errors is a pragmatic solution for local-only
+      communication but should never be used for remote connections.
+    solution: |
+      For curl:
+        curl --insecure https://localhost:27124/vault/ \
+          -H "Authorization: Bearer YOUR_API_KEY"
+
+      For Node.js/fetch:
+        Set NODE_TLS_REJECT_UNAUTHORIZED=0 in environment (local dev only)
+        Or use a custom https.Agent with rejectUnauthorized: false
+
+      For Python requests:
+        requests.get(url, verify=False, headers={"Authorization": "Bearer KEY"})
+        (Suppress InsecureRequestWarning for cleaner output)
+
+      Best practice: Extract the plugin's certificate and add it to your
+      local trust store instead of disabling verification entirely.
+
+      IMPORTANT: Since Local REST API is not installed in this vault,
+      prefer direct file operations from the terminal instead.
+      Claude Code runs inside the vault — use Read/Write/Edit tools directly.
+    symptoms:
+      - "SSL: CERTIFICATE_VERIFY_FAILED error in Python"
+      - "unable to verify the first certificate in Node.js"
+      - "curl: (60) SSL certificate problem: self-signed certificate"
+      - "DEPTH_ZERO_SELF_SIGNED_CERT error"
+      - "fetch failed with TypeError: Failed to fetch"
+    detection_pattern: 'localhost:27124|rest.api|CERTIFICATE_VERIFY|self.signed'
+
+  - id: concurrent-file-access
+    summary: Race condition between Claude edits and Obsidian autosave
+    severity: high
+    situation: |
+      Claude Code writes to a markdown file via the terminal while Obsidian
+      has the same file open in its editor. Obsidian's autosave (every 2
+      seconds by default) or a user keystroke triggers a write at the same
+      moment. The result is data loss: either Claude's changes are overwritten
+      by Obsidian's cached version, or Obsidian's unsaved edits are lost when
+      Claude's write replaces the file. Obsidian may show a "file changed on
+      disk" dialog but the user may miss it or dismiss it incorrectly.
+    why: |
+      Obsidian keeps an in-memory buffer of open files and periodically
+      flushes to disk. It watches for external file changes via fs.watch but
+      the detection is not instantaneous. If an external write happens between
+      Obsidian reading the file and writing its buffer, one set of changes is
+      lost. This is a fundamental race condition with no perfect solution when
+      two writers share the same file without coordination. The risk increases
+      when Obsidian sync plugins (Git, Syncthing, iCloud) are also running.
+    solution: |
+      1. Before writing a file, check if it is likely open in Obsidian:
+         - Read the .obsidian/workspace.json to see which files are active
+         - Or check file mtime — if modified within last 5 seconds, wait
+
+      2. Use atomic write pattern:
+         - Write to a temporary file (same directory, .tmp extension)
+         - Rename/move the temp file to the target path (atomic on same fs)
+
+      3. After writing, verify the content:
+         - Read the file back within 1 second
+         - Compare to what you wrote
+         - If different, Obsidian may have overwritten — retry or alert user
+
+      4. Best practices:
+         - Prefer creating new files over editing open ones
+         - If editing, work on files not currently visible in Obsidian
+         - For bulk operations, suggest user close Obsidian or switch to a
+           different note before proceeding
+         - Add a brief sleep (500ms) after write to let Obsidian detect change
+    symptoms:
+      - "Edits disappear after Claude writes to a file"
+      - "Obsidian shows 'file changed on disk' dialog repeatedly"
+      - "File content is a mix of old and new content"
+      - "Note shows content from before Claude's edit after Obsidian restart"
+      - "Sync conflicts appearing in Git or sync plugin"
+    detection_pattern: 'writeFile|fs\.write|Edit.*\.md|Write.*\.md'
+
+  - id: templater-syntax-in-content
+    summary: Templater executes raw <% %> syntax found in regular notes
+    severity: medium
+    situation: |
+      A note created or edited by Claude contains Templater syntax (<% %>
+      or <%* %>) in its body content — for example, in documentation about
+      Templater, in code examples, or accidentally from a copy-paste. When
+      the user opens this note in Obsidian, Templater's "Trigger Templater
+      on new file creation" or "Enable Folder Templates" setting causes the
+      syntax to be evaluated. This can result in unexpected JavaScript
+      execution, error popups, or content being replaced with evaluated output.
+    why: |
+      Templater hooks into Obsidian's file open/create events. If configured
+      to trigger on file creation (common setting), any new .md file with
+      <% %> blocks will have those blocks executed as JavaScript. Even in
+      existing files, the "Trigger on file edit" setting (if enabled) can
+      cause re-evaluation. The Templater plugin is installed in this vault
+      and templates live in 09 Systems/Templates/. Any <% %> outside that
+      folder is almost certainly unintentional and potentially dangerous.
+    solution: |
+      1. Never place raw <% %> syntax in notes outside 09 Systems/Templates/
+
+      2. When writing about Templater syntax in documentation or notes:
+         - Wrap in code blocks: ` ``` ` fences or inline backticks
+         - The backtick-wrapped syntax is NOT evaluated by Templater
+         - Example: Write `<% tp.date.now() %>` not <% tp.date.now() %>
+
+      3. If you must include the literal characters outside code blocks:
+         - Use a zero-width space between < and %
+         - Or use HTML entities: &lt;% %&gt;
+
+      4. When creating files programmatically:
+         - Scan content for <% before writing
+         - If found outside code blocks, wrap in backticks or warn the user
+         - Template files should ONLY go in 09 Systems/Templates/
+    symptoms:
+      - "Note content changes unexpectedly when opened"
+      - "Templater error popup when opening a non-template note"
+      - "Date or text appears in note that was not written by user"
+      - "JavaScript errors referencing tp.file or tp.date in console"
+    detection_pattern: '<%[^`]|<%\*'
+
+  - id: large-vault-search-performance
+    summary: Search without exclusions is extremely slow on large vaults
+    severity: medium
+    situation: |
+      Running grep, ripgrep, find, or Glob operations on the vault without
+      excluding system directories (.obsidian/, .git/, .trash/, node_modules/).
+      The .obsidian/ directory alone contains thousands of small files (plugin
+      data, cache, theme files). A vault with Git history can have tens of
+      thousands of objects in .git/. Searching all of these adds seconds or
+      minutes to every query and returns irrelevant noise in results.
+    why: |
+      The .obsidian/ folder stores Obsidian configuration, plugin data,
+      themes, and cached metadata — often totaling thousands of files. The
+      .git/ directory (if the vault is version controlled) contains the full
+      repository history. Neither contains user content that should appear
+      in search results. Including them wastes time, returns false positives,
+      and can cause Claude's search tools to hit output limits before finding
+      relevant content in actual notes.
+    solution: |
+      Always exclude system directories when searching:
+
+      For ripgrep (rg):
+        rg "pattern" --glob='!.obsidian/**' --glob='!.git/**' \
+           --glob='!.trash/**' --glob='!node_modules/**'
+
+      For find:
+        find . -not -path './.obsidian/*' -not -path './.git/*' \
+           -not -path './.trash/*' -name '*.md'
+
+      For Grep tool:
+        Use glob parameter: "*.md" to restrict to markdown files
+        This automatically skips binary and hidden directories
+
+      For Glob tool:
+        Use patterns like "**/*.md" — this skips hidden dirs by default
+
+      Recommended search approach for this vault:
+        1. First try Glob with "**/*.md" to find files by name
+        2. Then Grep with type: "md" for content search
+        3. Only broaden search if specific file not found
+    symptoms:
+      - "Search takes more than 5 seconds on the vault"
+      - "Results include .obsidian/plugins/ files"
+      - "Output truncated before finding relevant notes"
+      - "High CPU usage during search operations"
+      - "Results contain minified CSS/JS from themes"
+    detection_pattern: 'grep -r|find \.|rg [^-].*--no-ignore'
+
+  - id: git-obsidian-workspace-conflicts
+    summary: workspace.json creates constant Git merge conflicts
+    severity: high
+    situation: |
+      The .obsidian/workspace.json file changes every time the user switches
+      tabs, opens/closes panes, resizes panels, or scrolls in Obsidian. If
+      this file is tracked by Git, every commit includes workspace changes,
+      every pull creates merge conflicts, and the Git history is polluted
+      with meaningless diffs. On multi-device setups, workspace conflicts
+      can occur on every sync.
+    why: |
+      workspace.json stores the entire UI state: open files, pane layout,
+      scroll positions, active file, sidebar state, and plugin panel
+      positions. This changes with virtually every user interaction. Git
+      tracks these changes as modifications, creating noise in diffs and
+      inevitable conflicts when syncing between devices. The file is
+      auto-generated by Obsidian and never needs to be version-controlled.
+      The same applies to workspace-mobile.json for mobile clients.
+    solution: |
+      Add these entries to .gitignore immediately:
+
+      .obsidian/workspace.json
+      .obsidian/workspace-mobile.json
+
+      If already tracked, remove from Git without deleting:
+        git rm --cached .obsidian/workspace.json
+        git rm --cached .obsidian/workspace-mobile.json
+        git commit -m "Stop tracking workspace files"
+
+      Additional .obsidian files to consider gitignoring:
+        .obsidian/workspace.json
+        .obsidian/workspace-mobile.json
+        .obsidian/graph.json          (graph view position/zoom)
+        .obsidian/backlink.json       (backlink pane state)
+        .obsidian/bookmarks.json      (if personal, not shared)
+
+      Files to KEEP tracked (shared config):
+        .obsidian/app.json            (editor settings)
+        .obsidian/appearance.json     (theme settings)
+        .obsidian/community-plugins.json (installed plugins list)
+        .obsidian/hotkeys.json        (keyboard shortcuts)
+        .obsidian/core-plugins.json   (core plugin toggles)
+    symptoms:
+      - "Merge conflicts in .obsidian/workspace.json on every pull"
+      - "Git status always shows modified .obsidian files"
+      - "Commit history full of workspace.json changes"
+      - "Sync plugin reports conflicts constantly"
+    detection_pattern: 'workspace\.json|git add \.obsidian'
+
+  - id: mcp-api-key-exposure
+    summary: API keys for Obsidian plugins or MCP servers committed to Git
+    severity: critical
+    situation: |
+      API keys, tokens, or secrets used by Obsidian plugins (Local REST API
+      authorization token, AI plugin API keys) or MCP server configurations
+      are stored in files within the vault and committed to Git. This includes
+      keys in .obsidian/plugins/*/data.json, .env files, mcp.json configs,
+      or hardcoded in automation scripts stored in the vault.
+    why: |
+      Once an API key is committed to Git, it exists in the repository history
+      forever — even if the file is later deleted or the key is changed. If
+      the repository is ever pushed to a public remote (or a private remote
+      with leaked access), all keys are compromised. Obsidian plugins store
+      their configuration including API keys in .obsidian/plugins/<id>/data.json,
+      which is often tracked by Git. MCP server configurations may contain
+      API keys for services like Claude, OpenAI, or custom endpoints.
+    solution: |
+      1. Add to .gitignore:
+         .env
+         .env.*
+         *.key
+         *.pem
+         mcp.json
+         .obsidian/plugins/*/data.json   (contains plugin API keys)
+
+      2. Use environment variables for API keys:
+         - Store in ~/.zshrc, ~/.bashrc, or ~/.config/environment
+         - Reference via process.env in scripts
+         - Never hardcode in files within the vault
+
+      3. If a key was already committed:
+         - Rotate/revoke the key immediately
+         - Use git filter-branch or BFG Repo Cleaner to purge from history
+         - Force push the cleaned history (coordinate with collaborators)
+
+      4. Audit current state:
+         - Check: grep -r "sk-\|Bearer \|api_key\|API_KEY" --include="*.json"
+         - Check: grep -r "OPENAI\|ANTHROPIC\|token" --include="*.env*"
+         - Review .obsidian/plugins/*/data.json for embedded secrets
+
+      5. For MCP configurations:
+         - Store API keys as environment variable references, not literals
+         - Example: "apiKey": "${OBSIDIAN_API_KEY}" not the actual key
+    symptoms:
+      - "API key visible in Git diff or commit history"
+      - "GitHub secret scanning alerts on push"
+      - "Unexpected API usage or billing from leaked key"
+      - "data.json files showing up in git status"
+    detection_pattern: 'sk-[a-zA-Z0-9]{20,}|Bearer [a-zA-Z0-9]{20,}|api[_-]?key|API_KEY|OPENAI|ANTHROPIC'
+
+  - id: wiki-link-case-sensitivity
+    summary: Wiki-link case mismatches break on case-sensitive filesystems
+    severity: medium
+    situation: |
+      Notes are created and linked using wiki-links like [[My Note]] but the
+      actual filename is "my note.md" or "MY NOTE.md". On macOS (default
+      case-insensitive HFS+/APFS), this works fine — Obsidian resolves the
+      link regardless of case. However, if the vault is synced to a Linux
+      server, CI pipeline, or case-sensitive filesystem, the links break.
+      Git on macOS may also silently handle case changes incorrectly.
+    why: |
+      macOS filesystems are case-insensitive by default (though case-preserving).
+      This means "Note.md", "note.md", and "NOTE.md" all refer to the same
+      file. Linux filesystems (ext4, btrfs) are case-sensitive, so these
+      would be three different files. When a vault crosses filesystem
+      boundaries (Git push to Linux server, Docker container, GitHub Actions,
+      or sync to Android), case mismatches become broken links. Git compounds
+      this by sometimes failing to detect case-only renames on macOS.
+    solution: |
+      1. Establish a naming convention and stick to it:
+         - Recommended: Title Case for note names (matches Obsidian default)
+         - Example: "Project Planning.md" not "project planning.md"
+
+      2. When creating wiki-links programmatically:
+         - Read the actual filename from disk
+         - Use the exact case as it appears in the filesystem
+         - Do not assume or normalize case
+
+      3. When renaming files:
+         - On macOS, use a two-step rename to change case:
+           mv "note.md" "note_tmp.md" && mv "note_tmp.md" "Note.md"
+         - Direct case-only renames may not be detected by Git
+
+      4. Audit existing links:
+         - Compare [[link targets]] against actual filenames
+         - Flag any case mismatches for correction
+    symptoms:
+      - "Broken links appear on Linux/Android but work on macOS"
+      - "Git shows no changes after renaming file case on macOS"
+      - "Obsidian mobile app cannot find linked notes"
+      - "CI/CD pipeline reports missing files that exist locally"
+    detection_pattern: '\[\[.*[A-Z].*\]\]'
+
+  - id: advanced-uri-plugin-missing
+    summary: Advanced URI commands fail silently when plugin is not installed
+    severity: medium
+    situation: |
+      Scripts or automations use the obsidian://advanced-uri? scheme to
+      perform operations like writing to specific headings, appending to
+      daily notes, or opening notes with specific view modes. The Advanced
+      URI plugin is NOT installed in this vault. These URIs are silently
+      ignored by Obsidian — no error, no notification, just nothing happens.
+    why: |
+      The obsidian://advanced-uri? scheme is registered by the Advanced URI
+      community plugin, not by Obsidian core. Without the plugin installed
+      and enabled, Obsidian does not recognize this URI scheme and silently
+      drops the request. This is distinct from the built-in obsidian://open
+      and obsidian://new schemes which work without any plugins. Since the
+      plugin is not installed in this vault (check community-plugins.json),
+      any automation relying on it will silently fail.
+    solution: |
+      1. Before using advanced-uri, check if plugin is installed:
+         - Read .obsidian/community-plugins.json
+         - Look for "obsidian-advanced-uri" in the array
+         - If absent, do not use obsidian://advanced-uri? URIs
+
+      2. Use built-in URI schemes instead:
+         - obsidian://open?vault=Agentic&file=path/to/note
+         - obsidian://new?vault=Agentic&file=path/to/note&content=text
+         - These work without any plugins
+
+      3. For operations that Advanced URI would provide:
+         - Writing to specific heading: Use direct file editing (read file,
+           find heading, insert content, write back)
+         - Appending to daily note: Use direct file append
+         - Opening with specific view: Not possible without plugin
+
+      4. Since Claude Code runs INSIDE the vault:
+         - Direct file operations are faster and more reliable than any URI
+         - Use Read/Write/Edit tools instead of URI schemes
+         - URIs are only needed to trigger Obsidian UI actions (open, focus)
+    symptoms:
+      - "obsidian://advanced-uri command has no effect"
+      - "Automation runs without errors but Obsidian does nothing"
+      - "Script works on one vault but not this one"
+    detection_pattern: 'advanced-uri|obsidian://advanced'
+
+  - id: dataview-not-installed
+    summary: Dataview queries render as raw code blocks without the plugin
+    severity: medium
+    situation: |
+      Notes contain Dataview query blocks (```dataview, ```dataviewjs, or
+      inline `= expressions`) intended to display dynamic tables, lists, or
+      computed values. The Dataview plugin is NOT installed in this vault.
+      Users see the raw query syntax instead of results. Notes that rely on
+      Dataview for navigation, project tracking, or dashboards are unusable.
+    why: |
+      Dataview is a community plugin that registers custom code block
+      processors. Without it, Obsidian treats ```dataview blocks as
+      regular fenced code blocks and renders them as-is. This is by design —
+      Obsidian does not process unknown code block languages. Since Dataview
+      is not installed in this vault, any queries written by Claude will
+      appear as inert code blocks. However, Dataview-compatible frontmatter
+      (dates, tags, status fields) is still valuable as structured metadata
+      even without the plugin.
+    solution: |
+      1. Do NOT write Dataview queries in notes for this vault
+         - They will render as raw code, confusing the user
+         - No dynamic tables, lists, or computed values
+
+      2. DO write Dataview-compatible frontmatter (future-proofing):
+         - Use standard YAML keys: created, modified, status, tags, type
+         - If user installs Dataview later, metadata is ready to query
+         - This costs nothing and adds structured data
+
+      3. For dynamic content, use static alternatives:
+         - Manual tables in markdown instead of Dataview TABLE queries
+         - Explicit lists of links instead of Dataview LIST queries
+         - MOC (Map of Content) notes with curated links
+
+      4. If the user asks for "Dataview-like" functionality:
+         - Explain that Dataview is not installed
+         - Offer to create static equivalents
+         - Offer to help install Dataview if they want dynamic queries
+         - Use Claude Code search (Grep/Glob) as a runtime alternative
+    symptoms:
+      - "```dataview block visible in reading view as code"
+      - "Inline `= this.field` showing as literal text"
+      - "Dashboard note shows query syntax instead of results"
+      - "MOC note is not updating automatically"
+    detection_pattern: '```dataview|```dataviewjs|`= this\.'
+
+  - id: path-with-special-chars
+    summary: Special characters in filenames break CLI tools and wiki-links
+    severity: medium
+    situation: |
+      Note filenames or folder names contain special characters that have
+      meaning in shells, URLs, or Obsidian's wiki-link syntax. Characters
+      like |, #, ^, [, ], ?, *, <, >, ", and : cause different problems
+      depending on context: shell commands fail to parse, wiki-links break
+      (# is heading anchor, | is alias, ^ is block reference), and URI
+      encoding becomes complex.
+    why: |
+      Different systems interpret special characters differently:
+      - Shell: |, <, >, *, ?, [, ] are glob/pipe/redirect operators
+      - Obsidian wiki-links: | is alias separator, # is heading link,
+        ^ is block reference — these cannot appear in note names
+      - URLs/URIs: #, ?, &, = are reserved URI characters
+      - Git: Some characters cause cross-platform issues
+      - macOS: : is technically allowed but displayed as / in Finder
+
+      A filename like "Q&A: What is [[AI]]?" would break in every single
+      one of these contexts simultaneously.
+    solution: |
+      1. Safe characters for filenames:
+         - Letters (a-z, A-Z), numbers (0-9)
+         - Spaces (handled well by Obsidian, quote in shell)
+         - Hyphens (-) and underscores (_)
+         - Periods (.) except leading dots
+
+      2. Characters to NEVER use in filenames:
+         - | (pipe — wiki-link alias separator)
+         - # (hash — heading anchor in links)
+         - ^ (caret — block reference in links)
+         - [ ] (brackets — link syntax)
+         - : (colon — invalid on Windows, URI reserved)
+         - ? * < > " (OS-restricted or glob characters)
+         - / \ (path separators)
+
+      3. When creating notes programmatically:
+         - Sanitize the filename before creating:
+           filename = title.replace(/[|#^[\]:?*<>"\\\/]/g, '-')
+         - Preserve spaces (Obsidian handles them fine)
+         - Warn user if the desired title needed sanitization
+
+      4. When referencing files in shell commands:
+         - Always quote paths: "00 Inbox/My Note.md"
+         - Use -- to stop option parsing if filename starts with -
+    symptoms:
+      - "Shell command fails with 'unexpected token' or 'ambiguous redirect'"
+      - "Wiki-link resolves to wrong note or shows as unlinked"
+      - "File cannot be found by Obsidian search"
+      - "Git operations fail on files with special characters"
+      - "Note cannot be synced to Windows or Android devices"
+    detection_pattern: '[|#^[\]:?*<>"\\].*\.md'
+
+  - id: cli-requires-obsidian-running
+    summary: Obsidian CLI commands fail silently when Obsidian app is not running
+    severity: high
+    situation: |
+      You execute an Obsidian CLI command like
+      /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+      and the command hangs indefinitely or returns no output. No error message
+      is produced. The agent waits for a response that never comes, wasting time
+      and blocking the workflow.
+    why: |
+      The Obsidian CLI binary IS the Obsidian application binary. CLI commands
+      work by communicating with an already-running Obsidian instance via IPC
+      (inter-process communication). If Obsidian is not running, there is no
+      process to receive or respond to the CLI command. The binary may attempt
+      to start Obsidian in GUI mode instead of returning an error, or it may
+      simply hang waiting for an IPC connection that will never be established.
+    solution: |
+      Always check that Obsidian is running before issuing CLI commands:
+
+      Pre-check:
+        pgrep -x Obsidian > /dev/null && echo "running" || echo "not running"
+
+      If not running, either:
+        1. Start Obsidian: open /Applications/Obsidian.app
+           Wait 2-3 seconds for vault to load, then retry
+        2. Fall back to direct file operations:
+           - Search: use Grep tool (slower but works offline)
+           - Orphans: use Glob + Grep pipeline (much slower, ~15.6s vs 0.26s)
+           - Tags: parse frontmatter with Grep
+           - Backlinks: grep for [[note name]] patterns
+
+      Recommended pattern:
+        if pgrep -x Obsidian > /dev/null; then
+          /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+        else
+          echo "Obsidian not running — falling back to file ops"
+          # fallback grep-based orphan detection
+        fi
+    symptoms:
+      - "CLI command hangs with no output"
+      - "Command does not return within 5 seconds"
+      - "Obsidian launches in GUI mode unexpectedly"
+      - "Timeout waiting for CLI response"
+    detection_pattern: 'Obsidian.*vault=|obsidian.*search|obsidian.*orphans|obsidian.*backlinks'
+
+  - id: cli-vault-parameter-first
+    summary: vault= parameter placed after command causes wrong vault targeting
+    severity: medium
+    situation: |
+      You execute a CLI command with vault= placed after the command keyword:
+      /Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault=Agentic
+      The command either targets the default vault instead of Agentic, returns
+      results from the wrong vault, or fails to find notes that clearly exist.
+    why: |
+      The Obsidian CLI parser treats the first positional parameter as the vault
+      selector. The vault= parameter must appear immediately after the binary
+      path, before any command keywords. When vault= appears later in the
+      argument list, the parser may interpret it as a command option rather
+      than a vault selector, causing the command to target the default vault
+      or the first vault in alphabetical order.
+    solution: |
+      Always structure CLI commands with vault= as the first parameter:
+
+      Correct:
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="test"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
+
+      Wrong:
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian search vault=Agentic query="test"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian orphans vault=Agentic
+
+      Recommended: Set a shell alias to avoid mistakes:
+        alias obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic'
+        obs orphans
+        obs search query="test"
+    symptoms:
+      - "Results from wrong vault or empty results"
+      - "Notes not found that clearly exist in the vault"
+      - "Tag or property counts do not match expected vault"
+      - "Different results than direct file ops on the same vault"
+    detection_pattern: 'Obsidian\s+(?:search|orphans|deadends|tags|properties|backlinks|links|file|tasks|plugins|create|daily|template)\s.*vault='
+
+  - id: cli-scope-without-all-flag
+    summary: Vault-wide queries return empty without the 'all' flag
+    severity: medium
+    situation: |
+      You run a CLI command like tasks, tags, or properties without the 'all'
+      flag, expecting vault-wide results. The command returns empty output or
+      an error because it expects a file= or path= parameter to scope the
+      query to a specific note or folder.
+    why: |
+      The CLI's tasks, tags, and properties commands operate in two modes:
+      file-scoped (when file= or path= is provided) and vault-wide (when
+      'all' is specified). Without either a file target or the 'all' flag,
+      the command has no scope and returns nothing. This is a deliberate
+      design choice to avoid accidentally running expensive vault-wide
+      queries when only a single file's data is needed.
+    solution: |
+      For vault-wide queries, always include the 'all' flag:
+
+      Correct (vault-wide):
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all
+
+      Correct (file-scoped):
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks file="01 Projects/MyProject.md"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags path="03 Resources/"
+
+      Wrong (no scope — returns empty):
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties
+    symptoms:
+      - "Empty output from tasks/tags/properties command"
+      - "No results when vault clearly has matching content"
+      - "Command succeeds but returns nothing"
+    detection_pattern: 'vault=.*\b(tasks|tags|properties)\s*$'
+
+config:
+  always_run:
+    - frontmatter-corruption
+    - mcp-api-key-exposure
+    - concurrent-file-access
+    - cli-requires-obsidian-running
+  pre_operation:
+    - all
+  exclude_patterns:
+    - ".obsidian/**"
+    - ".git/**"
+    - ".trash/**"
+    - "node_modules/**"

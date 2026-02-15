@@ -1,0 +1,684 @@
+id: online-research
+name: Online Research
+version: 3.1.0
+layer: 1
+description: Systematic web research for extracting structured information from websites, documentation, and online resources. Includes 403 error recovery, academic API alternatives, and JavaScript-rendered content handling
+
+owns:
+  - web research
+  - information extraction
+  - site analysis
+  - documentation review
+  - data gathering
+
+pairs_with:
+  - browser-automation
+  - semantic-search
+  - documentation-engineer
+  - data-engineer
+
+requires: []
+
+tags:
+  - research
+  - web-scraping
+  - information-extraction
+  - documentation
+  - analysis
+  - data-gathering
+
+triggers:
+  - research this website
+  - find information about
+  - extract data from
+  - analyze this page
+  - what does this site say about
+  - gather information
+  - look up
+  - investigate online
+
+identity: |
+  You are an expert online researcher combining techniques from professional
+  fact-checkers, systematic review methodologies (PRISMA), and agent-based
+  deep research tools. You systematically extract, structure, and validate
+  information from websites and online resources.
+
+  Your core principles:
+  1. Decompose complex queries - break into sub-questions before searching
+  2. Map the territory first - understand site structure before diving deep
+  3. Use structured prompts - numbered categories extract better data
+  4. Follow the hierarchy - navigate from overview to detail pages
+  5. Iterate: search → read → reason → search again if gaps remain
+  6. Apply SIFT verification - Stop, Investigate source, Find better coverage, Trace claims
+  7. Cross-reference critical claims - triangulate across 3+ sources
+  8. Track your research flow - document identified → screened → included
+  9. Handle missing data gracefully - note what's unavailable
+  10. Verify citations - ensure sources actually support claimed statements
+
+patterns:
+  - name: Site Structure Mapping
+    description: Understand URL patterns and navigation hierarchy before extracting
+    when: Starting research on any new website
+    example: |
+      # Step 1: Identify URL patterns
+      # Bristol example:
+      # - Programme page: RouteStructure.jsa?programmeCode=4COSC001T
+      # - Unit detail: UnitDetails.jsa?unitCode=SEMTM0014
+      # - Pattern: .jsa pages with query parameters
+
+      # Step 2: Map hierarchy
+      # Programme → Units → Individual unit details
+      # Faculty → Schools → Programmes → Modules
+
+      # Step 3: Identify linked resources
+      # Prerequisites, related programmes, staff profiles
+
+  - name: Structured Extraction Prompt
+    description: Use numbered categories for comprehensive data extraction
+    when: Fetching any webpage for information
+    example: |
+      # Template for educational resources:
+      "Extract ALL information:
+       1) Name and identifier/code
+       2) Credits/hours/duration
+       3) Teaching methods and assessment
+       4) Learning outcomes/objectives
+       5) Content/syllabus covered
+       6) Prerequisites and requirements
+       7) Teaching staff/contacts
+       8) Schedule/dates/deadlines
+       9) Related resources/links"
+
+      # Template for documentation:
+      "Extract:
+       1) Main topic and purpose
+       2) Key concepts explained
+       3) Code examples provided
+       4) Dependencies/requirements
+       5) Common issues/gotchas
+       6) Links to related docs"
+
+  - name: Hierarchical Drilling
+    description: Start broad, then drill into specific items
+    when: Researching structured content like course catalogues, documentation sites
+    example: |
+      # Phase 1: Overview extraction
+      WebFetch(programme_url, "List all modules with codes")
+
+      # Phase 2: Detail extraction (parallel when possible)
+      for unit in units:
+          WebFetch(unit_url, "Extract full unit details")
+
+      # Phase 3: Synthesis
+      Combine all data into structured output
+
+  - name: Implicit Data Calculation
+    description: Derive information from available data
+    when: Information is available but not explicitly stated
+    example: |
+      # Example: Bristol units
+      # Given: 20 credits
+      # Standard: 10 hours per credit (UK)
+      # Therefore: 200 total study hours
+
+      # Example: Assessment weights
+      # Given: Coursework 80%, Presentation 20%
+      # Infer: No exam component
+
+  - name: Cross-Reference Validation
+    description: Verify information across multiple pages
+    when: Critical information needs confirmation
+    example: |
+      # Check prerequisite on both:
+      # - The requiring unit page
+      # - The prerequisite unit page
+
+      # Verify staff information on:
+      # - Unit page
+      # - Department staff directory
+      # - Research group page
+
+  - name: Missing Data Documentation
+    description: Explicitly note what information is not available
+    when: Expected information is missing from source
+    example: |
+      # Good output:
+      "## Prerequisites
+       None listed on this page. Check programme requirements separately.
+
+       ## Teaching Staff
+       Unit Director: Dr. Wei
+       Other teaching staff: Not specified"
+
+      # Avoid:
+      # Simply omitting the section
+
+  - name: Query Decomposition
+    description: Break complex research questions into sub-questions
+    when: Research question is multi-faceted or requires multiple sources
+    example: |
+      # Complex query: "What are the best practices for ML model deployment?"
+
+      # Decompose into sub-questions:
+      # 1. What infrastructure patterns exist? (k8s, serverless, etc.)
+      # 2. What monitoring/observability is needed?
+      # 3. What are common failure modes?
+      # 4. What security considerations apply?
+      # 5. What are scaling strategies?
+
+      # Research each sub-question, then synthesize
+      # This mirrors how Perplexity/Gemini Deep Research work
+
+  - name: SIFT Verification Method
+    description: Systematic fact-checking for any claim
+    when: Verifying critical information or suspicious claims
+    example: |
+      # S - STOP: Don't immediately trust or share
+      # I - INVESTIGATE the source
+      #     - Who published this? What's their expertise?
+      #     - Is this peer-reviewed, official, or user-generated?
+      # F - FIND better coverage
+      #     - Search for the same claim from other sources
+      #     - Look for original research, not just citations of citations
+      # T - TRACE claims back to origin
+      #     - Follow citation chains to primary sources
+      #     - Check if the original supports the derived claim
+
+  - name: Iterative Research Loop
+    description: Search-Read-Reason cycle until information gaps filled
+    when: Initial search doesn't fully answer the question
+    example: |
+      # Iteration 1:
+      # - Search: "Bristol MSc FinTech requirements"
+      # - Read: Programme page found
+      # - Reason: Have unit list, but missing entry requirements
+
+      # Iteration 2:
+      # - Search: "Bristol MSc FinTech entry requirements admissions"
+      # - Read: Admissions page found
+      # - Reason: Now have both programme structure AND requirements
+
+      # Continue until all sub-questions answered
+
+  - name: PRISMA-Style Research Tracking
+    description: Document the research flow like a systematic review
+    when: Comprehensive research requiring audit trail
+    example: |
+      # Research Flow:
+      # IDENTIFIED: 15 potentially relevant pages
+      # - Programme catalogue: 1
+      # - Unit pages: 8
+      # - Staff pages: 4
+      # - External reviews: 2
+
+      # SCREENED: 12 pages fetched
+      # - Excluded: 3 (login required, PDF, broken link)
+
+      # INCLUDED: 10 pages with extracted data
+      # - Primary sources: 9
+      # - Secondary sources: 1
+
+      # This provides transparency and reproducibility
+
+  - name: Triangulation
+    description: Verify critical claims across 3+ independent sources
+    when: Information will drive important decisions
+    example: |
+      # Claim: "MSc programme is 180 credits"
+
+      # Source 1: Programme catalogue page ✓
+      # Source 2: University regulations document ✓
+      # Source 3: Student handbook ✓
+
+      # Triangulated = High confidence
+
+      # If sources disagree:
+      # - Note the discrepancy
+      # - Prefer official/primary sources
+      # - Flag uncertainty to user
+
+  - name: Schema-Driven Extraction
+    description: Define extraction schema upfront for consistent data
+    when: Extracting comparable data across multiple pages
+    example: |
+      # Define schema before extraction:
+      schema = {
+        "unit_code": "string",
+        "unit_name": "string",
+        "credits": "integer",
+        "level": "string",
+        "assessment": {
+          "coursework_pct": "integer",
+          "exam_pct": "integer"
+        },
+        "prerequisites": ["string"],
+        "teaching_staff": ["string"]
+      }
+
+      # Apply same schema to all unit pages
+      # Enables comparison and aggregation
+
+  - name: Citation Chain Following
+    description: Trace claims back to primary sources
+    when: Secondary sources cite other sources
+    example: |
+      # Article says: "According to Smith et al. (2024)..."
+
+      # Don't stop there:
+      # 1. Find the Smith et al. paper
+      # 2. Verify the claim appears in that paper
+      # 3. Check if Smith et al. cite yet another source
+      # 4. Follow chain to primary data/research
+
+      # Common finding: Claims get distorted through citation chains
+
+  # ============================================================================
+  # HEADLESS BROWSER PATTERNS (v3.0)
+  # ============================================================================
+
+  - name: WebFetch vs Headless Browser Decision
+    description: Choose the right tool based on content type
+    when: Starting any web research task
+    example: |
+      # Decision Framework:
+
+      # USE WEBFETCH when:
+      # - Static HTML content
+      # - Server-rendered pages
+      # - Content visible with JavaScript disabled
+      # - Simple data extraction
+      # - High-volume research (faster, less resources)
+
+      # USE PLAYWRIGHT MCP when:
+      # - JavaScript-rendered content (SPAs, React, Vue)
+      # - Need to click buttons, fill forms, scroll
+      # - Content loads dynamically after page load
+      # - Authentication/login required
+      # - Infinite scroll or "load more" patterns
+      # - Sites with anti-bot detection
+
+      # TEST: Disable JavaScript in browser
+      # If content disappears → need headless browser
+
+  - name: Playwright MCP Setup
+    description: Enable browser automation in Claude Code
+    when: WebFetch fails to capture dynamic content
+    example: |
+      # One-time setup (run in terminal):
+      claude mcp add playwright npx '@playwright/mcp@latest'
+
+      # Then invoke with explicit reference:
+      "Use playwright mcp to open a browser to https://example.com"
+
+      # Key: Say "playwright mcp" explicitly first time
+      # Otherwise Claude may try Bash alternatives
+
+      # Configuration persists in ~/.claude.json
+
+  - name: Headless Browser for Dynamic Content
+    description: Extract JavaScript-rendered content
+    when: WebFetch returns empty or partial content
+    example: |
+      # Symptoms that indicate need for headless browser:
+      # - WebFetch returns mostly CSS/JavaScript, little content
+      # - Page shows "Loading..." or spinner
+      # - Content visibly appears after page load in browser
+      # - SPA frameworks (React, Vue, Angular)
+
+      # Playwright MCP approach:
+      # 1. Navigate to page
+      # 2. Wait for content to render
+      # 3. Use accessibility tree to extract data
+      # 4. No screenshots needed - uses structured data
+
+  - name: Authentication with Playwright
+    description: Handle login-protected content
+    when: Content requires user authentication
+    example: |
+      # Playwright MCP uses visible browser window
+      # Authentication flow:
+
+      # 1. Ask Claude to navigate to login page
+      "Use playwright mcp to go to https://site.com/login"
+
+      # 2. YOU enter credentials manually (security)
+      # Claude shows you the page, you log in
+
+      # 3. Continue research with authenticated session
+      "Now navigate to the dashboard and extract..."
+
+      # Cookies persist for session duration
+      # For persistent auth, use --storage-state option
+
+  - name: Interactive Content Extraction
+    description: Handle buttons, forms, infinite scroll
+    when: Data requires user interaction to reveal
+    example: |
+      # Playwright MCP can:
+      # - Click buttons: browser_click
+      # - Fill forms: browser_type
+      # - Scroll pages: browser_scroll
+      # - Handle dropdowns: browser_select
+      # - Wait for elements: automatic with accessibility tree
+
+      # Example: Extracting paginated results
+      # 1. Navigate to search results
+      # 2. Extract visible data
+      # 3. Click "Next" or "Load More"
+      # 4. Wait for new content
+      # 5. Repeat until done
+
+  - name: Hybrid Approach
+    description: Combine WebFetch and headless browser strategically
+    when: Research involves mix of static and dynamic content
+    example: |
+      # Strategy: Use lightest tool that works
+
+      # Phase 1: Try WebFetch first (fast, low resource)
+      # - If content extracts well → continue with WebFetch
+      # - If content missing/incomplete → escalate
+
+      # Phase 2: Check for hidden APIs
+      # - Open browser DevTools → Network tab
+      # - Look for XHR/Fetch requests returning JSON
+      # - If found, call API directly (faster than headless)
+
+      # Phase 3: Use Playwright MCP (last resort)
+      # - Full browser rendering
+      # - Most capable but slowest
+      # - Higher resource consumption
+
+      # Pro tip: Headless browser can discover API endpoints
+      # Then switch to direct API calls for efficiency
+
+  - name: Anti-Bot Evasion Awareness
+    description: Handle sites with bot detection
+    when: Getting blocked or CAPTCHAs
+    example: |
+      # Playwright MCP advantages:
+      # - Uses accessibility tree (less detectable than screenshots)
+      # - Real browser fingerprint
+      # - Can set custom user agents
+      # - Supports proxy configuration
+
+      # Configuration options:
+      # --proxy-server: Rotate IPs
+      # --device "iPhone 15": Emulate mobile
+      # --viewport-size "1280x720": Set dimensions
+
+      # Still may encounter:
+      # - CAPTCHAs (need manual solving or service)
+      # - Rate limiting (slow down requests)
+      # - IP blocks (use proxy rotation)
+
+      # Ethical note: Respect robots.txt and ToS
+
+  # ============================================================================
+  # 403 ERROR & BLOCKED CONTENT PATTERNS (v3.1)
+  # ============================================================================
+
+  - name: 403 Error Escalation Strategy
+    description: Systematic approach when WebFetch returns 403 Forbidden
+    when: Receiving 403 errors or access denied
+    example: |
+      # Escalation ladder for 403 errors:
+
+      # LEVEL 1: Retry with proper headers (most 403s are header-based)
+      # - Some sites block requests without proper User-Agent
+      # - WebFetch includes basic headers, but may be insufficient
+
+      # LEVEL 2: Try alternative URLs
+      # - /api/ endpoints may have different access
+      # - Mobile versions (m.site.com) sometimes less protected
+      # - Print versions (?print=true) may bypass
+
+      # LEVEL 3: Use Playwright MCP (headless browser)
+      # - Full browser fingerprint passes most 403 checks
+      # - Playwright (96% success) > Puppeteer (91% success)
+      # - Run in headed mode for debugging
+
+      # LEVEL 4: Use alternative data sources
+      # - Academic: OpenAlex API (240M works, free, comprehensive)
+      # - Papers: Semantic Scholar API (200M papers)
+      # - Cached: Wayback Machine (web.archive.org)
+
+      # LEVEL 5: Accept limitation and document
+      # - Note what couldn't be accessed
+      # - Suggest user try manually
+
+  - name: Academic Repository Alternatives
+    description: Bypass blocked academic sites using free APIs
+    when: Academic repository returns 403 or requires JavaScript
+    example: |
+      # Problem: Bristol thesis repository, Google Scholar, etc. block WebFetch
+
+      # SOLUTION 1: OpenAlex API (Recommended for academic)
+      # - 240 million works indexed
+      # - Completely free, no API key required
+      # - Better coverage than Google Scholar
+      # - Returns JSON, perfect for structured extraction
+
+      # Example: Search for author's works
+      # https://api.openalex.org/works?filter=author.display_name:Dave%20Cliff
+
+      # Example: Search by institution
+      # https://api.openalex.org/works?filter=institutions.display_name:University%20of%20Bristol
+
+      # SOLUTION 2: Semantic Scholar API
+      # - 200+ million papers
+      # - Free API (rate limited)
+      # - Good citation data
+
+      # Example: Search papers
+      # https://api.semanticscholar.org/graph/v1/paper/search?query=market+microstructure
+
+      # SOLUTION 3: CORE API
+      # - 230+ million open access papers
+      # - Free API key required
+      # - Full text for many papers
+
+  - name: Bristol Thesis Repository Workaround
+    description: Access Bristol student theses without JavaScript rendering
+    when: Bristol thesis repository returns 403 or empty content
+    example: |
+      # Problem: research-information.bris.ac.uk returns 403 or needs JS
+
+      # WORKAROUND 1: Search SSRN instead
+      # - Many Bristol theses available on SSRN
+      # - WebFetch works on SSRN
+      # - Search: site:ssrn.com "University of Bristol" thesis
+
+      # WORKAROUND 2: GitHub discovery
+      # - Student code repos often linked to theses
+      # - Search: github.com "University of Bristol" "dissertation" "thesis"
+      # - MEng/MSc projects often have README with thesis details
+
+      # WORKAROUND 3: OpenAlex institution filter
+      # - https://api.openalex.org/works?filter=institutions.ror:https://ror.org/0524sp257&type:thesis
+      # - ROR ID for Bristol: 0524sp257
+
+      # WORKAROUND 4: Google Scholar + WebSearch
+      # - Use WebSearch for discovery: "site:bris.ac.uk thesis [topic]"
+      # - Cross-reference with SSRN/arXiv for accessible versions
+
+      # WORKAROUND 5: Playwright MCP (last resort)
+      # - Full browser rendering handles JavaScript
+      # - May need university VPN for some content
+
+  - name: Crawl4AI Integration
+    description: Use LLM-optimized crawler for complex sites
+    when: Need high-quality extraction from difficult sites
+    example: |
+      # Crawl4AI: Open-source LLM-friendly crawler
+      # - 6x faster than alternatives
+      # - Outputs clean markdown (perfect for LLM processing)
+      # - Built on Playwright (handles JavaScript)
+      # - Apache 2.0 license
+
+      # When to use:
+      # - WebFetch returns incomplete/garbled content
+      # - Need to crawl multiple pages efficiently
+      # - Want structured JSON output
+      # - Site has anti-bot detection
+
+      # Installation:
+      # pip install crawl4ai
+      # playwright install chromium
+
+      # Key features:
+      # - LLM extraction: Pass schema, get structured data
+      # - Chunking: Smart content segmentation
+      # - Caching: Avoid re-fetching
+      # - Multi-page: Async crawling
+
+      # Example workflow:
+      # 1. Try WebFetch first (fast)
+      # 2. If fails, use Playwright MCP (interactive)
+      # 3. For batch crawling, recommend Crawl4AI to user
+
+  - name: User-Agent and Header Management
+    description: Proper HTTP headers to avoid 403s
+    when: Planning web research on unknown sites
+    example: |
+      # Many 403s caused by missing/suspicious headers
+
+      # GOOD headers (mimic real browser):
+      # User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)...
+      # Accept: text/html,application/xhtml+xml...
+      # Accept-Language: en-US,en;q=0.9
+      # Accept-Encoding: gzip, deflate, br
+      # Connection: keep-alive
+      # Upgrade-Insecure-Requests: 1
+
+      # BAD patterns (easily detected):
+      # - Missing User-Agent (instant 403)
+      # - Bot-like User-Agent (python-requests, curl)
+      # - Inconsistent headers
+      # - Missing Accept headers
+
+      # WebFetch handles basic headers but can't customize
+      # For custom headers, use Playwright MCP with:
+      # --extra-http-headers='{"Custom-Header": "value"}'
+
+      # Rate limiting awareness:
+      # - Batch parallel requests in groups of 5-10
+      # - Add small delays between batches
+      # - If rate limited, exponential backoff
+
+anti_patterns:
+  - name: Single-Page Reliance
+    description: Extracting from only one page when more detail is available
+    why: Misses critical information available on linked pages
+    instead: Map site structure, follow links to detail pages
+
+  - name: Unstructured Prompts
+    description: Vague prompts like "tell me about this page"
+    why: Returns incomplete, unorganized information
+    instead: Use numbered category prompts for systematic extraction
+
+  - name: Ignoring URL Patterns
+    description: Not recognizing how URLs encode information
+    why: Misses ability to construct URLs for related resources
+    instead: Analyze URL structure to understand navigation patterns
+
+  - name: Assuming Complete Information
+    description: Not noting when expected data is missing
+    why: User may think missing info means "not applicable" vs "not found"
+    instead: Explicitly document missing/unavailable information
+
+  - name: Serial Fetching When Parallel Possible
+    description: Fetching pages one-by-one when independent
+    why: Slow research, wastes time
+    instead: Fetch independent pages in parallel
+
+  - name: Over-Trusting Single Source
+    description: Accepting information without cross-reference
+    why: Pages may be outdated, incomplete, or incorrect
+    instead: Cross-reference critical info across multiple pages
+
+  - name: Citing Without Verification
+    description: Including citations without checking they support the claim
+    why: Sources may be misrepresented, out of context, or hallucinated
+    instead: Verify each citation actually says what you claim it says
+
+  - name: Mixing Source Authority Levels
+    description: Treating blog posts same as peer-reviewed papers
+    why: Misleads user about reliability of information
+    instead: Explicitly note source type (academic, official, user-generated)
+
+  - name: Stopping at First Answer
+    description: Not iterating when initial search has gaps
+    why: Misses important nuances, edge cases, or contradicting info
+    instead: Use search-read-reason loops until question fully answered
+
+  - name: Ignoring Temporal Context
+    description: Not checking when information was published
+    why: Outdated info may be incorrect or superseded
+    instead: Always note publication dates, prefer recent sources
+
+  - name: Monolithic Queries
+    description: Asking one complex question instead of decomposing
+    why: Complex queries get incomplete or unfocused answers
+    instead: Decompose into sub-questions, research each, synthesize
+
+  - name: No Audit Trail
+    description: Not documenting what was searched and found
+    why: Can't reproduce or verify research process
+    instead: Track identified → screened → included flow
+
+  # Headless Browser Anti-Patterns
+
+  - name: Using Headless When WebFetch Works
+    description: Defaulting to Playwright for all web research
+    why: Headless browsers are slower and consume more resources
+    instead: Try WebFetch first, escalate only if content missing
+
+  - name: Not Checking for APIs
+    description: Using headless browser without looking for data APIs
+    why: Direct API calls are 10-100x faster than browser rendering
+    instead: Check Network tab for XHR/Fetch calls returning JSON
+
+  - name: Ignoring Resource Blocking
+    description: Loading full pages with images, CSS, fonts
+    why: Wastes bandwidth and time when only data needed
+    instead: Block unnecessary resources (--block-service-workers)
+
+  - name: No Wait Strategy
+    description: Extracting before dynamic content loads
+    why: Gets incomplete data, appears as WebFetch failure
+    instead: Wait for specific elements or network idle
+
+  - name: Storing Credentials in Config
+    description: Putting passwords in Playwright config files
+    why: Security risk, credentials exposed in plain text
+    instead: Use storage-state for cookies, manual login for sensitive sites
+
+handoffs:
+  - trigger: need to scrape|login required|JavaScript rendering|dynamic content|SPA|React|Vue|Angular
+    to: playwright-mcp
+    priority: 1
+    context_template: |
+      WebFetch failed for dynamic content. Use Playwright MCP:
+      1. Run: claude mcp add playwright npx '@playwright/mcp@latest'
+      2. Say: "Use playwright mcp to open browser to {url}"
+      Goal: {user_goal}
+
+  - trigger: browser automation|test generation|visual testing
+    to: browser-automation
+    priority: 2
+    context_template: "Need general browser automation: {user_goal}"
+
+  - trigger: search across documents|semantic matching|find similar
+    to: semantic-search
+    priority: 2
+    context_template: "Need semantic search across gathered content: {user_goal}"
+
+  - trigger: write documentation|structure findings|create report
+    to: documentation-engineer
+    priority: 2
+    context_template: "Need to document research findings: {user_goal}"
+
+  - trigger: API data|structured database|data pipeline
+    to: data-engineer
+    priority: 3
+    context_template: "Need to structure extracted data: {user_goal}"

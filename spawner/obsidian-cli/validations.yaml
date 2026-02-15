@@ -1,0 +1,408 @@
+id: obsidian-cli
+version: "1.0.0"
+
+validations:
+  # ── Frontmatter integrity ──────────────────────────────────────────
+  - id: frontmatter-exists
+    name: Frontmatter Present
+    description: >
+      Every note created or modified must have YAML frontmatter delimited
+      by triple-dash lines. Obsidian relies on frontmatter for metadata,
+      search, graph filtering, and plugin interop.
+    check: |
+      1. Read the first line of the file — it must be exactly '---'
+      2. Scan subsequent lines for a closing '---' before any content
+      3. The block between the two delimiters is the frontmatter
+      4. An empty frontmatter block (just two --- lines) passes this check
+         but will likely fail frontmatter-required-fields
+    severity: error
+    fix: |
+      Add a frontmatter block at the very top of the file:
+
+      ---
+      tags: []
+      date: {{current ISO date}}
+      type: note
+      ---
+
+      The block MUST start on line 1. No blank lines before the opening ---.
+
+  - id: frontmatter-valid-yaml
+    name: Valid YAML Frontmatter
+    description: >
+      The content between the --- delimiters must be parseable YAML.
+      Malformed YAML silently breaks Obsidian metadata, Templater
+      processing, and any downstream automation.
+    check: |
+      1. Extract text between opening and closing --- delimiters
+      2. Attempt to parse with a YAML parser
+      3. Result must be a mapping (key-value object), not a scalar or list
+      4. No duplicate keys allowed
+    severity: error
+    fix: |
+      Common issues and resolutions:
+        - Tabs in indentation: replace all tabs with 2 spaces
+        - Unquoted special characters: wrap values containing :, #, {, }, [, ]
+          in double quotes
+        - Duplicate keys: remove or merge duplicates
+        - Missing colon after key: add ': ' between key and value
+        - Trailing whitespace after --- delimiter: remove it
+
+  - id: frontmatter-required-fields
+    name: Required Frontmatter Fields
+    description: >
+      Every note must have at minimum 'tags' and 'date' fields in its
+      frontmatter. These are the baseline for search, filtering, and
+      temporal context across the vault.
+    check: |
+      1. Parse the frontmatter YAML into a mapping
+      2. Verify the key 'tags' exists (value may be [] or a list)
+      3. Verify the key 'date' exists (value should be a date string)
+      4. Both keys must be present — missing either one fails validation
+    severity: warning
+    fix: |
+      Add the missing fields inside the existing frontmatter block:
+
+      ---
+      tags: []
+      date: 2026-02-12
+      ---
+
+      For templates, use Templater syntax:
+        date: <% tp.date.now("YYYY-MM-DD") %>
+
+  - id: frontmatter-no-tabs
+    name: No Tabs in Frontmatter
+    description: >
+      YAML frontmatter must use spaces for indentation, never tabs.
+      Tabs cause silent YAML parse failures in Obsidian and break
+      metadata extraction.
+    check: |
+      1. Extract the frontmatter block (between --- delimiters)
+      2. Scan every line for tab characters (\t)
+      3. Any tab character within the frontmatter block fails this check
+    severity: error
+    fix: |
+      Replace all tab characters with 2 spaces in the frontmatter section.
+      Most editors can do this automatically:
+        - VS Code: "Convert Indentation to Spaces"
+        - CLI: expand -t 2 filename.md
+
+  # ── Tags and metadata ──────────────────────────────────────────────
+  - id: tags-format
+    name: Tags Format
+    description: >
+      Tags must be lowercase, hyphen-separated, and start with a letter
+      or digit. Consistent tag formatting prevents duplicates like
+      "my-tag" vs "My Tag" vs "myTag" cluttering the tag pane.
+    check: |
+      1. Read the 'tags' field from frontmatter (supports YAML list or
+         comma-separated string)
+      2. Also scan body for inline #tags
+      3. Every tag must match: ^[a-z0-9][a-z0-9-/]*$
+      4. Nested tags use / separator: "project/active"
+      5. No trailing hyphens or double hyphens allowed
+    severity: warning
+    fix: |
+      Convert tags to lowercase-hyphen format:
+        "My Tag"     -> "my-tag"
+        "camelCase"  -> "camel-case"
+        "UPPER_CASE" -> "upper-case"
+        "my  tag"    -> "my-tag"
+      Nested tags: "Project/Active" -> "project/active"
+
+  - id: date-format-iso
+    name: ISO Date Format
+    description: >
+      All date values in frontmatter must use ISO 8601 format (YYYY-MM-DD).
+      Consistent date formatting enables sorting, filtering, and calendar
+      plugin integration.
+    check: |
+      1. Read the 'date' field from frontmatter
+      2. Value must match pattern: ^\d{4}-\d{2}-\d{2}$
+      3. Also validate it is a real date (no 2024-13-45)
+      4. Check any other date-like fields: created, modified, due
+    severity: warning
+    fix: |
+      Convert dates to ISO format:
+        "Jan 15, 2024"  -> "2024-01-15"
+        "15/01/2024"    -> "2024-01-15"
+        "1-15-24"       -> "2024-01-15"
+      In templates use: <% tp.date.now("YYYY-MM-DD") %>
+
+  # ── File and folder structure ──────────────────────────────────────
+  - id: para-folder-structure
+    name: PARA Folder Placement
+    description: >
+      Notes must be placed in a valid PARA folder, never in the vault
+      root. The PARA structure keeps the vault navigable and ensures
+      every note has an organizational context.
+    check: |
+      1. Get the file's path relative to the vault root
+      2. The first path component must be one of the PARA prefixes:
+         - 00 Inbox
+         - 01 Projects
+         - 02 Areas
+         - 03 Resources
+         - 09 Systems
+         - 10 School
+         - 99 Archive
+      3. Files directly in the vault root fail this check
+      4. Exception: vault-level config files (.obsidian/, .gitignore, etc.)
+    severity: warning
+    fix: |
+      Move the note to the appropriate PARA folder:
+        - 00 Inbox     -> unsorted, needs processing
+        - 01 Projects   -> active projects with deadlines
+        - 02 Areas      -> ongoing responsibilities (career, health, finance)
+        - 03 Resources  -> reference material, topics of interest
+        - 09 Systems    -> templates, scripts, automation configs
+        - 10 School     -> academic coursework and study materials
+        - 99 Archive    -> completed or inactive items
+
+      When unsure, place in 00 Inbox for later triage.
+
+  - id: filename-safe-chars
+    name: Safe Filename Characters
+    description: >
+      Filenames must only contain alphanumeric characters, spaces,
+      hyphens, and underscores. Special characters break wiki-links,
+      cause sync issues, and create problems across operating systems.
+    check: |
+      1. Extract the filename (without path, without .md extension)
+      2. Must match: ^[a-zA-Z0-9][a-zA-Z0-9 _-]*$
+      3. Reject: |, #, ^, [, ], {, }, ?, *, <, >, \, /, :
+      4. No leading or trailing spaces
+      5. No double spaces
+    severity: warning
+    fix: |
+      Rename the file removing or replacing special characters:
+        "My Note #1"       -> "My Note 1"
+        "Meeting [draft]"  -> "Meeting draft"
+        "Q&A Session"      -> "Q and A Session"
+        "file/name"        -> "file-name"
+      Use mv or Obsidian's rename to preserve backlinks.
+
+  - id: no-duplicate-notes
+    name: No Duplicate Note Names
+    description: >
+      The vault must not contain two notes with the same filename.
+      Obsidian uses filenames as unique identifiers for wiki-links.
+      Duplicates cause ambiguous link resolution and confusion.
+    check: |
+      1. Before creating a new note, search the entire vault for files
+         with the same name (case-insensitive)
+      2. Check all PARA folders, not just the target folder
+      3. Include archived notes in the check
+      4. Both exact matches and near-matches (differing only in case)
+         should be flagged
+    severity: error
+    fix: |
+      If a duplicate exists:
+        - Append a disambiguating suffix: "Meeting Notes - 2026-02-12"
+        - Use a more specific name: "Weekly Review - Q1 2026"
+        - If the existing note is outdated, archive it first to 99 Archive
+      Never silently overwrite an existing note.
+
+  # ── Links and references ───────────────────────────────────────────
+  - id: wiki-links-valid
+    name: Wiki-Links Resolve
+    description: >
+      All [[wiki-links]] in a note should resolve to existing files in
+      the vault. Broken links create dead ends in the knowledge graph
+      and indicate missing context.
+    check: |
+      1. Extract all [[...]] patterns from the note body
+      2. Handle aliases: [[target|display text]] -> check 'target'
+      3. Handle headings: [[target#heading]] -> check 'target' exists
+      4. For each target, search vault for a matching .md file
+      5. Links to files in 09 Systems/Templates/ are always valid
+    severity: warning
+    fix: |
+      For each broken link:
+        - If the target note should exist, create it in 00 Inbox with
+          basic frontmatter for later processing
+        - If it is a typo, correct the link text to match the actual filename
+        - Use Obsidian's built-in "Show unresolved links" to review all
+          broken references at once
+
+  - id: template-variables-resolved
+    name: Template Variables Resolved
+    description: >
+      Notes outside 09 Systems/Templates/ must not contain unresolved
+      Templater variables. Unresolved placeholders indicate the template
+      was not properly processed before saving.
+    check: |
+      1. Skip files inside 09 Systems/Templates/ (they are templates)
+      2. Scan note content for Templater patterns:
+         - <% ... %>
+         - tp.date, tp.file, tp.system, tp.frontmatter
+         - {{title}}, {{date}} (legacy template syntax)
+      3. Any match outside of a code block (``` fenced) is a failure
+    severity: error
+    fix: |
+      Either:
+        - Run the Templater plugin on the note to resolve variables
+        - Manually replace each variable with its intended value:
+            <% tp.date.now("YYYY-MM-DD") %>  ->  2026-02-12
+            <% tp.file.title %>               ->  actual filename
+        - If the note was meant to be a template, move it to
+          09 Systems/Templates/
+
+  # ── Plugin safety ──────────────────────────────────────────────────
+  - id: plugin-check-before-use
+    name: Plugin Availability Check
+    description: >
+      Before generating content that depends on a community plugin,
+      verify the plugin is actually installed by reading
+      .obsidian/community-plugins.json. Using features from uninstalled
+      plugins produces broken output.
+    check: |
+      1. Read .obsidian/community-plugins.json from the vault root
+      2. Parse it as a JSON array of plugin ID strings
+      3. Currently installed: terminal, calendar, templater-obsidian
+      4. NOT installed (must not rely on):
+         - dataview (no dataview queries or DQL)
+         - obsidian-advanced-uri (no advanced:// URIs)
+         - obsidian-local-rest-api (no REST API calls)
+         - quickadd (no QuickAdd macros)
+         - obsidian-shellcommands (no shell command triggers)
+      5. Before using any plugin feature, confirm its ID appears in the list
+    severity: error
+    fix: |
+      If a plugin is not installed, use a plain-Markdown fallback:
+        - Dataview query  -> manual list of [[links]]
+        - Advanced URI    -> standard obsidian://open?vault=...&file=...
+        - REST API        -> direct file system operations
+        - QuickAdd        -> Templater template + CLI file creation
+      Always document which plugins the generated content requires.
+
+  # ── Security and git hygiene ───────────────────────────────────────
+  - id: no-api-keys-in-files
+    name: No API Keys in Tracked Files
+    description: >
+      API keys, tokens, passwords, and other secrets must never appear
+      in git-tracked vault files. Even if the repo is private, secrets
+      in version history are a persistent risk.
+    check: |
+      1. Scan file content for common secret patterns:
+         - api_key, apiKey, api-key followed by = or :
+         - OBSIDIAN_REST_API_KEY or similar env var assignments
+         - Authorization: Bearer <token>
+         - Strings matching key formats: sk-, pk_, ghp_, xoxb-
+         - Base64-encoded blocks longer than 40 characters after a key field
+      2. Check frontmatter values as well as body content
+      3. Ignore patterns inside code blocks that are clearly examples
+         (containing placeholder text like YOUR_KEY_HERE)
+    severity: error
+    fix: |
+      1. Remove the secret from the file immediately
+      2. Store secrets in a .env file at the vault root
+      3. Ensure .gitignore contains:
+           .env
+           .env.*
+      4. Reference secrets via environment variables in scripts
+      5. If the secret was already committed, rotate the key and
+         consider using git-filter-repo to scrub history
+
+  - id: gitignore-workspace
+    name: Gitignore Workspace Files
+    description: >
+      Obsidian workspace files contain local UI state (open panes,
+      scroll positions) that cause constant merge conflicts and pollute
+      commit history. They must be excluded from git tracking.
+    check: |
+      1. Verify .gitignore exists at the vault root
+      2. .gitignore must contain entries for:
+         - .obsidian/workspace.json
+         - .obsidian/workspace-mobile.json
+      3. Also recommended to ignore:
+         - .obsidian/cache
+         - .trash/
+    severity: warning
+    fix: |
+      Add to .gitignore at the vault root:
+
+      # Obsidian workspace (local UI state)
+      .obsidian/workspace.json
+      .obsidian/workspace-mobile.json
+      .obsidian/cache
+      .trash/
+
+      If these files are already tracked, untrack them:
+        git rm --cached .obsidian/workspace.json
+        git rm --cached .obsidian/workspace-mobile.json
+
+  # ── URI encoding ───────────────────────────────────────────────────
+  - id: obsidian-uri-encoded
+    name: URI Components Encoded
+    description: >
+      All parameters in obsidian:// URIs must be properly percent-encoded.
+      Raw spaces, ampersands, and other special characters break URI
+      parsing and cause "note not found" errors.
+    check: |
+      1. Extract all obsidian:// URIs from the note or generated output
+      2. Parse each URI and inspect parameter values
+      3. Values must not contain raw: spaces, &, =, #, ?, [, ], %
+         (unless already properly percent-encoded)
+      4. The vault name and file path parameters are the most common
+         offenders — e.g. "Agentic Obsidian Vault" must be encoded
+      5. Verify the overall URI structure:
+         obsidian://open?vault=<encoded>&file=<encoded>
+    severity: warning
+    fix: |
+      Encode all parameter values using percent-encoding:
+        Space  -> %20
+        &      -> %26
+        =      -> %3D
+        #      -> %23
+        /      -> %2F  (within parameter values, not path separators)
+
+      Example:
+        Bad:  obsidian://open?vault=My Vault&file=My Note
+        Good: obsidian://open?vault=My%20Vault&file=My%20Note
+
+      In shell scripts use: python3 -c "import urllib.parse; print(urllib.parse.quote('...'))"
+
+  # ── CLI availability ─────────────────────────────────────────────
+  - id: cli-available
+    name: Obsidian CLI Available
+    description: >
+      Before using Obsidian CLI v1.12 commands (search, orphans, backlinks,
+      tags, properties, etc.), verify that Obsidian is running and the CLI
+      responds. CLI commands communicate with the running Obsidian instance
+      via IPC — if Obsidian is not running, commands will hang or fail
+      silently.
+    check: |
+      1. Verify Obsidian process is running: pgrep -x Obsidian
+         - If empty, Obsidian is not running — CLI unavailable
+      2. Test CLI responsiveness with a fast command:
+         /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic version
+         - Expected: version string like "1.12.1" within 2 seconds
+         - If no response in 3 seconds, CLI is not functional
+      3. Verify vault targeting:
+         - vault=Agentic must be the first parameter after binary path
+         - Wrong parameter order causes wrong vault targeting
+      4. If either check fails, all CLI commands are unavailable
+      5. Fall back to direct file operations (Tier 1) for all vault work
+    severity: warning
+    fix: |
+      If Obsidian is not running:
+        1. Start Obsidian: open /Applications/Obsidian.app
+        2. Wait 2-3 seconds for vault to load
+        3. Retry the version check
+
+      If Obsidian is running but CLI does not respond:
+        1. Verify Obsidian version is 1.12+ (CLI was added in v1.12)
+        2. Verify vault name: vault=Agentic (case-sensitive, must match)
+        3. Ensure vault=Agentic is the FIRST parameter after binary path
+        4. Try restarting Obsidian
+
+      Fallback operations when CLI is unavailable:
+        - Search: use Grep tool (slower, ~1.6s vs 0.32s)
+        - Orphans: Glob all files + Grep for [[links]] (much slower, ~15.6s vs 0.26s)
+        - Tags: Grep frontmatter tags fields across all .md files
+        - Backlinks: Grep for [[note name]] patterns (misses aliases)
+        - Properties: Grep frontmatter across all .md files
+        - Dead-ends: Read all files and check for outgoing links
+        - Unresolved: Compare [[links]] against existing filenames via Glob

@@ -1,0 +1,324 @@
+id: ssrn-pdf-reader
+name: SSRN PDF to Markdown Reader
+version: "1.0.0"
+category: pattern
+layer: 2
+
+description: |
+  Fetches PDF documents from SSRN (Social Science Research Network) and converts them
+  to markdown using Mathpix API. Handles SSRN's Cloudflare protection using exported
+  browser cookies. Works with SSRN abstract IDs.
+
+triggers:
+  - fetch ssrn pdf
+  - convert ssrn paper
+  - read ssrn paper
+  - ssrn to markdown
+  - download ssrn
+  - ssrn abstract
+
+owns:
+  - ssrn pdf extraction
+  - ssrn paper fetching
+  - ssrn to markdown conversion
+  - working paper preprocessing
+
+tags:
+  - pdf
+  - ssrn
+  - academic
+  - research
+  - markdown
+  - mathpix
+  - conversion
+  - papers
+  - working-papers
+  - finance
+
+instructions: |
+  ## SSRN PDF to Markdown Reader
+
+  You fetch and convert SSRN working papers to markdown format using Mathpix API.
+  SSRN uses Cloudflare protection, so you need browser cookies for authenticated access.
+
+  ### Prerequisites
+
+  1. **Mathpix API credentials** in `.env` file at repository root:
+     ```
+     MATHPIX_APP_ID=your_app_id_here
+     MATHPIX_APP_KEY=your_app_key_here
+     ```
+
+  2. **SSRN cookies** exported from browser in Netscape format:
+     - File: `ssrn-cookies.txt` in repository root
+     - Export using browser extension (e.g., "Get cookies.txt LOCALLY")
+     - Must be logged into SSRN when exporting
+     - Cookies expire - re-export if downloads fail
+
+  3. **Tools required:**
+     - curl for API requests
+     - jq for JSON parsing (brew install jq)
+
+  ### Output Location
+
+  Save converted papers to: `Papers/<Paper-Title>/`
+  ```
+  Papers/
+  └── <Paper Title>/
+      ├── <Paper-Title>.md
+      └── <Paper-Title>.pdf
+  ```
+
+  ### SSRN URL Patterns
+
+  **Abstract page:**
+  `https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4502819`
+
+  **PDF download URL:**
+  `https://papers.ssrn.com/sol3/Delivery.cfm/XXXXXXX.pdf?abstractid=XXXXXXX`
+
+  Where XXXXXXX is the abstract ID (e.g., 4502819).
+
+  ### Core Workflow
+
+  **Step 1: Load environment and set variables**
+  ```bash
+  cd "/path/to/vault/10 School/Dissertation Research"
+  source .env
+  COOKIE_FILE="ssrn-cookies.txt"
+  SSRN_ID="4502819"  # Replace with actual ID
+  ```
+
+  **Step 2: Download PDF from SSRN with full browser headers**
+
+  CRITICAL: SSRN uses Cloudflare. You MUST include:
+  - Cookies via `-b`
+  - Full browser headers including Sec-Fetch-* headers
+  - Referer header pointing to abstract page
+  - --compressed flag
+
+  ```bash
+  PDF_URL="https://papers.ssrn.com/sol3/Delivery.cfm/${SSRN_ID}.pdf?abstractid=${SSRN_ID}"
+  REFERER="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=${SSRN_ID}"
+
+  curl -s -L -b "$COOKIE_FILE" \
+    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+    -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8" \
+    -H "Accept-Language: en-US,en;q=0.9" \
+    -H "Accept-Encoding: gzip, deflate, br" \
+    -H "Connection: keep-alive" \
+    -H "Upgrade-Insecure-Requests: 1" \
+    -H "Sec-Fetch-Dest: document" \
+    -H "Sec-Fetch-Mode: navigate" \
+    -H "Sec-Fetch-Site: none" \
+    -H "Sec-Fetch-User: ?1" \
+    -H "Referer: $REFERER" \
+    "$PDF_URL" \
+    --compressed \
+    -o "temp_ssrn.pdf"
+  ```
+
+  **Step 3: Verify PDF downloaded correctly**
+  ```bash
+  # Check if it's a valid PDF (not HTML error page)
+  file temp_ssrn.pdf | grep -q "PDF document" || echo "ERROR: Not a valid PDF"
+  ```
+
+  If you get HTML instead of PDF:
+  - Cookies may have expired - ask user to re-export
+  - Paper may be paywalled or restricted
+  - Try accessing abstract page first to refresh session
+
+  **Step 4: Submit to Mathpix API (local file)**
+  ```bash
+  PDF_ID=$(curl -s -X POST https://api.mathpix.com/v3/pdf \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" \
+    --form "file=@temp_ssrn.pdf" | jq -r '.pdf_id')
+
+  echo "PDF ID: $PDF_ID"
+  ```
+
+  **Step 5: Poll for completion**
+  ```bash
+  while true; do
+    STATUS=$(curl -s -X GET "https://api.mathpix.com/v3/pdf/$PDF_ID" \
+      -H "app_id: $MATHPIX_APP_ID" \
+      -H "app_key: $MATHPIX_APP_KEY" | jq -r '.status')
+
+    echo "Status: $STATUS"
+
+    if [ "$STATUS" = "completed" ]; then
+      break
+    elif [ "$STATUS" = "error" ]; then
+      echo "Error processing PDF"
+      exit 1
+    fi
+
+    sleep 5
+  done
+  ```
+
+  **Step 6: Download markdown**
+  ```bash
+  curl -s -X GET "https://api.mathpix.com/v3/pdf/${PDF_ID}.mmd" \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" > temp_output.mmd
+  ```
+
+  **Step 7: Extract title and organize**
+
+  Parse the first heading from the markdown to get the title.
+
+  Sanitize title for folder name:
+  - Remove special characters: / \ : * ? " < > |
+  - Replace spaces with hyphens
+  - Truncate to 100 characters
+  - Convert to lowercase
+
+  **Step 8: Create folder and save files**
+  ```bash
+  PAPER_DIR="Papers/$SANITIZED_TITLE"
+  mkdir -p "$PAPER_DIR"
+
+  # Move PDF
+  mv temp_ssrn.pdf "$PAPER_DIR/$SANITIZED_TITLE.pdf"
+  ```
+
+  **Step 9: Add frontmatter and save markdown**
+
+  ```markdown
+  ---
+  title: "${TITLE}"
+  source: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=${SSRN_ID}
+  ssrn_id: ${SSRN_ID}
+  author: [Author Name]
+  type: working-paper
+  date: YYYY-MM-DD
+  tags:
+    - ssrn
+    - working-paper
+    - [topic-tags]
+  ---
+
+  [Mathpix markdown content]
+  ```
+
+  Save to: `$PAPER_DIR/$SANITIZED_TITLE.md`
+
+  **Step 10: Cleanup and report**
+  ```bash
+  rm -f temp_output.mmd
+  echo "✓ Converted SSRN:${SSRN_ID} to Papers/$SANITIZED_TITLE/"
+  ```
+
+  ### Full Example: Download SSRN Paper 4502819
+
+  ```bash
+  cd "/path/to/vault/10 School/Dissertation Research"
+  source .env
+  COOKIE_FILE="ssrn-cookies.txt"
+  SSRN_ID="4502819"
+
+  # Download PDF
+  curl -s -L -b "$COOKIE_FILE" \
+    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
+    -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    -H "Accept-Language: en-US,en;q=0.9" \
+    -H "Accept-Encoding: gzip, deflate, br" \
+    -H "Sec-Fetch-Dest: document" \
+    -H "Sec-Fetch-Mode: navigate" \
+    -H "Sec-Fetch-Site: none" \
+    -H "Referer: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=${SSRN_ID}" \
+    "https://papers.ssrn.com/sol3/Delivery.cfm/${SSRN_ID}.pdf?abstractid=${SSRN_ID}" \
+    --compressed -o temp_ssrn.pdf
+
+  # Verify it's a PDF
+  file temp_ssrn.pdf
+
+  # Submit to Mathpix
+  PDF_ID=$(curl -s -X POST https://api.mathpix.com/v3/pdf \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" \
+    --form "file=@temp_ssrn.pdf" | jq -r '.pdf_id')
+
+  # Wait for completion
+  sleep 20
+
+  # Check status
+  curl -s "https://api.mathpix.com/v3/pdf/$PDF_ID" \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" | jq '.status'
+
+  # Download markdown when completed
+  curl -s "https://api.mathpix.com/v3/pdf/${PDF_ID}.mmd" \
+    -H "app_id: $MATHPIX_APP_ID" \
+    -H "app_key: $MATHPIX_APP_KEY" > paper.mmd
+  ```
+
+  ### Error Handling
+
+  - **HTML instead of PDF**: Cookies expired or Cloudflare challenge failed
+    - Ask user to re-export cookies from browser while logged into SSRN
+    - Try with fresh session
+
+  - **401 Unauthorized (Mathpix)**: Check API credentials in .env
+
+  - **Paper not found**: Verify SSRN abstract ID is correct
+
+  - **Processing failed**: Some PDFs may be scanned images or corrupted
+
+  - **Rate limiting**: SSRN may throttle requests - add delays between papers
+
+  ### Cookie Expiration
+
+  SSRN cookies typically expire after:
+  - Session cookies: When browser closes
+  - SSRN_TOKEN: ~24 hours
+  - __cf_bm (Cloudflare): ~30 minutes
+
+  If downloads start failing, ask user to:
+  1. Log into SSRN in browser
+  2. Re-export cookies
+  3. Replace ssrn-cookies.txt
+
+  ### Batch Processing
+
+  For multiple papers, process sequentially with delays:
+  ```bash
+  SSRN_IDS=(4502819 4480814 4691617)
+
+  for ID in "${SSRN_IDS[@]}"; do
+    echo "Processing SSRN:$ID..."
+    # [download and convert steps]
+    sleep 10  # Delay between papers
+  done
+  ```
+
+  ### Known SSRN Papers (Dave Cliff)
+
+  | SSRN ID | Title |
+  |---------|-------|
+  | 4502819 | FBA: Frequent Batch Auction Trading |
+  | 4480814 | Co-Evolution Causes Instability |
+  | 4691617 | XGBoost Dynamic Wager Placement |
+  | 3823317 | PRZI Traders |
+  | 3823356 | Market Impact MLOFI |
+  | 3823350 | Narrative Economics Platform |
+  | 4316574 | Narrative Economics + Opinion Dynamics |
+  | 4012561 | Narrative Economics of the Racetrack |
+  | 3845698 | BBE Microstructural Dynamics |
+  | 3881795 | BBE Implementation |
+
+prerequisites:
+  - Mathpix API credentials (app_id and app_key) in .env
+  - SSRN cookies in Netscape format (ssrn-cookies.txt)
+  - curl for API requests
+  - jq for JSON parsing (brew install jq)
+  - Active SSRN account (for cookie export)
+
+pairs_with:
+  - arxiv-pdf-reader
+  - mathpix-pdf-converter
+  - media-transcript
+  - lecture-notes-sync

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "integer",
+      "description": "The agent number (1-based)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial", "failed"],
+      "description": "Final execution status"
+    },
+    "files_created": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Absolute paths of newly created files"
+    },
+    "files_modified": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Absolute paths of modified existing files"
+    },
+    "files_deleted": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Absolute paths of deleted files"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-paragraph description of what was built or changed"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Assumptions made during implementation"
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Known limitations or TODOs"
+    },
+    "tests_run": {
+      "type": "boolean",
+      "description": "Whether the agent ran any tests"
+    },
+    "tests_passed": {
+      "type": "boolean",
+      "description": "Whether all tests passed (null if no tests run)"
+    }
+  },
+  "required": ["agent_id", "status", "files_created", "files_modified", "files_deleted", "summary", "assumptions", "limitations", "tests_run", "tests_passed"],
+  "additionalProperties": false
+}

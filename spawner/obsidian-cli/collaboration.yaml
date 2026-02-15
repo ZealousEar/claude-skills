@@ -1,0 +1,408 @@
+# ============================================================================
+# OBSIDIAN-CLI COLLABORATION
+# How obsidian-cli works with other skills in the ecosystem
+# ============================================================================
+
+id: obsidian-cli-collaboration
+skill: obsidian-cli
+version: 1.0.0
+
+# ============================================================================
+# PREREQUISITES — Foundational knowledge and skills required
+# ============================================================================
+
+prerequisites:
+  foundational_knowledge:
+    - "Markdown syntax — headings, links, lists, code blocks, emphasis"
+    - "YAML — key-value pairs, lists, nested structures, indentation rules"
+    - "Git basics — init, add, commit, push, pull, .gitignore, log, diff"
+    - "PARA method — Projects, Areas, Resources, Archive organizational framework"
+    - "File system operations — paths, directories, permissions, glob patterns"
+    - "URI encoding — percent-encoding, reserved characters, scheme structure"
+
+  required_skills:
+    - skill: file-operations
+      why: "Core of all vault interactions — reading, writing, editing, searching files"
+    - skill: yaml-parsing
+      why: "Frontmatter management requires safe YAML read/write without corruption"
+    - skill: git-version-control
+      why: "Vault backup, history, sync, and recovery depend on git fluency"
+
+  recommended_skills:
+    - skill: obsidian-notes-validator
+      why: "Quality assurance for created notes — validation runs after every creation"
+    - skill: markdown-formatting
+      why: "Notes must follow Obsidian-flavored markdown conventions"
+
+# ============================================================================
+# ECOSYSTEM — Tools, alternatives, and technology landscape
+# ============================================================================
+
+ecosystem:
+  primary_tools:
+    - name: "Claude Code Read/Write/Edit/Glob/Grep"
+      role: "Primary vault interaction — direct filesystem CRUD operations"
+      status: "always available"
+    - name: "Obsidian CLI v1.12"
+      role: "Discovery and graph intelligence — indexed search, orphan detection, backlinks, tags, properties, plugin management"
+      status: "available when Obsidian 1.12+ is running"
+      binary: "/Applications/Obsidian.app/Contents/MacOS/Obsidian"
+      invocation: "vault=Agentic must be first parameter after binary"
+    - name: "obsidian:// URI scheme"
+      role: "Obsidian UI control — open notes, trigger searches"
+      status: "available when Obsidian is running"
+    - name: "Templater plugin"
+      role: "Template variable processing — installed in vault"
+      status: "installed"
+    - name: "git"
+      role: "Vault version control, backup, and sync"
+      status: "available on system"
+
+  optional_tools:
+    - name: "Obsidian Local REST API plugin"
+      role: "HTTP API for structured JSON vault operations"
+      status: "not installed — use direct file ops instead"
+      install: "obsidian://show-plugin?id=obsidian-local-rest-api"
+    - name: "Dataview plugin"
+      role: "SQL-like queries over vault metadata and content"
+      status: "not installed — use Grep-based queries and static tables"
+      install: "obsidian://show-plugin?id=dataview"
+    - name: "Advanced URI plugin"
+      role: "Enhanced URI scheme with heading-level control"
+      status: "not installed — use basic obsidian:// URIs"
+      install: "obsidian://show-plugin?id=obsidian-advanced-uri"
+    - name: "QuickAdd plugin"
+      role: "Macro-based capture and template workflows"
+      status: "not installed — use Templater + direct file ops"
+      install: "obsidian://show-plugin?id=quickadd"
+
+  alternatives:
+    - name: "Yakitrak obsidian-cli (Go)"
+      role: "External CLI for vault operations"
+      when: "Batch processing from outside the vault process"
+      url: "https://github.com/yakitrak/obsidian-cli"
+    - name: "davidpp obsidian-cli (AI-optimized)"
+      role: "CLI with JSON output designed for AI agents"
+      when: "External AI tool needing structured vault access"
+    - name: "MCP servers (obsidian-claude-code-mcp, mcp-obsidian)"
+      role: "Model Context Protocol bridge for AI agent integration"
+      when: "Cross-tool orchestration where multiple AI systems need vault access"
+    - name: "obsidiantools (Python)"
+      role: "Vault analysis library — note parsing, graph metrics"
+      when: "Deep vault analytics and knowledge graph analysis"
+
+  deprecated:
+    - name: "obsidian-cli (early Node.js versions)"
+      reason: "Superseded by Go-based Yakitrak CLI and direct file operations"
+    - name: "Manual curl-based REST API scripts"
+      reason: "Direct file ops from Claude Code terminal are simpler and faster"
+    - name: "Shell Commands plugin for automation"
+      reason: "Claude Code in Terminal plugin provides superior automation capabilities"
+
+# ============================================================================
+# RECEIVES FROM — Skills that delegate work TO obsidian-cli
+# ============================================================================
+
+receives_from:
+
+  - skill: obsidian-notes-validator
+    context: "Validation found issues that need fixing in the vault"
+    receives:
+      - "Validation results with specific issues per file"
+      - "Notes needing frontmatter corrections"
+      - "Files with broken links or missing metadata"
+      - "Batch fix instructions for systematic problems"
+    provides:
+      - "Fixed notes with corrected frontmatter"
+      - "Repaired links and updated metadata"
+      - "Notes placed in correct PARA folders"
+      - "Summary of all changes made"
+
+  - skill: lecture-notes-sync
+    context: "Extracted lecture content needs to become properly formatted vault notes"
+    receives:
+      - "Structured lecture content with headings and sections"
+      - "Slide data with extracted text and image references"
+      - "Course metadata: title, instructor, date, topic"
+      - "Target location hints within 10 School/ hierarchy"
+    provides:
+      - "Formatted notes in 10 School/ with proper frontmatter"
+      - "Linked note series for multi-lecture courses"
+      - "Index notes connecting lecture sequences"
+      - "Tags and aliases applied per course conventions"
+
+  - skill: media-transcript
+    context: "Transcribed media content needs to become structured vault notes"
+    receives:
+      - "Transcript text with speaker identification"
+      - "Timestamps for key segments and topics"
+      - "Media metadata: source, duration, participants"
+      - "Suggested tags and categorization"
+    provides:
+      - "Notes with frontmatter in appropriate PARA folder"
+      - "Timestamped sections for easy reference"
+      - "Links to related existing vault notes"
+      - "Summary note with key takeaways"
+
+  - skill: data/graph-engineer
+    context: "Graph analysis requires vault structural data"
+    receives:
+      - "Analysis requests specifying what vault data is needed"
+      - "Query parameters: folder scope, date range, tag filters"
+      - "Specific link-pattern questions"
+    provides:
+      - "Vault file listings with metadata"
+      - "Frontmatter data extracted across files"
+      - "Link maps showing connections between notes"
+      - "Folder structure with file counts and dates"
+
+# ============================================================================
+# DELEGATION TRIGGERS — When obsidian-cli hands off to other skills
+# ============================================================================
+
+delegation_triggers:
+
+  - trigger: "validate|check|verify|lint"
+    delegate_to: obsidian-notes-validator
+    pattern: sequential
+    context: "After creating or editing notes, validate them for correctness"
+    handoff_data:
+      - "File paths of created or modified notes"
+      - "Note content for frontmatter validation"
+      - "Expected PARA category for location check"
+      - "Template name used, if any"
+    receive:
+      - "Validation results per file"
+      - "List of issues found with severity"
+      - "Suggested fixes for each issue"
+
+  - trigger: "graph|network|connections|orphan|cluster"
+    delegate_to: data/graph-engineer
+    pattern: parallel
+    context: "Vault structure or link network analysis needed"
+    handoff_data:
+      - "Link data extracted from vault files"
+      - "File structure with folder hierarchy"
+      - "Tag co-occurrence data"
+      - "Frontmatter relationship fields"
+    receive:
+      - "Graph analysis with clusters and centrality"
+      - "Orphan note identification"
+      - "Connection strength metrics"
+      - "Visualization data or recommendations"
+
+  - trigger: "transcript|audio|video|podcast|recording"
+    delegate_to: media-transcript
+    pattern: sequential
+    context: "Media content needs transcription before becoming notes"
+    handoff_data:
+      - "Media file paths or URLs"
+      - "Target vault location for resulting notes"
+      - "Desired note format and frontmatter template"
+    receive:
+      - "Transcribed text with timestamps"
+      - "Speaker identification where available"
+      - "Metadata extracted from media"
+
+  - trigger: "lecture|slides|course|syllabus|academic"
+    delegate_to: lecture-notes-sync
+    pattern: sequential
+    context: "Academic content needs structured extraction"
+    handoff_data:
+      - "Source material paths: PDFs, slides, recordings"
+      - "Course context: name, code, semester"
+      - "Existing notes in the course folder for linking"
+    receive:
+      - "Structured lecture content with clear sections"
+      - "Key concepts and definitions extracted"
+      - "References and citations formatted"
+
+  - trigger: "plugin|develop|extension|customize"
+    delegate_to: development/backend
+    pattern: parallel
+    context: "Obsidian plugin development or customization needed"
+    handoff_data:
+      - "Plugin requirements and desired functionality"
+      - "Obsidian API needs and manifest details"
+      - "Existing plugin list for compatibility checks"
+      - "Vault path for testing context"
+    receive:
+      - "Plugin source code"
+      - "Installation and configuration instructions"
+      - "Compatibility notes with existing plugins"
+
+# ============================================================================
+# FEEDBACK LOOPS — Continuous improvement signals between skills
+# ============================================================================
+
+feedback_loops:
+
+  receives_feedback_from:
+
+    - skill: obsidian-notes-validator
+      signal: "Validation failures on created notes"
+      action: |
+        Fix frontmatter formatting issues immediately.
+        Update internal templates if the same error recurs.
+        Adjust default frontmatter fields to match validation rules.
+        Track recurring issues to prevent them at creation time.
+
+    - skill: lecture-notes-sync
+      signal: "Content placement feedback — notes landed in wrong folder"
+      action: |
+        Adjust folder targeting logic for academic content.
+        Update 10 School/ subfolder resolution heuristics.
+        Refine course-to-folder mapping rules.
+
+    - skill: media-transcript
+      signal: "Transcription quality or formatting issues"
+      action: |
+        Adjust note formatting for transcript-based content.
+        Modify timestamp rendering for readability.
+        Update frontmatter templates for media-sourced notes.
+
+  sends_feedback_to:
+
+    - skill: obsidian-notes-validator
+      signal: "Note creation patterns and new templates"
+      action: |
+        Inform validator of new frontmatter fields being used.
+        Share template updates so validation rules stay current.
+        Report folder structure changes affecting path validation.
+
+    - skill: data/graph-engineer
+      signal: "Vault structure changes — new files, moved files, deleted links"
+      action: |
+        Notify of bulk file operations that change graph topology.
+        Share new linking patterns introduced.
+        Report folder reorganizations affecting path-based analysis.
+
+    - skill: lecture-notes-sync
+      signal: "Template availability and vault conventions"
+      action: |
+        Share updated templates for lecture note formatting.
+        Report changes to 10 School/ folder organization.
+        Provide feedback on which content structures work best.
+
+# ============================================================================
+# CROSS-DOMAIN INSIGHTS — Wisdom borrowed from other disciplines
+# ============================================================================
+
+cross_domain_insights:
+
+  - domain: Library Science
+    insight: |
+      Librarians have spent centuries perfecting information organization.
+      The principles translate directly to vault management:
+
+      - Frontmatter IS your card catalog — consistent fields, controlled
+        values, and predictable structure make every note findable.
+      - PARA IS your classification system — just as Dewey Decimal gives
+        every book a home, PARA gives every note a purpose-driven location.
+        Projects are active work, Areas are ongoing responsibilities,
+        Resources are reference material, Archives are completed work.
+      - Tags ARE your subject headings — use a controlled vocabulary rather
+        than inventing new tags freely. A tag explosion is like a library
+        where every book has its own unique category.
+      - Links ARE your cross-references — "see also" cards in the catalog
+        are exactly what [[wikilinks]] provide. The graph view is your
+        subject relationship map.
+
+      The cardinal rule: a note without metadata is a book without a
+      catalog entry — it exists but cannot be found.
+    applies_when: "Organizing notes, designing folder structures, planning metadata schemas"
+
+  - domain: DevOps Pipeline
+    insight: |
+      CI/CD pipelines process code through deterministic stages with
+      quality gates at each transition. Note creation follows the same
+      pipeline pattern:
+
+      1. CAPTURE — Raw input arrives (transcript, lecture, idea).
+         Quality gate: Is the source material complete?
+      2. PROCESS — Content is structured, formatted, enriched.
+         Quality gate: Does it follow the template? Is frontmatter valid?
+      3. ORGANIZE — Note is placed in the correct PARA folder.
+         Quality gate: Does the location match the note's purpose?
+      4. LINK — Connections are made to existing notes.
+         Quality gate: Are links valid? Are bidirectional links needed?
+      5. VALIDATE — The note passes all validation checks.
+         Quality gate: Frontmatter complete, links resolve, tags exist.
+
+      Failed quality gates should not block the pipeline entirely — notes
+      should be created with issues flagged, not lost because validation
+      failed. Fix forward, never discard content.
+    applies_when: "Creating notes from external sources, batch processing, automated workflows"
+
+# ============================================================================
+# COMMON COMBINATIONS — Frequently used multi-skill workflows
+# ============================================================================
+
+common_combinations:
+
+  - name: Note Creation Pipeline
+    skills:
+      - obsidian-cli
+      - obsidian-notes-validator
+    workflow: |
+      1. obsidian-cli creates or edits notes with proper frontmatter
+      2. obsidian-notes-validator checks all created/modified files
+      3. obsidian-cli fixes any issues found by validator
+      4. Final validation confirms all notes pass checks
+    use_case: "Standard note creation with quality assurance"
+    frequency: "Every note creation session"
+
+  - name: Lecture Processing
+    skills:
+      - lecture-notes-sync
+      - obsidian-cli
+      - obsidian-notes-validator
+    workflow: |
+      1. lecture-notes-sync extracts content from slides, PDFs, recordings
+      2. obsidian-cli creates formatted notes in 10 School/ hierarchy
+      3. obsidian-cli adds frontmatter, tags, and links to related notes
+      4. obsidian-notes-validator verifies all notes meet standards
+      5. obsidian-cli fixes any validation issues
+    use_case: "Converting academic materials into linked vault notes"
+    frequency: "Per lecture or study session"
+
+  - name: Media to Knowledge
+    skills:
+      - media-transcript
+      - obsidian-cli
+      - data/graph-engineer
+    workflow: |
+      1. media-transcript processes audio/video into text
+      2. obsidian-cli creates notes with timestamps and metadata
+      3. obsidian-cli links new notes to related existing content
+      4. data/graph-engineer analyzes how new notes fit the knowledge graph
+      5. obsidian-cli adds any recommended cross-links from analysis
+    use_case: "Turning podcasts, videos, and recordings into connected knowledge"
+    frequency: "Per media item processed"
+
+  - name: Vault Health Check
+    skills:
+      - obsidian-cli
+      - obsidian-notes-validator
+    workflow: |
+      1. obsidian-cli scans vault for structural overview
+      2. obsidian-notes-validator runs full validation across all notes
+      3. obsidian-cli categorizes issues by severity and type
+      4. obsidian-cli batch-fixes systematic issues (missing fields, broken links)
+      5. obsidian-notes-validator re-validates fixed files
+      6. obsidian-cli generates health report summary
+    use_case: "Periodic vault maintenance and cleanup"
+    frequency: "Weekly or after major reorganization"
+
+  - name: Knowledge Graph Enrichment
+    skills:
+      - obsidian-cli
+      - data/graph-engineer
+    workflow: |
+      1. obsidian-cli extracts link data and vault structure
+      2. data/graph-engineer identifies orphan notes and weak clusters
+      3. obsidian-cli creates MOC (Map of Content) notes for isolated clusters
+      4. obsidian-cli adds links to connect orphan notes
+      5. data/graph-engineer verifies improved graph connectivity
+    use_case: "Strengthening connections between notes and reducing orphans"
+    frequency: "Monthly or when vault feels fragmented"

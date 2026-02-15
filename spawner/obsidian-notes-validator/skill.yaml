@@ -1,0 +1,140 @@
+id: obsidian-notes-validator
+name: Obsidian Notes Validator
+version: "1.0.0"
+category: pattern
+layer: 3
+
+description: |
+  Validates Obsidian markdown notes for common issues before finalizing.
+  Checks Mermaid diagrams, TikZ blocks, frontmatter, wiki-links, and formatting.
+  Run as final step after creating/editing notes.
+
+triggers:
+  - validate notes
+  - check obsidian
+  - fix mermaid
+  - validate diagrams
+  - final check
+
+owns:
+  - mermaid validation
+  - tikz validation
+  - obsidian formatting
+  - wiki-link checking
+
+tags:
+  - obsidian
+  - validation
+  - mermaid
+  - tikz
+  - quality
+
+instructions: |
+  ## Obsidian Notes Validator
+
+  Run this as the **final step** after creating or editing Obsidian notes.
+
+  ### Validation Checklist
+
+  1. **Frontmatter**
+     - [ ] Has YAML frontmatter (--- delimiters)
+     - [ ] Contains required fields: tags, date, source
+     - [ ] Tags are lowercase with hyphens (not spaces)
+
+  2. **Mermaid Diagrams**
+     - [ ] No `<br/>` tags (use `<br>` or newlines in subgraphs)
+     - [ ] No numbered lists in labels: `[1. Item]` → `[Item]`
+     - [ ] Valid link syntax (not `---|----|`)
+     - [ ] No unsupported diagram types (timeline, mindmap may not work)
+     - [ ] Subgraph labels don't have special characters
+
+  3. **TikZ Diagrams**
+     - [ ] No `arrows.meta` library
+     - [ ] No `external` library
+     - [ ] No `tikzmark` library
+     - [ ] Uses `-latex` or `->` for arrows (not `-Stealth`)
+
+  4. **Wiki-Links**
+     - [ ] All `[[Note Name]]` links point to existing notes
+     - [ ] No broken links to non-existent files
+
+  5. **LaTeX Math**
+     - [ ] Inline math uses `$...$`
+     - [ ] Display math uses `$$...$$`
+     - [ ] No unescaped underscores in math mode
+
+  6. **Charts Plugin**
+     - [ ] Valid YAML inside chart blocks
+     - [ ] Required fields: type, labels, series
+
+  ### Common Mermaid Fixes
+
+  ```markdown
+  # BAD - Link with empty text
+  A ---|----| B
+
+  # GOOD - Simple link
+  A ---- B
+
+  # GOOD - Link with text
+  A ---|text|--- B
+
+  # BAD - br tag
+  A[Line 1<br/>Line 2]
+
+  # GOOD - Just remove multiline or use subgraph
+  A[Line 1 Line 2]
+
+  # BAD - Numbered list
+  A[1. First item]
+
+  # GOOD - No numbers
+  A[First item]
+
+  # BAD - Unsupported diagram type
+  timeline
+      2020 : Event
+
+  # GOOD - Use table instead
+  | Year | Event |
+  |------|-------|
+  | 2020 | Event |
+  ```
+
+  ### Validation Command
+
+  Run grep to find potential issues:
+
+  ```bash
+  # Find Mermaid blocks
+  grep -n "^\`\`\`mermaid" *.md
+
+  # Find potentially broken link syntax
+  grep -n "---\|" *.md
+
+  # Find br tags in labels
+  grep -n "<br/>" *.md
+
+  # Find timeline diagrams (may not work)
+  grep -n "^timeline$" *.md
+
+  # Find TikZ with problematic libraries
+  grep -n "arrows.meta\|\\\\usetikzlibrary{external}" *.md
+  ```
+
+  ### Auto-Fix Script
+
+  ```bash
+  # Replace <br/> with space in Mermaid labels
+  sed -i '' 's/<br\/>/ /g' file.md
+
+  # Note: Most fixes require manual review
+  ```
+
+prerequisites:
+  - Notes created following CLAUDE.md conventions
+  - Obsidian with Mermaid support
+
+pairs_with:
+  - lecture-notes-sync
+  - media-transcript

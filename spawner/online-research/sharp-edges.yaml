@@ -1,0 +1,683 @@
+id: online-research
+name: Online Research Sharp Edges
+
+edges:
+  - name: URL Encoding Issues
+    severity: medium
+    description: URLs with special characters fail if not properly encoded
+    symptoms:
+      - "WebFetch returns error or wrong page"
+      - "Parameters lost in URL"
+      - "Redirect to homepage"
+    detection_patterns:
+      - "\\?.*%2F"  # Encoded slashes in query params
+      - "\\s"       # Spaces in URLs
+      - "[\\[\\]{}]" # Brackets in URLs
+    solution: |
+      # Ensure URL encoding is correct
+      # Bristol example: ayrCode=25%2F26 (25/26 encoded)
+      # If copying from browser, encoding is usually preserved
+      # If constructing URLs, encode special characters
+    prevention: "Always copy full URL from browser address bar, or use proper URL encoding"
+
+  - name: Session/Authentication Walls
+    severity: high
+    description: Some pages require login or session state to access
+    symptoms:
+      - "WebFetch returns login page"
+      - "Content is truncated or generic"
+      - "Redirected to different page"
+    detection_patterns:
+      - "login|sign.?in|authenticate"
+      - "session.?expired"
+      - "access.?denied"
+    solution: |
+      # WebFetch cannot handle authenticated content
+      # Options:
+      # 1. Use public pages only
+      # 2. Hand off to browser-automation for login
+      # 3. Ask user to provide content directly
+    prevention: "Test URL in incognito window first to verify public access"
+
+  - name: JavaScript-Rendered Content
+    severity: high
+    description: Content loaded via JavaScript won't appear in WebFetch
+    symptoms:
+      - "Page appears mostly empty"
+      - "Missing key content sections"
+      - "Only header/footer visible"
+    detection_patterns:
+      - "Loading\\.\\.\\."
+      - "Please enable JavaScript"
+      - "noscript"
+    solution: |
+      # WebFetch only sees static HTML
+      # Hand off to browser-automation for JS-rendered sites
+      # Or look for API endpoints that return raw data
+    prevention: "Check if site works with JavaScript disabled in browser"
+
+  - name: Rate Limiting and Blocking
+    severity: medium
+    description: Too many rapid requests may get blocked
+    symptoms:
+      - "403 Forbidden errors"
+      - "CAPTCHA pages"
+      - "Temporary blocks"
+    detection_patterns:
+      - "rate.?limit"
+      - "too.?many.?requests"
+      - "blocked|banned"
+    solution: |
+      # Space out requests
+      # If blocked, wait and retry later
+      # Consider if fewer, more targeted fetches would work
+    prevention: "Batch related pages in parallel, but limit total requests per minute"
+
+  - name: Outdated or Cached Content
+    severity: medium
+    description: Fetched content may not be current
+    symptoms:
+      - "Information contradicts other sources"
+      - "Dates don't match expected timeframe"
+      - "Features mentioned don't exist"
+    detection_patterns:
+      - "last.?updated"
+      - "archived"
+      - "2023|2024"  # Old dates
+    solution: |
+      # Check page dates
+      # Cross-reference with official announcements
+      # Note uncertainty in output
+    prevention: "Look for 'last updated' dates, check multiple sources"
+
+  - name: Inconsistent Site Structure
+    severity: low
+    description: Same site may have different URL patterns for different sections
+    symptoms:
+      - "Constructed URLs return 404"
+      - "Some pages follow pattern, others don't"
+    detection_patterns:
+      - "404|not.?found"
+      - "page.?does.?not.?exist"
+    solution: |
+      # Don't assume consistent patterns
+      # Bristol example:
+      # - Programmes: RouteStructure.jsa
+      # - Units: UnitDetails.jsa
+      # - Different patterns for different content types
+    prevention: "Extract actual links from pages rather than constructing URLs"
+
+  - name: Ambiguous Terminology
+    severity: low
+    description: Same terms mean different things on different sites
+    symptoms:
+      - "Extracted data seems inconsistent"
+      - "Categories overlap strangely"
+    detection_patterns:
+      - "credits"  # Could be UK/US/ECTS
+      - "level"    # Could be year/difficulty/qualification
+    solution: |
+      # Bristol-specific:
+      # - Credits: UK system (10 hrs/credit)
+      # - Level 7 = Masters level
+      # - TB-1 = Teaching Block 1 (weeks 1-12)
+
+      # Note the system being used
+    prevention: "Look for glossary/definitions pages, note context in output"
+
+  - name: PDF and Non-HTML Content
+    severity: medium
+    description: WebFetch may not extract well from PDFs, images, or binary files
+    symptoms:
+      - "Garbled output"
+      - "Missing content"
+      - "Binary data returned"
+    detection_patterns:
+      - "\\.pdf$"
+      - "\\.docx?$"
+      - "\\.xlsx?$"
+    solution: |
+      # For PDFs: Note URL, suggest user downloads directly
+      # For structured files: May need specialized tools
+      # WebFetch works best with HTML pages
+    prevention: "Check file extension before fetching, warn user about non-HTML"
+
+  - name: Citation Hallucination
+    severity: critical
+    description: LLM may generate plausible-sounding but non-existent citations
+    symptoms:
+      - "Citation URL returns 404"
+      - "Author names don't match actual paper"
+      - "Paper title doesn't exist in search"
+      - "Year is wrong"
+    detection_patterns:
+      - "et al\\."
+      - "\\(\\d{4}\\)"
+      - "doi:"
+    solution: |
+      # ALWAYS verify citations exist
+      # Search for paper title in Google Scholar
+      # Check author names match
+      # Verify URL actually works
+      # If citation can't be verified, remove it or flag uncertainty
+    prevention: "Never include citations without verification. When in doubt, say 'sources suggest' rather than citing"
+
+  - name: Source Authority Mismatch
+    severity: high
+    description: Non-academic sources cited as if they were peer-reviewed
+    symptoms:
+      - "Blog post cited alongside journal articles"
+      - "LibGuide or tutorial treated as primary research"
+      - "Wikipedia used as authoritative source"
+    detection_patterns:
+      - "medium\\.com"
+      - "wordpress"
+      - "libguide"
+      - "wikipedia"
+      - "blog"
+    solution: |
+      # Clearly distinguish source types:
+      # - Peer-reviewed: journal articles, conference papers
+      # - Official: government, university, organization sites
+      # - Secondary: textbooks, review articles
+      # - Informal: blogs, tutorials, forums
+
+      # Label each source type in output
+    prevention: "Always note source type. Use phrases like 'according to a blog post' vs 'research shows'"
+
+  - name: Paywalled Content Limitations
+    severity: high
+    description: Academic papers behind paywalls can't be accessed
+    symptoms:
+      - "Only abstract available"
+      - "Redirected to purchase page"
+      - "Full text not extracted"
+    detection_patterns:
+      - "subscribe|purchase|buy"
+      - "full.?text.?available"
+      - "institutional.?access"
+    solution: |
+      # Options when hitting paywall:
+      # 1. Use abstract only (note limitation)
+      # 2. Search for open access version (arXiv, preprint servers)
+      # 3. Check if author posted on personal site
+      # 4. Note that full verification wasn't possible
+
+      # Tools like Elicit index 126M papers but same limitation applies
+    prevention: "Check for open access versions first. Note when only abstract was available"
+
+  - name: Citation Chain Distortion
+    severity: medium
+    description: Claims get distorted through multiple citations
+    symptoms:
+      - "Original source doesn't quite say what secondary claims"
+      - "Nuance lost in summarization"
+      - "Conditional findings stated as absolute"
+    detection_patterns:
+      - "according to"
+      - "studies show"
+      - "research indicates"
+    solution: |
+      # Follow citation chains to primary sources
+      # Example distortion:
+      # - Original: "In our sample of 50 students, X increased by 10%"
+      # - Citation 1: "Research shows X increases by 10%"
+      # - Citation 2: "X always increases significantly"
+
+      # Verify claims against original wording
+    prevention: "When possible, cite primary sources directly. Note when using secondary sources"
+
+  - name: Temporal Validity
+    severity: medium
+    description: Information may be outdated even if page looks current
+    symptoms:
+      - "Dates in content don't match page date"
+      - "Statistics are from years ago"
+      - "Technology/methods described are deprecated"
+    detection_patterns:
+      - "as of \\d{4}"
+      - "last updated"
+      - "current as of"
+    solution: |
+      # Check for:
+      # - Page last modified date
+      # - Dates mentioned in content
+      # - Whether information could have changed
+
+      # Fast-moving fields (AI, tech) may be outdated within months
+    prevention: "Always note when information was published. Prefer sources from last 1-2 years for rapidly evolving topics"
+
+  - name: Search Result Bias
+    severity: medium
+    description: Search engines may not surface all relevant sources
+    symptoms:
+      - "Important papers missing from results"
+      - "Only finding sources that agree"
+      - "Non-English sources excluded"
+    detection_patterns:
+      - "no results found"
+      - "did you mean"
+    solution: |
+      # Mitigate search bias:
+      # 1. Use multiple search strategies (different keywords)
+      # 2. Check specialized databases (not just general web)
+      # 3. Look for systematic reviews that may cite sources you missed
+      # 4. Search for contradicting viewpoints explicitly
+    prevention: "Use multiple search queries. Explicitly search for opposing viewpoints"
+
+  - name: LLM Confident Wrongness
+    severity: high
+    description: LLM presents uncertain or wrong info with high confidence
+    symptoms:
+      - "Specific numbers that can't be verified"
+      - "Definitive statements about uncertain topics"
+      - "No hedging language"
+    detection_patterns:
+      - "definitely|certainly|always|never"
+      - "\\d+%"  # Specific percentages
+      - "every|all|none"
+    solution: |
+      # Be skeptical of:
+      # - Specific statistics without clear source
+      # - Absolute statements
+      # - Confident answers to ambiguous questions
+
+      # Verify all specific claims independently
+    prevention: "When extracting, always ask 'can this be verified?' Add appropriate uncertainty language"
+
+  # ============================================================================
+  # HEADLESS BROWSER SHARP EDGES (v3.0)
+  # ============================================================================
+
+  - name: Playwright MCP Not Installed
+    severity: high
+    description: Trying to use Playwright without setting up MCP
+    symptoms:
+      - "Claude tries to run Bash playwright commands"
+      - "No browser window opens"
+      - "Errors about playwright not found"
+    detection_patterns:
+      - "npx playwright"
+      - "playwright test"
+      - "chromium.*not found"
+    solution: |
+      # Install Playwright MCP first:
+      claude mcp add playwright npx '@playwright/mcp@latest'
+
+      # Then explicitly invoke:
+      "Use playwright mcp to open browser to URL"
+
+      # Key: Say "playwright mcp" explicitly
+    prevention: "Check MCP is installed with 'claude mcp list' before using"
+
+  - name: Headless Mode Confusion
+    severity: medium
+    description: Expecting visible browser when running headless
+    symptoms:
+      - "Can't see what Claude is doing"
+      - "Can't manually log in"
+      - "Debugging difficult"
+    detection_patterns:
+      - "headless"
+      - "no browser window"
+    solution: |
+      # Playwright MCP runs HEADED by default (visible)
+      # This is intentional for:
+      # - Manual authentication
+      # - Debugging
+      # - Seeing Claude's actions
+
+      # For headless (invisible), add --headless flag
+      # But then you can't manually authenticate
+    prevention: "Use headed mode (default) for interactive research; headless only for fully automated tasks"
+
+  - name: Dynamic Content Timing
+    severity: high
+    description: Extracting before JavaScript finishes rendering
+    symptoms:
+      - "Content appears in browser but not in extraction"
+      - "Partial data returned"
+      - "Elements missing"
+    detection_patterns:
+      - "loading"
+      - "spinner"
+      - "skeleton"
+    solution: |
+      # Playwright MCP uses accessibility tree which waits for content
+      # But some sites have delayed loading
+
+      # For slow-loading content:
+      # 1. Navigate to page
+      # 2. Wait explicitly: "wait for the table to appear"
+      # 3. Then extract
+
+      # Check network activity stopped before extracting
+    prevention: "Always verify content visible in browser before asking to extract"
+
+  - name: Resource Consumption
+    severity: medium
+    description: Headless browsers consume significant memory/CPU
+    symptoms:
+      - "System slowdown"
+      - "Browser crashes"
+      - "Timeouts on complex pages"
+    detection_patterns:
+      - "timeout"
+      - "out of memory"
+      - "crashed"
+    solution: |
+      # Mitigations:
+      # 1. Close browser between sessions
+      # 2. Block unnecessary resources (images, fonts)
+      # 3. Don't open multiple tabs unnecessarily
+      # 4. Use WebFetch when possible (much lighter)
+
+      # For large-scale research, batch and pause between
+    prevention: "Use WebFetch first; only escalate to Playwright when necessary"
+
+  - name: Anti-Bot Detection
+    severity: high
+    description: Sites detecting and blocking automated browsers
+    symptoms:
+      - "CAPTCHA challenges"
+      - "Access denied pages"
+      - "Different content than manual browsing"
+    detection_patterns:
+      - "captcha"
+      - "verify.*human"
+      - "access.?denied"
+      - "blocked"
+    solution: |
+      # Playwright MCP uses real browser (better than pure HTTP)
+      # But still detectable
+
+      # Options:
+      # 1. Use --device to emulate mobile
+      # 2. Add --proxy-server for IP rotation
+      # 3. Slow down interactions (appear human)
+      # 4. Accept that some sites block automation
+
+      # If blocked, may need to:
+      # - Research manually
+      # - Find alternative sources
+      # - Use official APIs
+    prevention: "Respect robots.txt; slow down requests; check ToS before scraping"
+
+  - name: Session/Cookie Persistence
+    severity: medium
+    description: Losing authentication between sessions
+    symptoms:
+      - "Need to log in again each time"
+      - "Session expired errors"
+    detection_patterns:
+      - "session"
+      - "login"
+      - "authenticate"
+    solution: |
+      # Default: cookies persist only during session
+
+      # For persistent auth across sessions:
+      # Use --storage-state=/path/to/auth.json
+
+      # Or use --user-data-dir to keep full profile
+
+      # Security note: auth.json contains cookies
+      # Don't commit to version control
+    prevention: "Use storage-state for persistent auth; protect auth files"
+
+  - name: Cross-Origin Restrictions
+    severity: medium
+    description: Browser security blocking cross-origin requests
+    symptoms:
+      - "CORS errors"
+      - "Content from other domains not loading"
+    detection_patterns:
+      - "CORS"
+      - "cross-origin"
+      - "blocked"
+    solution: |
+      # Playwright MCP configuration:
+      # --allowed-origins to whitelist domains
+      # --blocked-origins to explicitly block
+
+      # Some content genuinely requires multiple origins
+      # May need to navigate to each origin separately
+    prevention: "Configure allowed-origins for known trusted domains"
+
+  # ============================================================================
+  # 403 ERROR & ACCESS BLOCKING SHARP EDGES (v3.1)
+  # ============================================================================
+
+  - name: 403 Forbidden Access
+    severity: high
+    description: Server explicitly denying access to content
+    symptoms:
+      - "WebFetch returns 403 error"
+      - "Access denied message"
+      - "Different content than browser shows"
+    detection_patterns:
+      - "403"
+      - "forbidden"
+      - "access.?denied"
+      - "not.?authorized"
+    solution: |
+      # 403 Escalation Ladder:
+
+      # 1. TRY ALTERNATIVE URLS
+      #    - Mobile site (m.example.com)
+      #    - API endpoint (/api/v1/...)
+      #    - Print version (?print=true)
+      #    - Cached version (webcache.googleusercontent.com)
+
+      # 2. USE PLAYWRIGHT MCP
+      #    - Full browser fingerprint (96% success rate)
+      #    - Command: claude mcp add playwright npx '@playwright/mcp@latest'
+      #    - Invoke: "Use playwright mcp to open browser to URL"
+
+      # 3. CHECK FOR PUBLIC APIS
+      #    - Academic: OpenAlex (openalex.org/api)
+      #    - Papers: Semantic Scholar (api.semanticscholar.org)
+      #    - General: Check site docs for API
+
+      # 4. USE WAYBACK MACHINE
+      #    - https://web.archive.org/web/*/[URL]
+      #    - Historical snapshots may be accessible
+
+      # 5. DOCUMENT LIMITATION
+      #    - Note what couldn't be accessed
+      #    - Suggest user try manually with VPN/auth
+
+    prevention: "Test URLs in incognito first. Have fallback APIs ready for common academic sites."
+
+  - name: Bristol University Site Blocking
+    severity: high
+    description: Bristol University sites block automated access
+    symptoms:
+      - "403 on research-information.bris.ac.uk"
+      - "Bristol thesis repository inaccessible"
+      - "Staff profiles return errors"
+    detection_patterns:
+      - "bris\\.ac\\.uk"
+      - "bristol"
+      - "research.?information"
+    solution: |
+      # Bristol-specific workarounds:
+
+      # THESIS REPOSITORY (research-information.bris.ac.uk):
+      # - Needs JavaScript rendering
+      # - Use Playwright MCP OR
+      # - Use OpenAlex API: filter=institutions.ror:https://ror.org/0524sp257
+      # - Search SSRN for Bristol theses
+      # - Search GitHub for student project repos
+
+      # STAFF PROFILES:
+      # - WebFetch usually works on individual profile pages
+      # - Bulk access may trigger blocks
+      # - Use WebSearch to find profile URLs first
+
+      # COURSE CATALOGUE (usually works):
+      # - RouteStructure.jsa and UnitDetails.jsa usually accessible
+      # - If blocked, may be temporary rate limit
+
+    prevention: "Prefer API alternatives (OpenAlex, SSRN) for Bristol academic content"
+
+  - name: Google Scholar Blocking
+    severity: high
+    description: Google Scholar blocks most automated access
+    symptoms:
+      - "Returns mostly CSS/JavaScript"
+      - "CAPTCHA pages"
+      - "Empty search results"
+    detection_patterns:
+      - "scholar\\.google"
+      - "captcha"
+      - "unusual.?traffic"
+    solution: |
+      # Google Scholar is heavily protected - use alternatives:
+
+      # BEST: OpenAlex API
+      # - Better coverage than Google Scholar
+      # - Completely free, no rate limits
+      # - Returns structured JSON
+      # - Example: api.openalex.org/works?search=[query]
+
+      # ALTERNATIVE: Semantic Scholar API
+      # - 200M+ papers indexed
+      # - Good citation data
+      # - Rate limited but generous
+
+      # ALTERNATIVE: WebSearch
+      # - Use WebSearch tool for discovery
+      # - Returns snippets with citation counts
+      # - Then access papers via DOI/title search
+
+      # LAST RESORT: Playwright MCP
+      # - May work for a few queries
+      # - Will eventually trigger CAPTCHA
+
+    prevention: "NEVER rely on Google Scholar for automated research. Use OpenAlex as primary."
+
+  - name: ResearchGate Blocking
+    severity: high
+    description: ResearchGate aggressively blocks scrapers
+    symptoms:
+      - "403 Forbidden"
+      - "Login required messages"
+      - "Rate limit errors"
+    detection_patterns:
+      - "researchgate"
+      - "login.?to.?continue"
+    solution: |
+      # ResearchGate is very difficult to scrape
+
+      # ALTERNATIVES:
+      # 1. OpenAlex - has most ResearchGate paper data
+      # 2. ORCID API - for author publication lists
+      # 3. Author's university page - often lists same papers
+      # 4. arXiv - if paper is preprinted
+      # 5. Direct journal - via DOI lookup
+
+      # INFO AVAILABLE VIA WEBSEARCH:
+      # - Publication counts (from search snippets)
+      # - Citation metrics (approximate)
+      # - Recent paper titles
+
+    prevention: "Use ResearchGate only via WebSearch snippets. Get actual data from OpenAlex."
+
+  - name: Wikipedia Blocking
+    severity: medium
+    description: Wikipedia sometimes blocks WebFetch
+    symptoms:
+      - "403 error on wikipedia.org"
+      - "Partial content returned"
+    detection_patterns:
+      - "wikipedia"
+      - "wikimedia"
+    solution: |
+      # Wikipedia has API - much better than scraping:
+
+      # WIKIPEDIA API:
+      # https://en.wikipedia.org/api/rest_v1/page/summary/[Article_Title]
+      # Returns: title, extract, description, thumbnail
+
+      # For full content:
+      # https://en.wikipedia.org/api/rest_v1/page/html/[Article_Title]
+
+      # WIKIDATA API (structured data):
+      # https://www.wikidata.org/wiki/Special:EntityData/[Q_ID].json
+
+      # If WebFetch works, great
+      # If blocked, use API endpoints
+
+    prevention: "Prefer Wikipedia REST API over direct page scraping"
+
+  - name: Rate Limiting Detection
+    severity: medium
+    description: Making too many requests triggers blocks
+    symptoms:
+      - "429 Too Many Requests"
+      - "Slow responses then failure"
+      - "Temporary blocks"
+    detection_patterns:
+      - "429"
+      - "rate.?limit"
+      - "too.?many"
+      - "slow.?down"
+      - "try.?again.?later"
+    solution: |
+      # Rate limiting mitigation:
+
+      # 1. BATCH REQUESTS INTELLIGENTLY
+      #    - Parallel fetch related pages (5-10 max)
+      #    - Add 1-2 second delays between batches
+      #    - Don't hammer same domain repeatedly
+
+      # 2. EXPONENTIAL BACKOFF
+      #    - If rate limited, wait 30s, then 1m, then 5m
+      #    - Don't keep retrying immediately
+
+      # 3. DISTRIBUTE ACROSS SOURCES
+      #    - Use multiple APIs for same data
+      #    - OpenAlex + Semantic Scholar + direct site
+
+      # 4. CACHE RESULTS
+      #    - Don't re-fetch unchanged pages
+      #    - WebFetch has 15-min cache built in
+
+    prevention: "Space out requests. Use parallel batching for independent pages, not serial rapid-fire."
+
+  - name: Academic Paywall Circumvention Ethics
+    severity: critical
+    description: Avoiding methods that violate terms of service
+    symptoms:
+      - "Temptation to use sci-hub or similar"
+      - "Bypassing publisher access controls"
+    detection_patterns:
+      - "sci.?hub"
+      - "libgen"
+      - "paywall.?bypass"
+    solution: |
+      # LEGITIMATE access methods only:
+
+      # 1. Open Access versions
+      #    - arXiv preprints
+      #    - Author's personal website
+      #    - Institutional repositories
+      #    - OpenAlex flags open access status
+
+      # 2. University library access
+      #    - If user has institutional access
+      #    - Use Playwright MCP with university VPN
+
+      # 3. Interlibrary loan
+      #    - Request through university library
+
+      # 4. Contact author directly
+      #    - Authors often happy to share
+
+      # 5. Work with abstracts
+      #    - Note limitation in output
+
+      # DO NOT suggest circumvention tools
+
+    prevention: "Always pursue legitimate access. Note when only abstract available."
