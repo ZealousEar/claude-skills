@@ -35,7 +35,7 @@ I keep my Claude Code skills and Spawner knowledge skills here for an agentic Ob
 | `obsidian` | Automates vault CRUD, graph queries, and UI control with a 3-tier workflow. |
 | `system-augmentor` | Audits capability gaps, researches options, debates candidates, and applies the best upgrade. |
 
-## [Spawner](https://github.com/clevesol/spawner-mcp) Skills (`spawner/`)
+## [Spawner](https://spawner.vibeship.co/mcp-guide) Skills (`spawner/`)
 
 | Skill | What it does |
 | --- | --- |
