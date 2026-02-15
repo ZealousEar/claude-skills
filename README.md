@@ -66,4 +66,10 @@ Load `spawner/<skill-name>/` as a knowledge skill in your Spawner setup.
 Use it as reference context during tasks; these files are guidance, not commands.  
 Pair a Spawner skill with a Claude Code skill when you want execution plus domain rules.
 
-Licensed under the MIT License. See `LICENSE`.
+## Documentation
+
+See the [docs/](docs/Home.md) for detailed guides on each skill, the architecture, and getting started.
+
+## License
+
+MIT
