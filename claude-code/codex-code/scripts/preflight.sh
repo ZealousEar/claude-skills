@@ -90,7 +90,7 @@ elif echo "$AUTH_STATUS" | grep -qi "not logged in\|unauthenticated\|expired"; t
 else
     # Ambiguous — try a quick model check instead
     log "  Auth status ambiguous, testing with model probe..."
-    PROBE_RESULT=$(echo "echo hello" | timeout 30 codex exec -m "$MODEL" --ephemeral --skip-git-repo-check - 2>&1 || true)
+    PROBE_RESULT=$(echo "echo hello" | timeout 30 codex exec -m "$MODEL" --full-auto --skip-git-repo-check - 2>&1 || true)
     if echo "$PROBE_RESULT" | grep -qi "unauthorized\|unauthenticated\|login\|auth"; then
         check_fail "Codex not authenticated (probe failed)"
         echo ""
