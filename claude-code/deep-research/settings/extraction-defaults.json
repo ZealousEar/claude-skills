@@ -1,0 +1,47 @@
+{
+  "youtube": {
+    "summarize_flags": {
+      "extract": true,
+      "json": true
+    },
+    "slides": {
+      "enabled": true,
+      "max_slides": 30,
+      "threshold": 0.3,
+      "ocr": false
+    }
+  },
+  "mathpix": {
+    "poll_interval_seconds": 5,
+    "poll_timeout_seconds": 300,
+    "postprocess_delimiters": true,
+    "delimiter_map": {
+      "inline_from": "\\(...\\)",
+      "inline_to": "$...$",
+      "display_from": "\\[...\\]",
+      "display_to": "$$...$$"
+    }
+  },
+  "ssrn": {
+    "cookie_path": ".credentials/cookies/ssrn-cookies.txt",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  },
+  "web_search": {
+    "queries_per_topic": 4,
+    "max_fetch_results": 5,
+    "search_categories": [
+      "community discussions (Reddit, HN)",
+      "GitHub repositories and code",
+      "blog posts and tutorials",
+      "official documentation",
+      "academic references"
+    ]
+  },
+  "output": {
+    "vault_root": "${VAULT_ROOT}",
+    "default_location": "05 Research",
+    "dissertation_location": "10 School/Dissertation Research/Papers",
+    "note_suffix": ".md",
+    "mathpix_suffix": ".mathpix.md"
+  }
+}

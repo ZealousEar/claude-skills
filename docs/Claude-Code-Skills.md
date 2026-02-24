@@ -2,7 +2,7 @@
 
 These are the executable skills -- the ones that actually do things when you invoke them. Each lives in `~/.claude/skills/<name>/` and follows the same structure: a `SKILL.md` that defines behavior, a `scripts/` directory with supporting code, `settings/` for configuration, and `references/` for documentation the skill reads at runtime.
 
-They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`). When triggered, Claude reads the SKILL.md, loads context from the supporting files, and executes the workflow described.
+They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/research`). When triggered, Claude reads the SKILL.md, loads context from the supporting files, and executes the workflow described.
 
 ---
 
@@ -126,6 +126,51 @@ They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`). Wh
 ```
 
 **Requirements:** At least one external API key (Google, Moonshot, OpenRouter, or Anthropic) for full multi-model. Works in balanced mode with just Claude.
+
+---
+
+## deep-research
+
+**Purpose:** Multi-source deep research pipeline. Takes any combination of YouTube videos, arXiv papers, SSRN papers, PDFs, and web articles, extracts their content in parallel, researches the topic broadly via web search, and synthesizes everything into a comprehensive Obsidian research note.
+
+**How it works:** Phase 0 classifies each input (URL or local path) into a source type using regex patterns for YouTube, arXiv, SSRN, generic PDF, or web article. Phase 1 extracts content from each source in parallel -- YouTube gets transcript via `summarize` CLI plus slide extraction via ffmpeg scene detection, academic papers get converted through Mathpix API with delimiter postprocessing, web articles get fetched via WebFetch. Phase 2 does visual analysis of extracted YouTube slides using Claude's multimodal capabilities. Phase 3 runs broad topic research via WebSearch to find community discussions, GitHub repos, blog posts, and official docs. Phase 4 synthesizes everything into a structured research note following a template (frontmatter, question, key idea, numbered sections, evidence, implications, links). Phase 5 validates Obsidian syntax (math delimiters, Mermaid, frontmatter). Phase 6 writes all output files to the vault.
+
+**Key features:**
+- **6 source types** -- YouTube, arXiv, SSRN, PDF (URL), PDF (local), web article
+- **Parallel extraction** -- independent sources processed concurrently
+- **Multimodal slide analysis** -- YouTube slides read and annotated via Claude vision
+- **Mathpix integration** -- academic PDFs converted with math-aware OCR, delimiters auto-fixed for Obsidian
+- **SSRN Cloudflare handling** -- cookie-based download with TLS fingerprint fallback guidance
+- **Obsidian syntax validation** -- P0-P4 priority rules catch math delimiters, Mermaid issues, frontmatter problems
+- **Smart output routing** -- infers vault location from content type, or asks the user
+
+**Example invocation:**
+```
+/research https://www.youtube.com/watch?v=I7azCAgoUHc
+/research https://arxiv.org/abs/2502.07766
+/research https://www.youtube.com/watch?v=abc123 https://blog.example.com/post
+/research ~/Downloads/paper.pdf --title "Market Microstructure Dynamics"
+/research https://arxiv.org/abs/2301.12345 --no-broad-search
+```
+
+**File structure:**
+```
+~/.claude/skills/deep-research/
+├── SKILL.md
+├── scripts/
+│   ├── mathpix_convert.py         # Mathpix API: submit, poll, download, postprocess
+│   ├── ssrn_download.py           # SSRN PDF download with Cloudflare bypass
+│   └── source_classifier.py       # URL classification + metadata extraction
+├── settings/
+│   ├── extraction-defaults.json   # Default params per source type
+│   ├── research-note-template.md  # Synthesis template + formatting rules
+│   └── credentials-paths.json     # Credential file locations
+└── references/
+    ├── obsidian-syntax-rules.md   # P0-P4 validation rules
+    └── source-type-guide.md       # Per-source extraction methods + known issues
+```
+
+**Requirements:** `summarize` CLI (`npm i -g @steipete/summarize`), yt-dlp, ffmpeg, Mathpix API credentials, Python 3.10+. Optional: SSRN cookies (for SSRN papers), tesseract (for slide OCR).
 
 ---
 
