@@ -182,6 +182,36 @@ sharp_edges:
       (ŷ, Σ, σ, μ, α, β, ², ³) in diagram labels. Put full LaTeX formulas outside
       the diagram in $$...$$ blocks."
 
+  - id: mermaid-curly-braces-in-labels
+    title: "Curly braces in Mermaid node labels parsed as rhombus shape"
+    severity: high
+    symptom: "Mermaid parse error or node rendered as diamond instead of rectangle"
+    cause: |
+      Curly braces `{}` in Mermaid define rhombus/diamond shapes. When LaTeX-style
+      subscripts like `y_{t-1}` appear inside square-bracket labels `[y_{t-1}]`,
+      Mermaid interprets `{t-1}` as the start of a rhombus node definition, causing
+      a parse error or garbled output.
+
+      Also applies to edge labels containing `{}`.
+    detection:
+      pattern: '\[[^\]"]*\{[^\}]*\}[^\]]*\]'
+      context: "Inside ```mermaid blocks — unquoted labels containing curly braces"
+    fix: |
+      Quote labels and replace curly braces with parentheses for subscripts:
+      ```markdown
+      # BAD — {} parsed as shape syntax
+      A[y_t] --- B[y_{t-1}] --- C[y_{t-2}]
+      D -. indirect path via y_{t-2}, y_{t-1} .-> A
+
+      # GOOD — quoted labels, parens for subscripts
+      A["y_t"] --- B["y_(t-1)"] --- C["y_(t-2)"]
+      D -. "indirect via y_(t-2), y_(t-1)" .-> A
+      ```
+    prevention: |
+      In Codex prompts: "In Mermaid labels, NEVER use curly braces {} for subscripts.
+      Use parentheses instead: y_(t-1) not y_{t-1}. Always double-quote labels
+      containing special characters."
+
   - id: mermaid-link-syntax
     title: "Invalid Mermaid link syntax"
     severity: high
@@ -417,6 +447,7 @@ codex_prompt_additions: |
 
   ### Mermaid Diagrams
   - Double-quote labels with parentheses: `A["label (with parens)"]`
+  - NO curly braces for subscripts: use `y_(t-1)` not `y_{t-1}` (braces = rhombus shape)
   - NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
   - NO `<br/>` tags
   - NO numbered lists in labels
@@ -431,6 +462,7 @@ validation_checklist:
   - "P0: grep for backtick-wrapped LaTeX commands and subscripts"
   - "P0: grep for backtick-wrapped \\color{} in notation callouts"
   - "P1: Check mermaid blocks for unquoted parentheses in labels"
+  - "P1: Check mermaid blocks for curly braces {} in labels (subscripts)"
   - "P1: Check mermaid blocks for LaTeX commands"
   - "P1: Check for <br/> tags in mermaid"
   - "P2: Check for unclosed color braces before \\right"

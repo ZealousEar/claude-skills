@@ -128,7 +128,17 @@ instructions: |
   ```
   Detection: `grep -n '\\\\(' mermaid blocks`, `grep -n '\\\\hat\|\\\\sum\|\\\\frac' mermaid blocks`
 
-  **6. Other Mermaid issues (carried from v1.0)**
+  **6. Curly braces in labels (subscripts)**
+  ```markdown
+  # BAD — {} parsed as rhombus shape syntax
+  A[y_t] --- B[y_{t-1}] --- C[y_{t-2}]
+
+  # GOOD — quote labels, use parens for subscripts
+  A["y_t"] --- B["y_(t-1)"] --- C["y_(t-2)"]
+  ```
+  Detection: Look for `{` inside unquoted `[...]` labels in mermaid blocks
+
+  **7. Other Mermaid issues (carried from v1.0)**
   - No `<br/>` tags in labels
   - No numbered lists: `[1. Item]` → `[Item]`
   - No `---|----|` empty link labels
