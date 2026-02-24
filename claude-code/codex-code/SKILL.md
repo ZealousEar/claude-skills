@@ -484,3 +484,71 @@ After all agents complete, Claude:
 8. **Reports results** in the structured execution report
 9. **Cleans up** worktrees and temp files
 10. **Offers next steps** — run tests, review specific files, launch follow-up agents
+
+---
+
+## Domain-Specific Post-Processing: Obsidian Notes
+
+**When Codex agents generate Obsidian markdown notes**, they consistently produce broken syntax. Claude MUST run comprehensive validation after merging. See `obsidian-notes-validator` v2.0 skill for full details.
+
+### Mandatory Codex Prompt Additions for Obsidian Tasks
+
+Add this block to EVERY agent prompt when generating Obsidian notes:
+
+```
+## OBSIDIAN SYNTAX RULES (CRITICAL — violations break rendering)
+
+### Math Delimiters
+- Display math: $$...$$ (NOT \[...\])
+- Inline math: $...$ (NOT backticks)
+- ANY content with \beta, \phi, subscripts (_), superscripts (^), Greek letters,
+  or LaTeX commands MUST use $...$ not backticks
+- Backticks (`) are ONLY for code: function names, CLI commands, file paths
+
+### Notation Callouts (Color-Coded Math)
+- Symbol format: ${\color{#hex}symbol}$ — <span style="color: #hex">role: description</span>
+- Dollar signs ($), NOT backticks
+- End with "**In English:**" summary
+
+### Mermaid Diagrams
+- Double-quote labels with parentheses: A["label (with parens)"]
+- NO curly braces for subscripts: use y_(t-1) not y_{t-1} (braces = rhombus shape)
+- NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
+- NO \n in labels — renders as literal text, use em-dash (—) to join phrases
+- NO <br/> tags, NO numbered lists in labels
+- Prefer flowchart TD over flowchart LR
+
+### Frontmatter
+- Replace ALL placeholder tags (e.g., topic-tags) with actual topics
+- Required fields: tags, date, source
+```
+
+### Post-Merge Validation Grep Commands
+
+```bash
+# P0: Wrong display math delimiters
+grep -rn '^\\\[' "$DIR" --include="*.md"
+
+# P0: Backtick-wrapped LaTeX (inline math)
+grep -rn '`[^`]*\\[a-zA-Z]' "$DIR" --include="*.md"
+
+# P0: Backtick-wrapped color math (notation callouts)
+grep -rn '`{.*\\color' "$DIR" --include="*.md"
+
+# P1: Mermaid — manually check all blocks for unquoted parens, LaTeX, \n
+grep -rn '```mermaid' "$DIR" --include="*.md"
+
+# P1: Literal \n in mermaid labels
+grep -rn '\\n' "$DIR" --include="*.md"
+
+# P3: Placeholder frontmatter tags
+grep -rn 'topic-tags' "$DIR" --include="*.md"
+```
+
+### Lessons from ADFT Session (2026-02-24)
+
+- 5 Codex agents produced ~60 syntax errors across 35 files
+- Issues concentrated in Weeks 2-3 agents; Weeks 1, 4, 5 agents were cleaner
+- Three rounds of fixes needed — first round missed inline math in body text
+- Always do comprehensive grep sweeps, not spot-checks
+- Don't trust subagent audits alone — verify critical findings yourself

@@ -1,13 +1,17 @@
 id: obsidian-notes-validator
 name: Obsidian Notes Validator
-version: "1.0.0"
+version: "2.0.0"
 category: pattern
 layer: 3
 
 description: |
   Validates Obsidian markdown notes for common issues before finalizing.
-  Checks Mermaid diagrams, TikZ blocks, frontmatter, wiki-links, and formatting.
-  Run as final step after creating/editing notes.
+  Checks Mermaid diagrams, math delimiters, notation callouts, TikZ blocks,
+  frontmatter, wiki-links, and formatting.
+
+  **Critical for Codex-generated notes** — LLM coding agents consistently produce
+  broken Obsidian syntax (wrong math delimiters, Mermaid parse errors, malformed
+  notation callouts). Run this as the FINAL step after any agent creates notes.
 
 triggers:
   - validate notes
@@ -15,12 +19,16 @@ triggers:
   - fix mermaid
   - validate diagrams
   - final check
+  - fix math delimiters
+  - fix notation
 
 owns:
   - mermaid validation
   - tikz validation
   - obsidian formatting
   - wiki-link checking
+  - math delimiter validation
+  - notation callout validation
 
 tags:
   - obsidian
@@ -28,108 +36,241 @@ tags:
   - mermaid
   - tikz
   - quality
+  - math
+  - latex
+  - codex-post-processing
 
 instructions: |
-  ## Obsidian Notes Validator
+  ## Obsidian Notes Validator v2.0
 
   Run this as the **final step** after creating or editing Obsidian notes.
+  Especially critical after Codex/LLM agents generate notes — they consistently
+  produce broken Obsidian syntax.
 
-  ### Validation Checklist
+  ### Priority Order (fix these first — they break rendering)
 
-  1. **Frontmatter**
-     - [ ] Has YAML frontmatter (--- delimiters)
-     - [ ] Contains required fields: tags, date, source
-     - [ ] Tags are lowercase with hyphens (not spaces)
+  #### P0: Math Delimiters (MOST COMMON issue from LLM agents)
 
-  2. **Mermaid Diagrams**
-     - [ ] No `<br/>` tags (use `<br>` or newlines in subgraphs)
-     - [ ] No numbered lists in labels: `[1. Item]` → `[Item]`
-     - [ ] Valid link syntax (not `---|----|`)
-     - [ ] No unsupported diagram types (timeline, mindmap may not work)
-     - [ ] Subgraph labels don't have special characters
+  LLM agents consistently get math delimiters wrong in three ways:
 
-  3. **TikZ Diagrams**
-     - [ ] No `arrows.meta` library
-     - [ ] No `external` library
-     - [ ] No `tikzmark` library
-     - [ ] Uses `-latex` or `->` for arrows (not `-Stealth`)
+  **1. Display math: `\[...\]` instead of `$$...$$`**
+  ```markdown
+  # BAD — Obsidian does NOT render \[...\]
+  \[
+  Y_t = \omega + \sum_{i=1}^{p} \phi_i Y_{t-i} + e_t
+  \]
 
-  4. **Wiki-Links**
-     - [ ] All `[[Note Name]]` links point to existing notes
-     - [ ] No broken links to non-existent files
+  # GOOD — Obsidian uses $$...$$ for display math
+  $$
+  Y_t = \omega + \sum_{i=1}^{p} \phi_i Y_{t-i} + e_t
+  $$
+  ```
+  Detection: `grep -n '^\\\[' *.md` and `grep -n '^\\\]' *.md`
 
-  5. **LaTeX Math**
-     - [ ] Inline math uses `$...$`
-     - [ ] Display math uses `$$...$$`
-     - [ ] No unescaped underscores in math mode
+  **2. Inline math: backticks instead of `$...$`**
+  ```markdown
+  # BAD — renders as monospace code, not math
+  The parameter `\beta` controls...
+  If `|\phi| < 1` then stationary...
+  The null hypothesis `H_0` states...
 
-  6. **Charts Plugin**
-     - [ ] Valid YAML inside chart blocks
-     - [ ] Required fields: type, labels, series
+  # GOOD — renders as LaTeX math
+  The parameter $\beta$ controls...
+  If $|\phi| < 1$ then stationary...
+  The null hypothesis $H_0$ states...
+  ```
+  Detection: grep for backtick-wrapped LaTeX commands, subscripts, superscripts:
+  ```bash
+  # LaTeX commands in backticks
+  grep -n '`[^`]*\\[a-zA-Z]' *.md
+  # Subscripts/superscripts in backticks
+  grep -n '`[^`]*[_^][{0-9a-z]' *.md
+  ```
 
-  ### Common Mermaid Fixes
+  **3. Color-coded math in notation callouts: backticks instead of `$...$`**
+  ```markdown
+  # BAD — shows raw LaTeX as code
+  > `{\color{#D55E00}b_1}` — parameter: slope coefficient
+
+  # GOOD — renders colored math
+  > ${\color{#D55E00}b_1}$ — <span style="color: #D55E00">parameter: slope coefficient</span>
+  ```
+  Detection: `grep -n '` "`\{.*\\color' *.md`
+
+  **Rule of thumb:** Anything containing `\beta`, `\phi`, `\sigma`, `\alpha`,
+  `\omega`, `\Delta`, `\infty`, `\sum`, `\frac`, `\operatorname`, `_`, `^`,
+  `\left`, `\right`, `\color`, or Greek letters MUST use `$...$` not backticks.
+
+  #### P1: Mermaid Syntax Errors
+
+  **4. Parentheses in square-bracket labels**
+  ```markdown
+  # BAD — Mermaid parses () as stadium-node syntax
+  F[Run unit root test (DFT/ADF)]
+  # Error: "Expecting 'SQE'... got 'PS'"
+
+  # GOOD — double-quote labels with parentheses
+  F["Run unit root test (DFT/ADF)"]
+  ```
+  Detection: Look for `[` ... `(` ... `)` ... `]` in mermaid blocks
+
+  **5. LaTeX commands in Mermaid labels**
+  ```markdown
+  # BAD — Mermaid doesn't support LaTeX
+  A[Data \(x_i,y_i\)]
+  B[\hat{y}_i = b_0 + b_1 x_i]
+  C[Minimize \sum u_i^2]
+
+  # GOOD — use plain text or Unicode
+  A["Data (x_i, y_i)"]
+  B["ŷ_i = b_0 + b_1 x_i"]
+  C["Minimize Σ u_i²"]
+  ```
+  Detection: `grep -n '\\\\(' mermaid blocks`, `grep -n '\\\\hat\|\\\\sum\|\\\\frac' mermaid blocks`
+
+  **6. Curly braces in labels (subscripts)**
+  ```markdown
+  # BAD — {} parsed as rhombus shape syntax
+  A[y_t] --- B[y_{t-1}] --- C[y_{t-2}]
+
+  # GOOD — quote labels, use parens for subscripts
+  A["y_t"] --- B["y_(t-1)"] --- C["y_(t-2)"]
+  ```
+  Detection: Look for `{` inside unquoted `[...]` labels in mermaid blocks
+
+  **7. Literal `\n` in labels (renders as text)**
+  ```markdown
+  # BAD — shows literal \n in the diagram
+  TS[Time Series\nOne entity across many times]
+  A["1. Identification\n- Check stationarity"]
+
+  # GOOD — em-dash separator, single line
+  TS["Time Series — One entity across many times"]
+  A["1. Identification — Check stationarity, differencing, ACF/PACF"]
+  ```
+  Detection: Look for `\n` inside node labels in mermaid blocks
+
+  **8. Other Mermaid issues (carried from v1.0)**
+  - No `<br/>` tags in labels
+  - No numbered lists: `[1. Item]` → `[Item]`
+  - No `---|----|` empty link labels
+  - No unsupported diagram types (timeline, mindmap, sankey, zenuml)
+
+  #### P2: Broken LaTeX Brace Pairing
+
+  **7. Missing closing brace before `\right)`**
+  ```markdown
+  # BAD — color group not closed before \right)
+  {\color{#0072B2}y_{t-k}\right)
+
+  # GOOD — close the color group first
+  {\color{#0072B2}y_{t-k}}\right)
+  ```
+  Detection: Look for `\color{...}...\right)` without intervening `}`
+
+  #### P3: Frontmatter Issues
+
+  **8. Placeholder tags left by LLM agents**
+  ```yaml
+  # BAD — agent left placeholder
+  tags:
+    - ADFT
+    - week4
+    - topic-tags    # ← placeholder!
+
+  # GOOD — actual topic tags
+  tags:
+    - ADFT
+    - week4
+    - arch
+    - garch
+    - volatility
+  ```
+  Detection: `grep -rn 'topic-tags' *.md`
+
+  **9. Missing or malformed frontmatter (from v1.0)**
+
+  #### P4: Other Checks
+  - TikZ: no `arrows.meta`, `external`, `tikzmark` libraries
+  - Wiki-links: all `[[Note Name]]` resolve to existing files
+  - Charts: valid YAML in chart blocks
+
+  ### Comprehensive Validation Script
+
+  Run these grep commands to find all issues at once:
+
+  ```bash
+  ADFT_DIR="/path/to/notes"
+
+  echo "=== P0: Math Delimiter Issues ==="
+
+  # Display math: \[...\] instead of $$...$$
+  echo "--- \\[...\\] delimiters ---"
+  grep -rn '^\\\[' "$ADFT_DIR" --include="*.md"
+  grep -rn '^\\\]' "$ADFT_DIR" --include="*.md"
+
+  # Inline math: backtick-wrapped LaTeX commands
+  echo "--- Backtick-wrapped LaTeX ---"
+  grep -rn '`[^`]*\\\\[a-zA-Z]' "$ADFT_DIR" --include="*.md"
+
+  # Inline math: backtick-wrapped subscripts/superscripts
+  echo "--- Backtick-wrapped sub/superscripts ---"
+  grep -rn '`[^`]*[_^][{0-9]' "$ADFT_DIR" --include="*.md"
+
+  # Color math in backticks (notation callouts)
+  echo "--- Color math in backticks ---"
+  grep -rn '`{.*\\color' "$ADFT_DIR" --include="*.md"
+
+  echo ""
+  echo "=== P1: Mermaid Syntax Issues ==="
+
+  # Parentheses in square-bracket labels (requires manual mermaid block check)
+  echo "--- Check mermaid blocks for unquoted parentheses ---"
+  grep -rn '```mermaid' "$ADFT_DIR" --include="*.md"
+
+  # Literal \n in mermaid labels
+  echo "--- Literal backslash-n in mermaid labels ---"
+  grep -rn '\\\\n' "$ADFT_DIR" --include="*.md"
+
+  # LaTeX in any file (might be in mermaid)
+  echo "--- Possible LaTeX in mermaid ---"
+  grep -rn '\\\\hat\|\\\\sum\|\\\\frac\|\\\\left\|\\\\right' "$ADFT_DIR" --include="*.md"
+
+  echo ""
+  echo "=== P2: Broken LaTeX Braces ==="
+  grep -rn '\\color{[^}]*}[^}]*\\right)' "$ADFT_DIR" --include="*.md"
+
+  echo ""
+  echo "=== P3: Frontmatter Issues ==="
+  grep -rn 'topic-tags' "$ADFT_DIR" --include="*.md"
+
+  echo ""
+  echo "=== P4: Other Issues ==="
+  grep -rn '<br/>' "$ADFT_DIR" --include="*.md"
+  grep -rn 'arrows\.meta' "$ADFT_DIR" --include="*.md"
+  ```
+
+  ### Notation Callout Format Reference
+
+  Correct format for `[!notation]` callouts (Okabe-Ito palette):
 
   ```markdown
-  # BAD - Link with empty text
-  A ---|----| B
-
-  # GOOD - Simple link
-  A ---- B
-
-  # GOOD - Link with text
-  A ---|text|--- B
-
-  # BAD - br tag
-  A[Line 1<br/>Line 2]
-
-  # GOOD - Just remove multiline or use subgraph
-  A[Line 1 Line 2]
-
-  # BAD - Numbered list
-  A[1. First item]
-
-  # GOOD - No numbers
-  A[First item]
-
-  # BAD - Unsupported diagram type
-  timeline
-      2020 : Event
-
-  # GOOD - Use table instead
-  | Year | Event |
-  |------|-------|
-  | 2020 | Event |
+  > [!notation] Formula Name
+  > ${\color{#0072B2}Y_t}$ — <span style="color: #0072B2">variable: observed value at time $t$</span>
+  > ${\color{#D55E00}\phi_i}$ — <span style="color: #D55E00">parameter: AR coefficients</span>
+  > ${\color{#009E73}f}$ — <span style="color: #009E73">function: prediction function</span>
+  > ${\color{#E69F00}N}$ — <span style="color: #E69F00">constant: sample size</span>
+  > ${\color{#CC79A7}\mathbb{R}}$ — <span style="color: #CC79A7">set: real numbers</span>
+  >
+  > **In English:** [plain-language description]
   ```
 
-  ### Validation Command
-
-  Run grep to find potential issues:
-
-  ```bash
-  # Find Mermaid blocks
-  grep -n "^\`\`\`mermaid" *.md
-
-  # Find potentially broken link syntax
-  grep -n "---\|" *.md
-
-  # Find br tags in labels
-  grep -n "<br/>" *.md
-
-  # Find timeline diagrams (may not work)
-  grep -n "^timeline$" *.md
-
-  # Find TikZ with problematic libraries
-  grep -n "arrows.meta\|\\\\usetikzlibrary{external}" *.md
-  ```
-
-  ### Auto-Fix Script
-
-  ```bash
-  # Replace <br/> with space in Mermaid labels
-  sed -i '' 's/<br\/>/ /g' file.md
-
-  # Note: Most fixes require manual review
-  ```
+  Key rules:
+  - Each symbol: `${\color{#hex}symbol}$` — `<span style="color: #hex">role: description</span>`
+  - Dollar signs ($), NOT backticks (`)
+  - `<span>` for colored text labels (not backticks)
+  - End with "**In English:**" summary
+  - Purple callout background (168, 85, 247) — all Okabe-Ito colors verified readable
 
 prerequisites:
   - Notes created following CLAUDE.md conventions
@@ -138,3 +279,4 @@ prerequisites:
 pairs_with:
   - lecture-notes-sync
   - media-transcript
+  - math-notation-colorizer
