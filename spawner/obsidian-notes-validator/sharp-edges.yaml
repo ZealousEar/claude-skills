@@ -246,16 +246,49 @@ sharp_edges:
       pattern: '<br/>'
       context: "Inside Mermaid node labels"
     fix: |
-      Option 1: Remove line breaks
+      Remove line breaks and use em-dash or comma to join content:
       ```markdown
-      A[Line 1 Line 2]
+      # BAD
+      A[Line 1<br/>Line 2]
+
+      # GOOD
+      A["Line 1 — Line 2"]
+      ```
+    prevention: "Keep node labels short; use em-dash to join phrases. Use tables below diagram for details."
+
+  - id: mermaid-literal-backslash-n
+    title: "Literal \\n in Mermaid labels renders as text"
+    severity: high
+    symptom: "Diagram nodes show literal backslash-n (\\n) as visible text instead of line break"
+    cause: |
+      LLM agents use `\n` inside Mermaid node labels to create multi-line text.
+      In Obsidian's Mermaid renderer, `\n` is NOT interpreted as a line break — it
+      renders as the literal characters "\" and "n" in the label text.
+
+      This happens in both quoted and unquoted labels:
+      - Unquoted: `A[Line 1\nLine 2]` → shows "Line 1\nLine 2"
+      - Quoted: `A["Line 1\nLine 2"]` → shows "Line 1\nLine 2"
+    detection:
+      pattern: '\\n'
+      context: "Inside ```mermaid blocks — node labels containing \\n"
+    fix: |
+      Replace `\n` with em-dash (—) or restructure as single-line label:
+      ```markdown
+      # BAD — shows literal \n text
+      TS[Time Series\nOne entity across many times]
+      A["1. Identification\n- Check stationarity\n- Apply differencing"]
+
+      # GOOD — em-dash separator
+      TS["Time Series — One entity across many times"]
+      A["1. Identification — Check stationarity, differencing, ACF/PACF"]
       ```
 
-      Option 2: Use newline character `\n` in quoted labels
-      ```markdown
-      A["Line 1\nLine 2"]
-      ```
-    prevention: "Keep node labels short; use tables below diagram for details"
+      If multi-line detail is truly needed, put it in a table or bullet list
+      below the diagram instead.
+    prevention: |
+      In Codex prompts: "NEVER use \\n in Mermaid labels — it renders as literal text
+      in Obsidian. Use em-dash (—) or comma to join phrases on one line. If detail is
+      needed, keep labels short and put explanations in a table below the diagram."
 
   - id: mermaid-timeline
     title: "Unsupported Mermaid diagram type"
@@ -449,6 +482,7 @@ codex_prompt_additions: |
   - Double-quote labels with parentheses: `A["label (with parens)"]`
   - NO curly braces for subscripts: use `y_(t-1)` not `y_{t-1}` (braces = rhombus shape)
   - NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
+  - NO `\n` in labels — renders as literal text, use em-dash (—) to join phrases
   - NO `<br/>` tags
   - NO numbered lists in labels
   - Prefer `flowchart TD` over `flowchart LR`
@@ -463,6 +497,7 @@ validation_checklist:
   - "P0: grep for backtick-wrapped \\color{} in notation callouts"
   - "P1: Check mermaid blocks for unquoted parentheses in labels"
   - "P1: Check mermaid blocks for curly braces {} in labels (subscripts)"
+  - "P1: Check mermaid blocks for literal \\n in labels"
   - "P1: Check mermaid blocks for LaTeX commands"
   - "P1: Check for <br/> tags in mermaid"
   - "P2: Check for unclosed color braces before \\right"

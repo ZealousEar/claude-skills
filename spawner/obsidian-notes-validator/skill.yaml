@@ -138,7 +138,19 @@ instructions: |
   ```
   Detection: Look for `{` inside unquoted `[...]` labels in mermaid blocks
 
-  **7. Other Mermaid issues (carried from v1.0)**
+  **7. Literal `\n` in labels (renders as text)**
+  ```markdown
+  # BAD — shows literal \n in the diagram
+  TS[Time Series\nOne entity across many times]
+  A["1. Identification\n- Check stationarity"]
+
+  # GOOD — em-dash separator, single line
+  TS["Time Series — One entity across many times"]
+  A["1. Identification — Check stationarity, differencing, ACF/PACF"]
+  ```
+  Detection: Look for `\n` inside node labels in mermaid blocks
+
+  **8. Other Mermaid issues (carried from v1.0)**
   - No `<br/>` tags in labels
   - No numbered lists: `[1. Item]` → `[Item]`
   - No `---|----|` empty link labels
@@ -215,6 +227,10 @@ instructions: |
   # Parentheses in square-bracket labels (requires manual mermaid block check)
   echo "--- Check mermaid blocks for unquoted parentheses ---"
   grep -rn '```mermaid' "$ADFT_DIR" --include="*.md"
+
+  # Literal \n in mermaid labels
+  echo "--- Literal backslash-n in mermaid labels ---"
+  grep -rn '\\\\n' "$ADFT_DIR" --include="*.md"
 
   # LaTeX in any file (might be in mermaid)
   echo "--- Possible LaTeX in mermaid ---"
