@@ -512,6 +512,7 @@ Add this block to EVERY agent prompt when generating Obsidian notes:
 
 ### Mermaid Diagrams
 - Double-quote labels with parentheses: A["label (with parens)"]
+- NO curly braces for subscripts: use y_(t-1) not y_{t-1} (braces = rhombus shape)
 - NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
 - NO <br/> tags, NO numbered lists in labels
 - Prefer flowchart TD over flowchart LR
