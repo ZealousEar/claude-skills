@@ -167,6 +167,27 @@ Or use ChatGPT OAuth (no manual API key needed):
 python3 ~/.claude/skills/convolutional-debate-agent/scripts/openai_auth.py login
 ```
 
+### deep-research
+```bash
+# Required: transcript + slide extraction
+npm install -g @steipete/summarize
+brew install yt-dlp ffmpeg jq
+
+# Required: Mathpix API credentials (for PDF conversion)
+# Get credentials at https://console.mathpix.com
+mkdir -p .credentials/dissertation-research
+echo "MATHPIX_APP_ID=your_id" >> .credentials/dissertation-research/.env
+echo "MATHPIX_APP_KEY=your_key" >> .credentials/dissertation-research/.env
+
+# Set vault root (scripts use this to find credentials)
+export VAULT_ROOT="/path/to/your/vault"
+
+# Optional: SSRN cookies (only needed for SSRN papers)
+# Export from browser in Netscape format while on papers.ssrn.com
+mkdir -p .credentials/cookies
+# Place ssrn-cookies.txt in .credentials/cookies/
+```
+
 ### geps-v5
 No additional setup -- uses debate skill's `llm_runner.py` and Python stdlib only.
 

@@ -10,6 +10,7 @@ I keep my Claude Code skills and Spawner knowledge skills here for an agentic Ob
 │   ├── aristotle-prover/
 │   ├── codex-code/
 │   ├── convolutional-debate-agent/
+│   ├── deep-research/
 │   ├── geps-v5/
 │   ├── obsidian/
 │   └── system-augmentor/
@@ -31,6 +32,7 @@ I keep my Claude Code skills and Spawner knowledge skills here for an agentic Ob
 | `aristotle-prover` | Translates math problems into Lean 4 proofs through the Harmonic Aristotle API. |
 | `codex-code` | Breaks work into subtasks, runs parallel Codex CLI agents in worktrees, then merges results. |
 | `convolutional-debate-agent` | Runs adversarial multi-model debates and aggregates outputs with reliability weighting. |
+| `deep-research` | Extracts content from YouTube, arXiv, SSRN, PDFs, and web articles, then synthesizes comprehensive research notes. |
 | `geps-v5` | Uses graph-guided evolutionary search and tournament ranking for portfolio strategy exploration. |
 | `obsidian` | Automates vault CRUD, graph queries, and UI control with a 3-tier workflow. |
 | `system-augmentor` | Audits capability gaps, researches options, debates candidates, and applies the best upgrade. |
