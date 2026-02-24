@@ -1,7 +1,187 @@
 id: obsidian-notes-validator
-version: "1.0.0"
+version: "2.0.0"
 
 sharp_edges:
+  # === P0: Math Delimiters (MOST COMMON — LLM agents get these wrong consistently) ===
+
+  - id: display-math-wrong-delimiters
+    title: "Display math uses \\[...\\] instead of $$...$$"
+    severity: critical
+    symptom: "Raw LaTeX source shown as plain text instead of rendered math"
+    cause: |
+      LLM coding agents (Codex, GPT) default to standard LaTeX `\[...\]` delimiters
+      for display math. Obsidian's MathJax renderer does NOT support these — it requires
+      `$$...$$` delimiters exclusively.
+    detection:
+      pattern: '^\\\[|^\\\]'
+      context: "Lines starting with \\[ or \\] in .md files"
+    fix: |
+      Replace all `\[...\]` with `$$...$$`:
+      ```markdown
+      # BAD
+      \[
+      Y_t = \omega + \sum \phi_i Y_{t-i} + e_t
+      \]
+
+      # GOOD
+      $$
+      Y_t = \omega + \sum \phi_i Y_{t-i} + e_t
+      $$
+      ```
+    prevention: |
+      In Codex agent prompts, explicitly state:
+      "Use $$...$$ for display math and $...$ for inline math.
+      Do NOT use \\[...\\] or \\(...\\) — Obsidian does not support these."
+
+  - id: inline-math-backtick-delimiters
+    title: "Inline math uses backticks instead of $...$"
+    severity: critical
+    symptom: "Math variables appear in monospace code font instead of rendered LaTeX"
+    cause: |
+      LLM agents frequently wrap math expressions in backticks (`) instead of
+      dollar signs ($). Backticks create code spans (monospace, no LaTeX processing).
+      Dollar signs trigger MathJax rendering.
+
+      Common patterns agents get wrong:
+      - `\beta` instead of $\beta$
+      - `H_0` instead of $H_0$
+      - `|\phi| < 1` instead of $|\phi| < 1$
+      - `e_{t-1}^2` instead of $e_{t-1}^2$
+      - `\sigma_{t-1}^2` instead of $\sigma_{t-1}^2$
+    detection:
+      pattern: '`[^`]*\\\\[a-zA-Z]|`[^`]*[_^][{0-9]'
+      context: "Backtick-wrapped content containing LaTeX commands or sub/superscripts"
+    fix: |
+      Replace backticks with dollar signs for ANY content containing:
+      - LaTeX commands: \beta, \phi, \sigma, \alpha, \omega, \Delta, \infty, \sum, \frac, \operatorname
+      - Greek letters
+      - Subscripts (_) or superscripts (^)
+      - Math operators or notation
+
+      ```markdown
+      # BAD
+      The parameter `\beta` controls the sensitivity.
+      If `|\phi| < 1` then the process is stationary.
+      Under `H_0`, the series has a unit root.
+
+      # GOOD
+      The parameter $\beta$ controls the sensitivity.
+      If $|\phi| < 1$ then the process is stationary.
+      Under $H_0$, the series has a unit root.
+      ```
+    prevention: |
+      In Codex agent prompts, add:
+      "CRITICAL: Use $...$ (dollar signs) for ALL inline math — including Greek letters,
+      subscripts, superscripts, and LaTeX commands. NEVER use backticks for math content.
+      Backticks are ONLY for code (function names, variable names in programming languages)."
+
+  - id: notation-callout-backtick-math
+    title: "Color-coded math in notation callouts uses backticks"
+    severity: critical
+    symptom: "Notation callouts show raw \\color{} syntax as monospace code"
+    cause: |
+      LLM agents wrap color-coded math symbols in backticks instead of dollar signs
+      inside [!notation] callouts. This renders the color commands as literal text
+      instead of colored math.
+    detection:
+      pattern: '`\\{?\\\\?color|`\\{\\\\color'
+      context: "Inside > [!notation] callout blocks"
+    fix: |
+      ```markdown
+      # BAD — shows raw code
+      > `{\color{#D55E00}b_1}` — parameter: slope
+
+      # GOOD — renders colored math
+      > ${\color{#D55E00}b_1}$ — <span style="color: #D55E00">parameter: slope</span>
+      ```
+
+      Full correct format:
+      ```markdown
+      > [!notation] Formula Name
+      > ${\color{#0072B2}Y_t}$ — <span style="color: #0072B2">variable: observed value</span>
+      > ${\color{#D55E00}\phi}$ — <span style="color: #D55E00">parameter: AR coefficient</span>
+      >
+      > **In English:** Plain-language summary.
+      ```
+    prevention: |
+      In Codex prompts, provide the exact notation callout template:
+      "Each symbol line: ${\color{#hex}symbol}$ — <span style=\"color: #hex\">role: description</span>
+      Use dollar signs ($), NOT backticks. Use <span> for colored labels."
+
+  # === P1: Mermaid Syntax Errors ===
+
+  - id: mermaid-parentheses-in-labels
+    title: "Parentheses in Mermaid square-bracket labels"
+    severity: high
+    symptom: "Mermaid parse error: Expecting 'SQE'... got 'PS'"
+    cause: |
+      Parentheses `()` inside square-bracket node labels `[...]` are parsed by Mermaid
+      as stadium-node (rounded rectangle) syntax, breaking the intended square-bracket node.
+
+      Example: `F[Run test (DFT/ADF)]` — Mermaid sees `F[Run test` then `(DFT/ADF)` as
+      a separate stadium node, causing a parse error.
+    detection:
+      pattern: '\[([^\]"]*)\(([^\)]*)\)([^\]]*)\]'
+      context: "Inside ```mermaid blocks — square-bracket labels containing parentheses"
+    fix: |
+      Double-quote labels that contain parentheses:
+      ```markdown
+      # BAD
+      F[Run unit root test (DFT/ADF)]
+      G[Check stationarity (visual)]
+      H[SARIMA(p,d,q)(P,D,Q,m)]
+
+      # GOOD
+      F["Run unit root test (DFT/ADF)"]
+      G["Check stationarity (visual)"]
+      H["SARIMA(p,d,q)(P,D,Q,m)"]
+      ```
+    prevention: |
+      In Codex prompts: "In Mermaid diagrams, ALWAYS double-quote node labels that
+      contain parentheses, commas, or special characters: `A[\"label (with parens)\"]`"
+
+  - id: mermaid-latex-in-labels
+    title: "LaTeX commands in Mermaid node labels"
+    severity: high
+    symptom: "Mermaid parse error or garbled text in diagram nodes"
+    cause: |
+      Mermaid does not support LaTeX rendering. Commands like \(, \), \hat{}, \sum,
+      \frac{}{} are treated as literal text and often cause parse errors due to
+      backslashes and braces.
+    detection:
+      pattern: '\\\\(|\\\\)|\\\\hat|\\\\sum|\\\\frac|\\\\left|\\\\right'
+      context: "Inside ```mermaid blocks"
+    fix: |
+      Replace LaTeX with plain text or Unicode equivalents:
+      ```markdown
+      # BAD
+      A[Data \(x_i,y_i\)]
+      B[\hat{y}_i = b_0 + b_1 x_i]
+      C[Minimize \sum u_i^2]
+
+      # GOOD
+      A["Data (x_i, y_i)"]
+      B["ŷ_i = b_0 + b_1 x_i"]
+      C["Minimize Σ u_i²"]
+      ```
+
+      Unicode substitutions:
+      | LaTeX | Unicode |
+      |-------|---------|
+      | \hat{y} | ŷ |
+      | \sum | Σ |
+      | \prod | Π |
+      | \sigma | σ |
+      | \mu | μ |
+      | \alpha | α |
+      | \beta | β |
+      | ^2 | ² |
+      | ^3 | ³ |
+    prevention: |
+      In Codex prompts: "Mermaid does NOT support LaTeX. Use plain text or Unicode
+      (ŷ, Σ, σ, μ, α, β, ², ³) in diagram labels. Put full LaTeX formulas outside
+      the diagram in $$...$$ blocks."
+
   - id: mermaid-link-syntax
     title: "Invalid Mermaid link syntax"
     severity: high
@@ -41,12 +221,9 @@ sharp_edges:
       A[Line 1 Line 2]
       ```
 
-      Option 2: Use subgraph for grouping
+      Option 2: Use newline character `\n` in quoted labels
       ```markdown
-      subgraph Label
-        A[Line 1]
-        B[Line 2]
-      end
+      A["Line 1\nLine 2"]
       ```
     prevention: "Keep node labels short; use tables below diagram for details"
 
@@ -89,12 +266,113 @@ sharp_edges:
       ```
     prevention: "Don't use numbered lists inside node labels; describe steps in text below"
 
+  - id: mermaid-lr-overflow
+    title: "Mermaid LR flowcharts clip in narrow or split panes"
+    severity: medium
+    symptom: "Diagram has horizontal scrollbar or right side is cut off"
+    cause: |
+      `flowchart LR` (left-to-right) creates wide horizontal diagrams.
+      In Obsidian split panes (~50% screen width), the SVG is wider than
+      the container and overflows.
+    detection:
+      pattern: 'flowchart LR|graph LR'
+      context: "Inside ```mermaid blocks with 3+ nodes"
+    fix: |
+      1. **CSS fix** (in center-diagrams.css snippet):
+         ```css
+         .markdown-preview-view pre:has(.mermaid) { overflow: hidden; }
+         .markdown-preview-view .mermaid svg { max-width: 100%; height: auto; }
+         ```
+      2. **Content fix** — prefer `flowchart TD` for diagrams in split panes
+    prevention: "Prefer flowchart TD over flowchart LR. If LR is needed, ensure CSS scaling."
+
+  # === P2: Broken LaTeX ===
+
+  - id: latex-broken-color-braces
+    title: "Missing closing brace before \\right) in color-coded math"
+    severity: high
+    symptom: "LaTeX rendering error or malformed equation"
+    cause: |
+      When color-coding tokens with {\color{#hex}...}, the closing brace must come
+      BEFORE any \right) or \right] delimiter. LLM agents sometimes omit it.
+    detection:
+      pattern: '\\color\{[^}]+\}[^}]*\\right[)\]]'
+      context: "Inside $$...$$ or $...$ math blocks"
+    fix: |
+      ```markdown
+      # BAD — color group not closed
+      {\color{#0072B2}y_{t-k}\right)
+
+      # GOOD — close color group, then close delimiter
+      {\color{#0072B2}y_{t-k}}\right)
+      ```
+    prevention: |
+      "When using {\color{#hex}token}, always close the brace immediately after
+      the token: {\color{#hex}token}. Never let structural LaTeX (\right, \end, etc.)
+      fall inside the color group."
+
+  # === P3: Frontmatter ===
+
+  - id: frontmatter-placeholder-tags
+    title: "Placeholder tags left by LLM agents"
+    severity: medium
+    symptom: "Notes have generic 'topic-tags' instead of actual tags"
+    cause: |
+      LLM coding agents receive template frontmatter with placeholder tags like
+      `topic-tags` and fail to replace them with actual content-specific tags.
+    detection:
+      pattern: '^\s+- topic-tags?\s*$'
+      context: "YAML frontmatter tags array"
+    fix: |
+      Replace placeholders with actual topic tags:
+      ```yaml
+      # BAD
+      tags:
+        - ADFT
+        - week4
+        - topic-tags
+
+      # GOOD
+      tags:
+        - ADFT
+        - week4
+        - arch
+        - garch
+        - volatility
+      ```
+    prevention: |
+      In Codex prompts: "Replace ALL placeholder values in frontmatter.
+      The tag 'topic-tags' is a PLACEHOLDER — replace it with 2-4 actual
+      topic tags relevant to the note content."
+
+  - id: frontmatter-missing
+    title: "Missing or invalid frontmatter"
+    severity: medium
+    symptom: "Note not appearing in Dataview queries, missing metadata"
+    cause: "YAML frontmatter missing or malformed."
+    detection:
+      pattern: "File doesn't start with ---"
+    fix: |
+      Add frontmatter at very top of file:
+      ```yaml
+      ---
+      tags:
+        - module-code
+        - weekN
+        - actual-topic-tags
+      date: YYYY-MM-DD
+      source: Source Name
+      ---
+      ```
+    prevention: "Always start notes with frontmatter; use templates"
+
+  # === P4: TikZ ===
+
   - id: tikz-arrows-meta
     title: "TikZ arrows.meta library not supported"
     severity: high
     symptom: "TikZ diagram fails to render in Obsidian"
-    cause: |
-      TikZJax (Obsidian plugin) doesn't support arrows.meta library.
+    cause: "TikZJax (Obsidian plugin) doesn't support arrows.meta library."
     detection:
       pattern: 'arrows\.meta|\\usetikzlibrary\{.*arrows\.meta'
     fix: |
@@ -109,44 +387,54 @@ sharp_edges:
       ```
     prevention: "Use basic arrow styles: ->, -latex, -stealth (lowercase)"
 
-  - id: frontmatter-missing
-    title: "Missing or invalid frontmatter"
-    severity: medium
-    symptom: "Note not appearing in Dataview queries, missing metadata"
-    cause: |
-      YAML frontmatter missing or malformed.
-    detection:
-      pattern: "File doesn't start with ---"
-    fix: |
-      Add frontmatter at very top of file:
-      ```yaml
-      ---
-      tags:
-        - module-code
-        - weekN
-      date: YYYY-MM-DD
-      source: Source Name
-      ---
-      ```
-    prevention: "Always start notes with frontmatter; use templates"
-
   - id: wiki-link-spaces
     title: "Wiki-links with unusual characters"
     severity: low
     symptom: "Links don't resolve to files"
-    cause: |
-      File names with special characters may not match wiki-links.
+    cause: "File names with special characters may not match wiki-links."
     detection:
       pattern: '\[\[.*[<>:"/\\|?*].*\]\]'
-    fix: |
-      Ensure file names match wiki-link text exactly.
-      Avoid special characters in file names.
+    fix: "Ensure file names match wiki-link text exactly. Avoid special characters."
     prevention: "Use simple file names with hyphens instead of special characters"
 
+# === Codex Agent Prompt Additions ===
+# When using CodexCode to generate Obsidian notes, add these rules to EVERY agent prompt:
+
+codex_prompt_additions: |
+  ## OBSIDIAN SYNTAX RULES (CRITICAL — violations break rendering)
+
+  ### Math Delimiters
+  - Display math: `$$...$$` (NOT `\[...\]`)
+  - Inline math: `$...$` (NOT backticks)
+  - ANY content with \beta, \phi, subscripts (_), superscripts (^), Greek letters,
+    or LaTeX commands MUST use $...$ not backticks
+  - Backticks (`) are ONLY for code: function names, CLI commands, file paths
+
+  ### Notation Callouts
+  - Symbol format: `${\color{#hex}symbol}$` — `<span style="color: #hex">role: description</span>`
+  - Dollar signs ($), NOT backticks
+  - End with "**In English:**" summary
+
+  ### Mermaid Diagrams
+  - Double-quote labels with parentheses: `A["label (with parens)"]`
+  - NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
+  - NO `<br/>` tags
+  - NO numbered lists in labels
+  - Prefer `flowchart TD` over `flowchart LR`
+
+  ### Frontmatter
+  - Replace ALL placeholder tags (e.g., `topic-tags`) with actual topics
+  - Required fields: tags, date, source
+
 validation_checklist:
-  - "Run grep for `---\\|` in Mermaid blocks"
-  - "Check for <br/> tags in diagrams"
-  - "Verify no timeline/mindmap diagrams"
-  - "Check TikZ for arrows.meta"
-  - "Verify frontmatter exists"
-  - "Test wiki-links resolve"
+  - "P0: grep for ^\\[ and ^\\] (wrong display math delimiters)"
+  - "P0: grep for backtick-wrapped LaTeX commands and subscripts"
+  - "P0: grep for backtick-wrapped \\color{} in notation callouts"
+  - "P1: Check mermaid blocks for unquoted parentheses in labels"
+  - "P1: Check mermaid blocks for LaTeX commands"
+  - "P1: Check for <br/> tags in mermaid"
+  - "P2: Check for unclosed color braces before \\right"
+  - "P3: grep for placeholder 'topic-tags' in frontmatter"
+  - "P3: Verify frontmatter exists with required fields"
+  - "P4: Check TikZ for arrows.meta"
+  - "P4: Test wiki-links resolve"
