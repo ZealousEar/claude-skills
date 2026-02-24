@@ -14,7 +14,6 @@
 | `--json` | boolean | false | Emit JSONL event stream to stdout |
 | `--color` | always/never/auto | auto | ANSI color control |
 | `--full-auto` | boolean | false | Low-friction automation preset |
-| `--ephemeral` | boolean | false | Skip session file persistence |
 | `--skip-git-repo-check` | boolean | false | Allow non-git directories |
 | `-a, --ask-for-approval` | untrusted/on-failure/on-request/never | — | Approval timing |
 | `-s, --sandbox` | read-only/workspace-write/danger-full-access | read-only | Sandbox policy |
