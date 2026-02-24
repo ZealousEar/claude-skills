@@ -514,6 +514,7 @@ Add this block to EVERY agent prompt when generating Obsidian notes:
 - Double-quote labels with parentheses: A["label (with parens)"]
 - NO curly braces for subscripts: use y_(t-1) not y_{t-1} (braces = rhombus shape)
 - NO LaTeX in labels — use Unicode: ŷ, Σ, σ, μ, α, β, ², ³
+- NO \n in labels — renders as literal text, use em-dash (—) to join phrases
 - NO <br/> tags, NO numbered lists in labels
 - Prefer flowchart TD over flowchart LR
 
@@ -534,8 +535,11 @@ grep -rn '`[^`]*\\[a-zA-Z]' "$DIR" --include="*.md"
 # P0: Backtick-wrapped color math (notation callouts)
 grep -rn '`{.*\\color' "$DIR" --include="*.md"
 
-# P1: Mermaid — manually check all blocks for unquoted parens + LaTeX
+# P1: Mermaid — manually check all blocks for unquoted parens, LaTeX, \n
 grep -rn '```mermaid' "$DIR" --include="*.md"
+
+# P1: Literal \n in mermaid labels
+grep -rn '\\n' "$DIR" --include="*.md"
 
 # P3: Placeholder frontmatter tags
 grep -rn 'topic-tags' "$DIR" --include="*.md"
