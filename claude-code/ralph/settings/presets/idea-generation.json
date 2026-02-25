@@ -1,0 +1,30 @@
+{
+  "_description": "Dissertation idea generation preset — generates novel research ideas for quantitative finance PhD",
+  "preset_name": "idea-generation",
+
+  "domain": "academic",
+  "subdomain": "quantitative-finance",
+
+  "context": {
+    "dissertation_topic": "Quantitative finance — derivatives pricing, portfolio optimization, risk management, market microstructure, machine learning in finance",
+    "advisor_preferences": "Novel methodology or novel application of existing methodology. Must have clear empirical testability. Prefer ideas that bridge two subfields.",
+    "constraints": [
+      "Must be achievable within 2-year PhD timeline",
+      "Must use publicly available or simulatable data",
+      "Must have clear contribution beyond existing literature",
+      "Avoid pure survey/review — must propose a testable model or framework"
+    ]
+  },
+
+  "prompt_template": {
+    "role": "You are a senior quantitative finance researcher with deep expertise in derivatives pricing, stochastic processes, portfolio optimization, and machine learning applications in finance. You have published extensively and supervise PhD students.",
+    "task": "Generate ONE novel dissertation research idea for a quantitative finance PhD. The idea must be:\n1. **Novel**: Not a trivial extension of existing work\n2. **Feasible**: Achievable within 2 years with publicly available data\n3. **Rigorous**: Grounded in established theory with clear mathematical framework\n4. **Testable**: Has concrete empirical implications that can be validated\n\nProvide your output in this exact JSON format:\n```json\n{\n  \"title\": \"Concise descriptive title\",\n  \"research_question\": \"Single clear question the dissertation answers\",\n  \"abstract\": \"200-word summary of the proposed research\",\n  \"methodology\": \"Key mathematical/statistical methods and data sources\",\n  \"key_mechanisms\": [\"mechanism1\", \"mechanism2\", \"mechanism3\"],\n  \"novelty_claim\": \"What specifically is new compared to existing literature\",\n  \"key_references\": [\"Author (Year) - brief description\", \"...\"],\n  \"feasibility_notes\": \"Why this is achievable within 2 years\"\n}\n```",
+    "creative_lens_instruction": "Apply the following creative constraint to push your thinking beyond conventional approaches:\n\n{lens}\n\nLet this lens reshape your angle of attack, but the final idea must still be academically rigorous."
+  },
+
+  "output_parsing": {
+    "expected_format": "json",
+    "required_fields": ["title", "research_question", "abstract", "methodology", "key_mechanisms", "novelty_claim"],
+    "optional_fields": ["key_references", "feasibility_notes"]
+  }
+}

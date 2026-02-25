@@ -1,0 +1,56 @@
+{
+  "_description": "Ralph Loop — autonomous fresh-context iteration for dissertation idea generation",
+  "version": "1.0.0",
+
+  "paths": {
+    "llm_skill": "~/.claude/skills/llm",
+    "llm_route": "~/.claude/skills/llm/scripts/llm_route.py",
+    "rankings_csv": "~/.claude/skills/llm/benchmarks/rankings.csv",
+    "model_registry": "~/.claude/skills/llm/settings/model-registry.json",
+    "benchmark_profiles": "~/.claude/skills/ralph/settings/benchmark-profiles.json",
+    "creative_lenses": "~/.claude/skills/ralph/references/creative-lenses.yaml",
+    "state_dir": "~/.claude/skills/ralph/state"
+  },
+
+  "loop": {
+    "max_iterations": 200,
+    "max_runtime_hours": 8,
+    "cooldown_between_iterations_seconds": 5,
+    "log_format": "jsonl"
+  },
+
+  "exit_gate": {
+    "saturation_window": 10,
+    "saturation_threshold": 0.15,
+    "min_unique_ideas": 5,
+    "hard_limit_iterations": 200,
+    "hard_limit_hours": 8
+  },
+
+  "circuit_breaker": {
+    "failure_threshold": 3,
+    "cooldown_seconds": 300,
+    "half_open_max_attempts": 1
+  },
+
+  "model_selection": {
+    "domain": "academic",
+    "exploration_weight": 0.3,
+    "recency_penalty_window": 5,
+    "excluded_models": ["aristotle", "glm-5"],
+    "preferred_models": ["opus", "gemini-3-pro", "gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "sonnet"]
+  },
+
+  "idea_evaluation": {
+    "novelty_weight": 0.55,
+    "feasibility_weight": 0.45,
+    "dedup_jaccard_threshold": 0.6,
+    "min_key_terms": 5
+  },
+
+  "llm_call": {
+    "max_tokens": 4096,
+    "timeout": 600,
+    "system_prompt_max_length": 8000
+  }
+}

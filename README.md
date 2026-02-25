@@ -14,6 +14,7 @@ I keep my Claude Code skills and Spawner knowledge skills here for an agentic Ob
 │   ├── geps-v5/
 │   ├── llm/
 │   ├── obsidian/
+│   ├── ralph/
 │   └── system-augmentor/
 └── spawner/
     ├── arxiv-pdf-reader/
@@ -37,6 +38,7 @@ I keep my Claude Code skills and Spawner knowledge skills here for an agentic Ob
 | `geps-v5` | Uses graph-guided evolutionary search and tournament ranking for portfolio strategy exploration. |
 | `llm` | Routes prompts to any model across all providers — CLI-first, with auto-discovery and benchmark tracking. |
 | `obsidian` | Automates vault CRUD, graph queries, and UI control with a 3-tier workflow. |
+| `ralph` | Autonomous fresh-context loop for multi-model dissertation idea generation with saturation exit. |
 | `system-augmentor` | Audits capability gaps, researches options, debates candidates, and applies the best upgrade. |
 
 ## [Spawner](https://spawner.vibeship.co/mcp-guide) Skills (`spawner/`)
