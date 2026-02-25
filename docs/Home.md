@@ -1,21 +1,21 @@
 # Claude Skills Collection
 
-A collection of 15 custom AI agent skills built for two complementary systems: **Claude Code** (executable slash-command workflows) and **Spawner** (YAML+MD domain knowledge packs). These aren't toy examples -- they're production skills I use daily for formal theorem proving, multi-model debates, portfolio research, vault automation, deep research, academic paper processing, and more.
+A collection of 16 custom AI agent skills built for two complementary systems: **Claude Code** (executable slash-command workflows) and **Spawner** (YAML+MD domain knowledge packs). These aren't toy examples -- they're production skills I use daily for formal theorem proving, multi-model debates, portfolio research, vault automation, deep research, academic paper processing, and more.
 
 ## What's Here
 
-**7 Claude Code skills** -- executable workflows invoked via slash commands (`/prove`, `/debate`, `/research`, etc.). Each one has a `SKILL.md`, supporting scripts, config files, and reference docs. They do things: call APIs, orchestrate agents, manipulate files, run tournaments.
+**8 Claude Code skills** -- executable workflows invoked via slash commands (`/prove`, `/debate`, `/research`, `/llm`, etc.). Each one has a `SKILL.md`, supporting scripts, config files, and reference docs. They do things: call APIs, orchestrate agents, manipulate files, run tournaments.
 
 **8 Spawner skills** -- domain knowledge packs that Claude reads as reference context. They don't execute anything themselves. Instead, they encode expertise about what works, what breaks, and how tools fit together. Think of them as the institutional memory that prevents you from making the same mistake twice.
 
 ## Quick Navigation
 
-- [Claude Code Skills](Claude-Code-Skills.md) -- Deep dive on the 7 executable skills
+- [Claude Code Skills](Claude-Code-Skills.md) -- Deep dive on the 8 executable skills
 - [Spawner Skills](Spawner-Skills.md) -- Deep dive on the 8 knowledge packs
 - [Architecture](Architecture.md) -- How the two systems work together
 - [Getting Started](Getting-Started.md) -- Installation and usage guide
 
-## All 15 Skills at a Glance
+## All 16 Skills at a Glance
 
 ### Claude Code Skills (Executable)
 
@@ -26,6 +26,7 @@ A collection of 15 custom AI agent skills built for two complementary systems: *
 | **convolutional-debate-agent** | `/debate` | 5 solver drafts, 4 adversarial reviews, reliability-weighted scoring |
 | **deep-research** | `/research` | Multi-source extraction (YouTube, arXiv, SSRN, PDF, web) + synthesis into research notes |
 | **geps-v5** | `/geps` | Graph-guided evolutionary search for portfolio strategies |
+| **llm** | `/llm` | Universal model router — CLI-first, auto-discovery, benchmark tracking |
 | **obsidian** | `/obsidian` | 3-tier vault automation (file ops + CLI + URIs) |
 | **system-augmentor** | `/improve` | Self-improvement agent that audits gaps and installs solutions |
 
@@ -45,3 +46,4 @@ A collection of 15 custom AI agent skills built for two complementary systems: *
 ## Navigation
 
 - [Claude Code Skills](Claude-Code-Skills.md) | [Spawner Skills](Spawner-Skills.md) | [Architecture](Architecture.md) | [Getting Started](Getting-Started.md)
+
