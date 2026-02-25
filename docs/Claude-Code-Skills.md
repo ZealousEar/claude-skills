@@ -310,6 +310,59 @@ They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/r
 
 ---
 
+## ralph
+
+**Purpose:** Autonomous fresh-context loop for multi-model dissertation idea generation. Runs hundreds of independent LLM iterations, each in a clean context, with automatic saturation detection to know when to stop.
+
+**How it works:** Each iteration discards the previous context entirely -- state lives on disk, not in any model's memory. The bash orchestrator (`ralph.sh`) picks a model weighted by academic benchmarks with stochastic exploration, builds a prompt injected with one of 20 creative divergence lenses (inversion, cross-pollination, failure-mode analysis, scale shift, etc.), calls the model, scores the response for novelty and feasibility, deduplicates against all prior ideas via Jaccard similarity, updates a cross-iteration memory taxonomy, and records circuit breaker state. The loop self-terminates when idea quality saturates, the budget is exhausted, or all models are circuit-broken.
+
+Named after the Ralph Wiggum Loop pattern: instead of managing growing context, throw it away and start fresh.
+
+**Key features:**
+- **Fresh context per iteration** -- no context window degradation over hundreds of iterations
+- **Multi-model rotation** -- Claude, GPT, Gemini, Kimi, MiniMax via benchmark-weighted stochastic selection
+- **20 creative lenses** -- divergence-forcing constraints prevent mode collapse (inversion, cross-pollination, failure mode, scale shift, data-first, adversarial, regime-aware, etc.)
+- **Saturation exit** -- automatically stops when rolling marginal idea quality plateaus below threshold
+- **Per-model circuit breaker** -- 3-state (closed/open/half-open) with exponential backoff cooldown
+- **Session resume** -- pick up where you left off after interruption
+- **Cross-iteration memory** -- 4-type taxonomy (patterns, decisions, fixes, warning signs) accumulates across iterations
+- **Jaccard deduplication** -- prevents near-duplicate ideas from inflating the idea bank
+
+**Example invocation:**
+```
+/ralph
+/ralph --iterations 20
+/ralph --preset idea-generation --domain academic
+```
+
+**File structure:**
+```
+~/.claude/skills/ralph/
+├── SKILL.md
+├── scripts/
+│   ├── ralph.sh                 # Bash orchestrator (7-step iteration loop)
+│   ├── session_manager.py       # LLM calls + session lifecycle
+│   ├── circuit_breaker.py       # Per-model 3-state circuit breaker
+│   ├── model_selector.py        # Benchmark-weighted stochastic selection
+│   ├── prompt_builder.py        # Prompt assembly + 20 creative lenses
+│   ├── exit_evaluator.py        # Saturation detection + budget limits
+│   ├── idea_evaluator.py        # Novelty/feasibility scoring + dedup
+│   ├── memory_indexer.py        # Cross-iteration learning (4-type taxonomy)
+│   └── benchmark_sync.py        # Benchmark data freshness check
+├── settings/
+│   ├── ralph-config.json        # Loop limits, exit gates, circuit breaker params
+│   ├── benchmark-profiles.json  # Domain-specific model reliability weights
+│   └── presets/
+│       └── idea-generation.json # Dissertation preset (academic, quant finance)
+└── references/
+    ├── architecture.md          # Design rationale + failure modes
+    └── creative-lenses.yaml     # 20 curated divergence lenses
+```
+
+**Requirements:** `/llm` skill (model routing + benchmarks), `/debate` skill's `benchmark-profiles.json` (domain weights), Python 3.10+
+
+---
+
 ## system-augmentor
 
 **Purpose:** Self-improvement agent. Audits your Claude Code system for capability gaps, researches solutions online, evaluates candidates via the debate protocol, and implements the winner.
