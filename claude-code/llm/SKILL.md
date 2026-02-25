@@ -70,6 +70,13 @@ Models are routed to providers in this priority order:
 
 Use `--route <provider>` to override the default route for any model. For example, `--route openrouter` forces a CLI model through OpenRouter instead.
 
+> **Important: CLI tools must be installed on the machine running Claude Code.** The CLI-first routing for GPT models (Codex CLI) and Kimi models (Kimi CLI) requires those CLIs to be installed and authenticated locally. If you're running Claude Code on a remote server, CI runner, or any machine without these CLIs, those routes will silently fail. Use `--route openrouter` to force API-based routing instead, or install the CLIs:
+> ```bash
+> npm install -g @openai/codex && codex login     # GPT models
+> npm install -g kimi-cli && kimi login            # Kimi models
+> ```
+> Claude CLI is always available since you're already running inside Claude Code.
+
 ## Model Tiers
 
 | Tier | Description | Auto-update | Default visibility |
