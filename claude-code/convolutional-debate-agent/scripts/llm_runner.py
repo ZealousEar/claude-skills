@@ -28,12 +28,58 @@ from pathlib import Path
 # Default paths
 SKILL_DIR = Path.home() / ".claude" / "skills" / "convolutional-debate-agent"
 SETTINGS_PATH = SKILL_DIR / "settings" / "model-settings.json"
+PROMPTING_PATH = SKILL_DIR / "settings" / "model-prompting.json"
 ENV_PATH = SKILL_DIR / "api-keys" / "provider-keys.env"
 OAUTH_TOKEN_PATH = SKILL_DIR / "api-keys" / "openai-oauth.json"
 
 # Defaults
 DEFAULT_MAX_TOKENS = 4096
 DEFAULT_TEMPERATURE = 0.7
+DEFAULT_CLI_TIMEOUT = 600
+
+# Cached prompting config (loaded once per process)
+_PROMPTING_CACHE: dict | None = None
+
+
+def load_prompting_config() -> dict:
+    """Load per-model prompting overrides from model-prompting.json."""
+    global _PROMPTING_CACHE
+    if _PROMPTING_CACHE is None:
+        if PROMPTING_PATH.exists():
+            _PROMPTING_CACHE = json.loads(PROMPTING_PATH.read_text())
+        else:
+            _PROMPTING_CACHE = {"defaults": {}, "models": {}}
+    return _PROMPTING_CACHE
+
+
+def apply_prompting_overrides(
+    model_name: str,
+    system: str | None,
+    temperature: float,
+    prompting_cfg: dict,
+) -> tuple[str | None, float]:
+    """Apply model-specific system prompt wrapping and temperature override."""
+    model_cfg = prompting_cfg.get("models", {}).get(model_name, {})
+
+    # Temperature override (null means keep caller's default)
+    temp_override = model_cfg.get("temperature")
+    if temp_override is not None:
+        temperature = temp_override
+
+    # System prompt wrapping
+    preamble = model_cfg.get("system_preamble")
+    suffix = model_cfg.get("system_suffix")
+    if preamble or suffix:
+        parts = []
+        if preamble:
+            parts.append(preamble)
+        if system:
+            parts.append(system)
+        if suffix:
+            parts.append(suffix)
+        system = "\n\n".join(parts)
+
+    return system, temperature
 
 
 def load_env_file(env_path: Path) -> dict[str, str]:
@@ -158,6 +204,8 @@ def resolve_model(model_name: str, settings: dict) -> dict:
         "reasoning_effort": model_cfg.get("reasoning_effort"),
         "thinking_level": model_cfg.get("thinking_level"),
         "thinking": model_cfg.get("thinking"),
+        "reasoning": model_cfg.get("reasoning"),
+        "grounding": model_cfg.get("grounding"),
     }
 
 
@@ -187,8 +235,16 @@ def call_openai_compatible(
     system: str | None = None,
     temperature: float = DEFAULT_TEMPERATURE,
     max_tokens: int = DEFAULT_MAX_TOKENS,
+    reasoning: dict | None = None,
 ) -> str:
-    """Call an OpenAI-compatible chat completions API."""
+    """Call an OpenAI-compatible chat completions API.
+
+    The optional `reasoning` dict is passed through as-is to the request body.
+    OpenRouter uses this to enable provider-specific reasoning modes:
+      - Claude: {"max_tokens": 16000}
+      - GPT:    {"effort": "high"}
+      - Gemini: {"effort": "high"}
+    """
     messages = []
     if system:
         messages.append({"role": "system", "content": system})
@@ -208,6 +264,8 @@ def call_openai_compatible(
         "temperature": temperature,
         "max_tokens": max_tokens,
     }
+    if reasoning:
+        body["reasoning"] = reasoning
 
     resp = _http_request(url, headers, body)
 
@@ -257,8 +315,13 @@ def call_google(
     temperature: float = DEFAULT_TEMPERATURE,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     thinking_level: str | None = None,
+    grounding: bool = False,
 ) -> str:
-    """Call the Google Generative AI API."""
+    """Call the Google Generative AI API.
+
+    When grounding=True, enables Google Search grounding which allows the model
+    to cite web sources in its response.
+    """
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
         f"models/{model_id}:generateContent?key={api_key}"
@@ -278,6 +341,8 @@ def call_google(
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": generation_config,
     }
+    if grounding:
+        body["tools"] = [{"google_search": {}}]
     if system:
         body["systemInstruction"] = {"parts": [{"text": system}]}
 
@@ -299,7 +364,7 @@ def call_codex(
     model_id: str,
     prompt: str,
     system: str | None = None,
-    timeout: int = 300,
+    timeout: int = DEFAULT_CLI_TIMEOUT,
     reasoning_effort: str | None = None,
 ) -> str:
     """Call an OpenAI model via the locally installed Codex CLI.
@@ -381,7 +446,7 @@ def call_kimi(
     model_id: str,
     prompt: str,
     system: str | None = None,
-    timeout: int = 300,
+    timeout: int = DEFAULT_CLI_TIMEOUT,
     thinking: bool = False,
 ) -> str:
     """Call a Kimi model via the locally installed Kimi CLI.
@@ -433,7 +498,7 @@ def call_claude_cli(
     model_id: str,
     prompt: str,
     system: str | None = None,
-    timeout: int = 300,
+    timeout: int = DEFAULT_CLI_TIMEOUT,
 ) -> str:
     """Call a Claude model via the locally installed Claude Code CLI.
 
@@ -483,6 +548,83 @@ def call_claude_cli(
         raise RuntimeError(f"Claude CLI timed out after {timeout}s")
 
 
+def _find_fallback_route(model_name: str, settings: dict) -> dict | None:
+    """Find a non-CLI API fallback route for a model.
+
+    Looks up the model's ``routes`` dict for a route backed by a real API
+    (not a CLI wrapper).  Prefers ``openrouter``, then any other API route.
+    Returns a resolved provider config dict (same shape as ``resolve_model``
+    output) or ``None`` if no fallback exists.
+    """
+    CLI_STYLES = {"codex", "kimi-cli", "claude-cli", "claude-code", "aristotle"}
+
+    models = settings.get("models", {})
+    model_cfg = models.get(model_name)
+    if not model_cfg:
+        return None
+
+    routes = model_cfg.get("routes", {})
+    providers = settings.get("providers", {})
+
+    # Prefer openrouter, then try any other non-CLI route
+    candidates = []
+    for route_name, route_cfg in routes.items():
+        provider_cfg = providers.get(route_name, {})
+        api_style = provider_cfg.get("api_style", route_name)
+        if api_style in CLI_STYLES:
+            continue
+        candidates.append((route_name, route_cfg, provider_cfg, api_style))
+
+    if not candidates:
+        return None
+
+    # Sort: openrouter first
+    candidates.sort(key=lambda c: (0 if c[0] == "openrouter" else 1, c[0]))
+    route_name, route_cfg, provider_cfg, api_style = candidates[0]
+
+    return {
+        "model_name": model_name,
+        "provider": route_name,
+        "api_model": route_cfg.get("api_model", model_name),
+        "base_url": provider_cfg.get("base_url", ""),
+        "env_key": provider_cfg.get("env_key", ""),
+        "api_style": api_style,
+        "reasoning_effort": model_cfg.get("reasoning_effort"),
+        "thinking_level": model_cfg.get("thinking_level"),
+        "thinking": model_cfg.get("thinking"),
+        "reasoning": model_cfg.get("reasoning"),
+        "grounding": model_cfg.get("grounding"),
+    }
+
+
+def _call_api_route(
+    model_config: dict,
+    prompt: str,
+    system: str | None,
+    temperature: float,
+    max_tokens: int,
+    env_path: Path = ENV_PATH,
+) -> str:
+    """Call a model via its API route (non-CLI). Extracted for fallback reuse."""
+    api_model = model_config["api_model"]
+    api_style = model_config.get("api_style", "openai")
+    api_key = get_api_key(model_config["env_key"], env_path)
+
+    if api_style == "anthropic":
+        return call_anthropic(api_key, api_model, prompt, system, temperature, max_tokens)
+    elif api_style == "google":
+        return call_google(
+            api_key, api_model, prompt, system, temperature=1.0,
+            max_tokens=max_tokens, thinking_level=model_config.get("thinking_level"),
+            grounding=bool(model_config.get("grounding")),
+        )
+    else:
+        return call_openai_compatible(
+            model_config["base_url"], api_key, api_model, prompt, system, temperature, max_tokens,
+            reasoning=model_config.get("reasoning"),
+        )
+
+
 def call_model(
     model_config: dict,
     prompt: str,
@@ -490,19 +632,49 @@ def call_model(
     temperature: float = DEFAULT_TEMPERATURE,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     env_path: Path = ENV_PATH,
+    timeout: int = DEFAULT_CLI_TIMEOUT,
+    settings: dict | None = None,
 ) -> str:
-    """Route to the appropriate API based on provider config."""
+    """Route to the appropriate API based on provider config.
+
+    For CLI-based routes (codex, kimi-cli, claude-cli), wraps the call in a
+    try/except.  On timeout or crash, automatically falls back to an API route
+    (e.g. OpenRouter) if one is configured for that model in *settings*.
+    """
+    # Apply per-model prompting overrides (temperature, system preamble/suffix)
+    prompting_cfg = load_prompting_config()
+    system, temperature = apply_prompting_overrides(
+        model_config["model_name"], system, temperature, prompting_cfg
+    )
+
     api_model = model_config["api_model"]
     api_style = model_config.get("api_style", "openai")
 
-    # CLI-based routes — no API key needed
-    if api_style == "codex":
-        return call_codex(api_model, prompt, system, reasoning_effort=model_config.get("reasoning_effort"))
-    if api_style == "kimi-cli":
-        return call_kimi(api_model, prompt, system, thinking=bool(model_config.get("thinking")))
-    if api_style == "claude-cli":
-        return call_claude_cli(api_model, prompt, system)
+    # CLI-based routes — no API key needed, with auto-fallback on failure
+    if api_style in ("codex", "kimi-cli", "claude-cli"):
+        try:
+            if api_style == "codex":
+                return call_codex(api_model, prompt, system, timeout=timeout, reasoning_effort=model_config.get("reasoning_effort"))
+            elif api_style == "kimi-cli":
+                return call_kimi(api_model, prompt, system, timeout=timeout, thinking=bool(model_config.get("thinking")))
+            else:
+                return call_claude_cli(api_model, prompt, system, timeout=timeout)
+        except RuntimeError as e:
+            if "not found on PATH" in str(e):
+                raise  # setup issue, don't fallback
+            # Timeout, non-zero exit, empty response, crash → try API fallback
+            if settings:
+                fallback = _find_fallback_route(model_config["model_name"], settings)
+                if fallback:
+                    print(
+                        f"WARNING: {api_style} failed ({e}), falling back to "
+                        f"{fallback['provider']}",
+                        file=sys.stderr,
+                    )
+                    return _call_api_route(fallback, prompt, system, temperature, max_tokens, env_path)
+            raise
 
+    # API-based routes
     api_key = get_api_key(model_config["env_key"], env_path)
 
     if api_style == "anthropic":
@@ -512,11 +684,13 @@ def call_model(
         return call_google(
             api_key, api_model, prompt, system, temperature=1.0,
             max_tokens=max_tokens, thinking_level=model_config.get("thinking_level"),
+            grounding=bool(model_config.get("grounding")),
         )
     else:
         # Default to OpenAI-compatible (covers OpenRouter, direct OpenAI, Moonshot, etc.)
         return call_openai_compatible(
-            model_config["base_url"], api_key, api_model, prompt, system, temperature, max_tokens
+            model_config["base_url"], api_key, api_model, prompt, system, temperature, max_tokens,
+            reasoning=model_config.get("reasoning"),
         )
 
 
@@ -560,6 +734,7 @@ def main() -> None:
     parser.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
     parser.add_argument("--settings", type=Path, default=SETTINGS_PATH, help="Path to model-settings.json")
     parser.add_argument("--env-file", type=Path, default=ENV_PATH, help="Path to API keys env file")
+    parser.add_argument("--timeout", type=int, default=DEFAULT_CLI_TIMEOUT, help="CLI subprocess timeout in seconds (default: 600)")
     parser.add_argument("--list-models", action="store_true", help="List available models and exit")
     parser.add_argument("--json", action="store_true", help="Wrap output in JSON with model metadata")
     args = parser.parse_args()
@@ -603,6 +778,8 @@ def main() -> None:
             temperature=args.temperature,
             max_tokens=args.max_tokens,
             env_path=args.env_file,
+            timeout=args.timeout,
+            settings=settings,
         )
     except Exception as e:
         print(f"Error calling {args.model}: {e}", file=sys.stderr)
