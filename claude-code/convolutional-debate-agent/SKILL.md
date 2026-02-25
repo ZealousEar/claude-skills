@@ -202,6 +202,20 @@ Benchmark profiles and domain-specific weights are in `settings/benchmark-profil
 - **Hybrid**: top-two gap < 0.40 triggers synthesis from both
 - **Insufficient**: top score < 1.20 or all eliminated triggers follow-up questions
 
+### Refreshing Benchmark Weights
+
+The model weights in `settings/benchmark-profiles.json` are derived from [Vals.ai](https://vals.ai) benchmarks (scraped Feb 2026). To refresh when models update:
+
+1. Fetch fresh benchmarks via `/llm`:
+   ```bash
+   python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --list --top 20
+   ```
+2. Compare key metrics (GPQA, Arena Elo, SWE-bench, AIME, MMLU Pro) against the weights in `benchmark-profiles.json`
+3. Update `models.<model_name>.weight` and `benchmarks` fields for any models with significant changes
+4. Update `budget_debater_models` D1 assignments if the strongest non-Claude model changed for a domain
+
+The `/llm` skill's `benchmarks/rankings.csv` aggregates data from Chatbot Arena, Epoch AI, OpenRouter, and Artificial Analysis with BetterBench quality tiers.
+
 ## File Structure
 
 ```
