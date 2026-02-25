@@ -90,6 +90,26 @@ Persistent log of known errors, root causes, and solutions. Consult before debug
 
 ---
 
+## Codex CLI — Timeout Cascade in Parallel Batch (2026-02-25)
+
+**Problem:** During a `/debate` run with 30k token budget, Codex CLI timed out at 300s. Claude Code's parallel batch semantics cancelled ALL sibling Bash calls in the same batch. The orchestrator fell back to Task tool (Claude only), so D2 (gpt-5.2) and D3 (gpt-5.3-codex) both ran as Opus/Sonnet instead of their intended models — losing multi-model independence.
+
+**Root causes:**
+1. CLI timeout default (300s) too low for high token budgets (30k tokens = long generation)
+2. No auto-fallback — `RuntimeError` from timeout propagated and killed the call
+3. Parallel batch failure propagation — one Bash subprocess timeout cancels all siblings in Claude Code
+4. No protocol guidance on error handling or batch isolation
+
+**Solutions applied (v5):**
+1. **Increased CLI timeouts:** `DEFAULT_CLI_TIMEOUT = 600` in both `llm_runner.py` and `llm_route.py`. All CLI calls (codex, kimi, claude-cli) now default to 600s instead of 300s.
+2. **Auto CLI→API fallback:** When a CLI call fails (timeout, crash, non-zero exit), the runner automatically retries via the model's API fallback route (typically OpenRouter). Does NOT fallback for "not found on PATH" (setup issue). Prints `WARNING: <cli> failed (<error>), falling back to <provider>` to stderr.
+3. **Batch isolation in protocol:** `debate.md` Steps 3 and 4 now mandate each external-model Bash call as a **separate Bash invocation** (separate tool call). This prevents cascade cancellation.
+4. **Fallback detection:** Step 5 now checks stderr for fallback warnings and notes them in the debate summary.
+
+**Key detail:** The auto-fallback preserves the model family (e.g., gpt-5.3-codex via codex → openai/gpt-5.3 via OpenRouter). The underlying model is the same, just accessed via API instead of CLI.
+
+---
+
 ## Codex CLI — Network Errors on Model List Refresh
 
 **Problem:** `ERROR codex_core::models_manager::manager: failed to refresh available models: stream disconnected` appears at startup.
