@@ -1,0 +1,71 @@
+{
+  "_description": "Per-model prompting optimizations. Loaded by llm_route.py to auto-apply temperature overrides and system prompt wrapping.",
+  "defaults": {
+    "temperature": 0.7,
+    "format": "plain",
+    "system_preamble": null,
+    "system_suffix": null
+  },
+  "models": {
+    "opus": {
+      "temperature": null,
+      "format": "xml",
+      "system_preamble": "Use XML tags to structure your reasoning. Be thorough but avoid unnecessary hedging.",
+      "system_suffix": null
+    },
+    "sonnet": {
+      "temperature": null,
+      "format": "xml",
+      "system_preamble": null,
+      "system_suffix": null
+    },
+    "haiku": {
+      "temperature": null,
+      "format": "xml",
+      "system_preamble": null,
+      "system_suffix": null
+    },
+    "gpt-5.3-codex": {
+      "temperature": null,
+      "format": "ctco",
+      "system_preamble": "Follow the CTCO framework: provide Context, then Task, then Constraints, then Output format. Be concrete with length constraints.",
+      "system_suffix": null
+    },
+    "gpt-5.2": {
+      "temperature": null,
+      "format": "ctco",
+      "system_preamble": "Follow the CTCO framework: provide Context, then Task, then Constraints, then Output format. Be concrete with length constraints.",
+      "system_suffix": null
+    },
+    "gemini-3-pro": {
+      "temperature": 1.0,
+      "format": "xml",
+      "system_preamble": "Be concise and direct. Avoid verbose analysis. Place critical constraints after context.",
+      "system_suffix": null
+    },
+    "gemini-3-flash": {
+      "temperature": 1.0,
+      "format": "xml",
+      "system_preamble": "Be concise and direct. Avoid verbose analysis.",
+      "system_suffix": null
+    },
+    "kimi-2.5": {
+      "temperature": 1.0,
+      "format": "plain",
+      "system_preamble": null,
+      "system_suffix": null
+    },
+    "glm-5": {
+      "temperature": null,
+      "format": "plain",
+      "system_preamble": null,
+      "system_suffix": null
+    },
+    "minimax-m2.5": {
+      "temperature": 1.0,
+      "format": "plain",
+      "system_preamble": null,
+      "system_suffix": null
+    }
+  }
+}

@@ -191,6 +191,31 @@ mkdir -p .credentials/cookies
 ### geps-v5
 No additional setup -- uses debate skill's `llm_runner.py` and Python stdlib only.
 
+### llm
+
+```bash
+# Install CLIs for zero-cost routing (any combination works)
+npm install -g @anthropic-ai/claude-code   # claude login
+npm install -g @openai/codex               # codex login
+npm install -g kimi-cli                     # kimi login
+
+# Set API keys for non-CLI providers
+export GOOGLE_API_KEY="your-key"       # Gemini models
+export OPENROUTER_API_KEY="your-key"   # GLM-5, MiniMax, etc.
+
+# Verify
+python3 ~/.claude/skills/llm/scripts/llm_route.py --list-models
+python3 ~/.claude/skills/llm/scripts/llm_route.py --model sonnet --prompt "Hello"
+
+# Optional: auto-discover new models
+python3 ~/.claude/skills/llm/scripts/discover_models.py --apply
+
+# Optional: fetch benchmark rankings
+python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py
+```
+
+Falls back to the debate agent's `provider-keys.env` for API keys if env vars aren't set.
+
 ### obsidian
 - Obsidian must be installed (for Tier 2/3)
 - Obsidian 1.12+ required for CLI commands
