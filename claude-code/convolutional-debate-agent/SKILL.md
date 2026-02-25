@@ -90,27 +90,40 @@ User Question
 
 ## Model Routing
 
-Configured in `settings/model-settings.json`. Five profiles:
+Configured in `settings/model-settings.json`. Seven profiles:
 
-| Profile           | Solver A | Solver B          | Solver C               | Solver D  | Solver E      | Debaters (fallback) | Synthesizer |
-|-------------------|----------|-------------------|------------------------|-----------|---------------|---------------------|-------------|
-| multi_model       | opus     | gpt-5.3-codex codex | gpt-5.2 | kimi-2.5  | gemini-3-pro  | sonnet (static)     | opus        |
-| multi_model_full  | opus     | gpt-5.3-codex codex | gpt-5.2 | kimi-2.5  | gemini-3-pro  | mixed (static)      | opus        |
-| balanced          | opus     | opus              | opus                   | opus      | opus          | sonnet (static)     | opus        |
-| cost_optimized    | sonnet   | sonnet            | sonnet                 | sonnet    | sonnet        | haiku (static)      | sonnet      |
-| max_quality       | opus     | gpt-5.3-codex codex | gpt-5.2 | kimi-2.5  | gemini-3-pro  | mixed (static)      | opus        |
+| Profile           | Solver A        | Solver B          | Solver C        | Solver D  | Solver E      | Debaters (fallback)       | Synthesizer    |
+|-------------------|-----------------|-------------------|-----------------|-----------|---------------|---------------------------|----------------|
+| multi_model       | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | sonnet (static)           | opus           |
+| multi_model_full  | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
+| balanced          | opus            | opus              | opus            | opus      | opus          | sonnet (static)           | opus           |
+| cost_optimized    | sonnet          | sonnet            | sonnet          | sonnet    | sonnet        | haiku (static)            | sonnet         |
+| max_quality       | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
+| **budget**        | gpt-5.3-codex   | gpt-5.2           | kimi-2.5        | gemini-3-pro | glm-5      | 2×GPT + Kimi + Gemini    | gpt-5.3-codex  |
 
 **Standardized debater assignment:** All debaters use exactly **2 Opus + 2 ChatGPT** models to eliminate intelligence gaps between evaluators. When a domain is detected (Step 1.5), the debater assignment from `benchmark-profiles.json` overrides profile defaults, but all domains now use the standardized 2+2 split:
 
 | Domain   | D1 (Consistency)       | D2 (Counterexample)    | D3 (Constraint)        | D4 (Evidence)    |
 |----------|------------------------|------------------------|------------------------|------------------|
-| coding   | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
-| math     | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
-| finance  | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
-| legal    | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
-| academic | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
-| strategy | gpt-5.2 | opus                   | gpt-5.3-codex            | opus             |
-| general  | opus                   | gpt-5.2 | gpt-5.3-codex            | opus             |
+| coding   | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| math     | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| finance  | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| legal    | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| academic | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| strategy | gpt-5.2                | opus                   | gpt-5.3-codex          | opus             |
+| general  | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+
+**Budget mode debater assignment:** When the `budget` profile is active, `budget_debater_models` replaces `debater_models` — zero Claude in any slot:
+
+| Domain   | D1 (Consistency)       | D2 (Counterexample)    | D3 (Constraint)        | D4 (Evidence)    |
+|----------|------------------------|------------------------|------------------------|------------------|
+| coding   | gpt-5.3-codex          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
+| math     | gemini-3-pro           | gpt-5.2                | gpt-5.3-codex          | kimi-2.5         |
+| finance  | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
+| legal    | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
+| academic | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
+| strategy | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
+| general  | gpt-5.3-codex          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
 
 ### Supported Providers
 
@@ -224,6 +237,20 @@ Benchmark profiles and domain-specific weights are in `settings/benchmark-profil
 ```
 
 ## Changelog
+
+### v5 — 2026-02-25 (CLI Timeout Cascade Fix + Budget Mode)
+
+**1. CLI timeout increase** — `DEFAULT_CLI_TIMEOUT` raised from 300s to 600s in both `llm_runner.py` and `llm_route.py`. Codex, Kimi, and Claude CLI calls all default to 600s. A `--timeout` CLI flag is now available on both scripts for explicit control.
+
+**2. Auto CLI→API fallback** — When a CLI call fails (timeout, crash, non-zero exit, empty response), the runner automatically retries via the model's API fallback route (e.g., OpenRouter). Skips fallback for "not found on PATH" (setup issue, not transient). Prints `WARNING` to stderr so the orchestrator can detect and report it. New helpers: `_find_fallback_route()` and `_call_api_route()` in both Python files.
+
+**3. Protocol batch isolation** — `debate.md` Steps 3 and 4 now mandate each external-model Bash call as a **separate Bash invocation** (separate tool call). This prevents Claude Code's parallel batch cancellation from cascading one CLI timeout to all sibling calls.
+
+**4. Fallback detection in scoring** — Step 5 now checks stderr for fallback warnings and notes any CLI→API fallbacks in the debate summary, so the user knows which models ran via non-primary routes.
+
+**5. Budget mode** — New `budget` profile: zero Claude subagents. All solver/debater/synthesizer/formalizer calls route via Codex CLI, Kimi CLI, Google API, or OpenRouter. The only Claude instance is the main orchestrator. Domain-specific `budget_debater_models` added to all 7 domains in benchmark-profiles.json. Formalizer falls back to `budget_formalizer_model` (gpt-5.3-codex). Debate summary shows "Mode: budget (no Claude subagents)" when active.
+
+**Trigger:** Codex CLI timed out at 300s during a 30k-token debate run, cascading to cancel all sibling Bash calls. See `errors.md` for full incident details.
 
 ### v4 — 2026-02-08 (Post-Evaluation Overhaul)
 

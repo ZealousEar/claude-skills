@@ -21,6 +21,10 @@
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SWE-bench #1, logical bug detection), D2=GPT-5.2 (IOI-class edge cases), D3=GPT-5.3 (code-specialized spec compliance), D4=Opus (broad comparison with deepest reasoning)"
       },
+      "budget_debater_models": {
+        "models": ["gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.3 (code-specialized, strongest non-Claude for SWE), D2=GPT-5.2 (IOI-class edge cases), D3=Kimi (long-context constraint checking), D4=Gemini (broad comparison)."
+      },
       "models": {
         "opus": {
           "weight": 1.00,
@@ -64,6 +68,10 @@
       "debater_models": {
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (ProofBench #2, formal logic), D2=GPT-5.2 (quantitative reasoning, MMMU), D3=GPT-5.3 (computational verification), D4=Opus (broadest math reasoning for comparison)"
+      },
+      "budget_debater_models": {
+        "models": ["gemini-3-pro", "gpt-5.2", "gpt-5.3-codex", "kimi-2.5"],
+        "_rationale": "Budget mode: no Claude. D1=Gemini (AIME #1, strongest math model), D2=GPT-5.2 (quantitative reasoning), D3=GPT-5.3 (computational verification), D4=Kimi (clarity and simplification)."
       },
       "models": {
         "opus": {
@@ -109,6 +117,10 @@
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (Finance Agent #1, financial logic), D2=GPT-5.2 (adversarial risk thinking), D3=GPT-5.3 (regulatory constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
       },
+      "budget_debater_models": {
+        "models": ["gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (Poker Agent #1, strategic risk thinking), D2=GPT-5.3 (regulatory constraint checking), D3=Kimi (CorpFin coverage), D4=Gemini (MortgageTax #1, broad evidence)."
+      },
       "models": {
         "opus": {
           "weight": 1.00,
@@ -152,6 +164,10 @@
       "debater_models": {
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (TaxEval #1, legal logic), D2=GPT-5.2 (adversarial regulatory reasoning), D3=GPT-5.3 (risk analysis, constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "budget_debater_models": {
+        "models": ["gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (strong reasoning), D2=GPT-5.3 (risk analysis), D3=Kimi (clarity), D4=Gemini (LegalBench #1, strongest legal model)."
       },
       "models": {
         "opus": {
@@ -197,6 +213,10 @@
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SAGE #1, methodology compliance), D2=GPT-5.2 (MMMU cross-domain counterexamples), D3=GPT-5.3 (literature constraint checking), D4=Opus (deepest reasoning for evidence synthesis)"
       },
+      "budget_debater_models": {
+        "models": ["gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (MMMU cross-domain), D2=GPT-5.3 (literature constraint checking), D3=Kimi (long-context synthesis), D4=Gemini (MMLU Pro #1, broadest academic coverage)."
+      },
       "models": {
         "opus": {
           "weight": 0.90,
@@ -241,6 +261,10 @@
         "models": ["gpt-5.2", "opus", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=GPT-5.2 (strategic logic, Poker-class reasoning), D2=Opus (adversarial decision analysis), D3=GPT-5.3 (constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
       },
+      "budget_debater_models": {
+        "models": ["gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (Poker Agent #1, strategic reasoning), D2=GPT-5.3 (constraint checking), D3=Kimi (decision matrix clarity), D4=Gemini (historical precedent and broad knowledge)."
+      },
       "models": {
         "opus": {
           "weight": 0.85,
@@ -284,6 +308,10 @@
       "debater_models": {
         "models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (strongest overall reasoning), D2=GPT-5.2 (adversarial capability), D3=GPT-5.3 (constraint compliance), D4=Opus (deepest reasoning for evidence comparison)"
+      },
+      "budget_debater_models": {
+        "models": ["gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+        "_rationale": "Budget mode: no Claude. D1=GPT-5.3 (strongest non-Claude overall), D2=GPT-5.2 (adversarial capability), D3=Kimi (constraint checking), D4=Gemini (broad evidence)."
       },
       "models": {
         "opus": {
