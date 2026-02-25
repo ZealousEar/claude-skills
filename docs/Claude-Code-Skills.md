@@ -316,7 +316,7 @@ They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/r
 
 **How it works:** Each iteration discards the previous context entirely -- state lives on disk, not in any model's memory. The bash orchestrator (`ralph.sh`) picks a model weighted by academic benchmarks with stochastic exploration, builds a prompt injected with one of 20 creative divergence lenses (inversion, cross-pollination, failure-mode analysis, scale shift, etc.), calls the model, scores the response for novelty and feasibility, deduplicates against all prior ideas via Jaccard similarity, updates a cross-iteration memory taxonomy, and records circuit breaker state. The loop self-terminates when idea quality saturates, the budget is exhausted, or all models are circuit-broken.
 
-Named after the Ralph Wiggum Loop pattern: instead of managing growing context, throw it away and start fresh.
+Named after the [Ralph Wiggum Loop](https://ghuntley.com/ralph/) by [Geoffrey Huntley](https://github.com/ghuntley/how-to-ralph-wiggum): instead of managing growing context, throw it away and start fresh.
 
 **Key features:**
 - **Fresh context per iteration** -- no context window degradation over hundreds of iterations
@@ -360,6 +360,8 @@ Named after the Ralph Wiggum Loop pattern: instead of managing growing context, 
 ```
 
 **Requirements:** `/llm` skill (model routing + benchmarks), `/debate` skill's `benchmark-profiles.json` (domain weights), Python 3.10+
+
+**Acknowledgments:** All code is original. Architectural ideas adapted from [frankbria/ralph-claude-code](https://github.com/frankbria/ralph-claude-code) (circuit breaker, session persistence; MIT), [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) (4-type memory taxonomy; MIT), [coleam00/ralph-loop-quickstart](https://github.com/coleam00/ralph-loop-quickstart) (bash loop simplicity), and [snwfdhmp/awesome-ralph](https://github.com/snwfdhmp/awesome-ralph) ("3 Phases, 2 Prompts, 1 Loop" framework). Circuit breaker pattern from Michael Nygard's *Release It!* (2007).
 
 ---
 

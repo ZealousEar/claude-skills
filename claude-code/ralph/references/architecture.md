@@ -1,6 +1,6 @@
 # Ralph Loop Architecture — Design Rationale
 
-> This document captures the architectural decisions for the Ralph skill, derived from a convolutional debate analysis of 4 major Ralph implementations (frankbria, mikeyobrien, coleam00, awesome-ralph) plus community patterns.
+> This document captures the architectural decisions for the Ralph skill, derived from a convolutional debate analysis of 4 major Ralph implementations (frankbria, mikeyobrien, coleam00, awesome-ralph) plus community patterns. The Ralph Wiggum Loop technique was created by [Geoffrey Huntley](https://ghuntley.com/ralph/) ([how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)).
 
 ## Core Insight
 
@@ -69,12 +69,16 @@ The Ralph Loop solves the "malloc/free problem" of LLM context windows. Instead 
 
 ## Source Implementations
 
-| Repo | Key Pattern Borrowed | Adapted How |
-|------|---------------------|-------------|
-| frankbria/ralph-claude-code | Circuit breaker, session persistence | Python instead of bash, per-model instead of global |
-| mikeyobrien/ralph-orchestrator | Memory taxonomy, multi-model routing | Simplified to 4 types, delegated routing to /llm |
-| coleam00/ralph-loop-quickstart | Bash loop simplicity | Kept bash orchestrator, moved logic to Python scripts |
-| awesome-ralph (snwfdhmp) | "3 Phases, 2 Prompts, 1 Loop" framework | Single phase (idea generation), single prompt per iteration |
+No code was copied from any of these repositories. The following design ideas were studied and reimplemented from scratch:
+
+| Repo | License | Key Architectural Idea | How We Adapted It |
+|------|---------|----------------------|-------------------|
+| [frankbria/ralph-claude-code](https://github.com/frankbria/ralph-claude-code) | MIT | 3-state circuit breaker (`lib/circuit_breaker.sh`), session persistence via response analyzer | Reimplemented in Python (`circuit_breaker.py`); per-model instead of global; added exponential backoff cooldown (doubles on re-fail, max 3600s) |
+| [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) | MIT | 4-type memory taxonomy (`memory.rs`: Pattern/Decision/Fix/Context), multi-model backend adapters | Reimplemented in Python (`memory_indexer.py`); changed "Context" to "Signs" for early saturation detection; delegated multi-model routing to /llm skill |
+| [coleam00/ralph-loop-quickstart](https://github.com/coleam00/ralph-loop-quickstart) | — | Minimal bash loop (`ralph.sh`, ~110 lines, no dependencies beyond `claude` CLI) | Kept bash as outer orchestrator; moved all logic to standalone Python scripts callable independently |
+| [snwfdhmp/awesome-ralph](https://github.com/snwfdhmp/awesome-ralph) | — | "3 Phases, 2 Prompts, 1 Loop" framework (Define → Plan → Build) | Simplified to single phase (idea generation), single prompt per iteration |
+
+The circuit breaker pattern itself originates from Michael Nygard, *Release It!* (2007), popularized by [Martin Fowler's writeup](https://martinfowler.com/bliki/CircuitBreaker.html).
 
 ## Failure Modes & Mitigations
 

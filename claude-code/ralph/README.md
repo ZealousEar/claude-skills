@@ -24,7 +24,7 @@ Autonomous fresh-context loop for multi-model dissertation idea generation with 
 
 Each iteration runs in a fresh LLM context — no growing conversation, no context window pressure. The bash orchestrator selects a model (weighted by academic benchmarks with stochastic exploration), builds a prompt injected with one of 20 creative lenses (inversion, cross-pollination, failure-mode analysis, scale shift, etc.), calls the model, scores the response for novelty and feasibility, deduplicates against all prior ideas via Jaccard similarity, and persists everything to disk. A circuit breaker tracks per-model failures and routes around broken models automatically. The loop exits when idea quality saturates (rolling improvement drops below threshold), the time or iteration budget is exhausted, or all models are circuit-broken.
 
-Named after the Ralph Wiggum Loop pattern: instead of managing growing context, discard it entirely and restart fresh each iteration. State lives on disk, not in any model's context window.
+Named after the [Ralph Wiggum Loop](https://ghuntley.com/ralph/) pattern by [Geoffrey Huntley](https://github.com/ghuntley/how-to-ralph-wiggum): instead of managing growing context, discard it entirely and restart fresh each iteration. State lives on disk, not in any model's context window.
 
 ## Key features
 
@@ -48,3 +48,16 @@ Named after the Ralph Wiggum Loop pattern: instead of managing growing context, 
 ## Setup
 
 Requires the `/llm` skill for model routing and benchmark data, and the `/debate` skill's `benchmark-profiles.json` for domain weights. Python 3.10+.
+
+## Acknowledgments
+
+The Ralph Wiggum Loop technique was created by [Geoffrey Huntley](https://ghuntley.com/ralph/) ([how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)). All code in this skill is original; the following architectural ideas were studied and reimplemented from scratch:
+
+| Repo | License | Idea Borrowed | How We Adapted It |
+|------|---------|--------------|-------------------|
+| [frankbria/ralph-claude-code](https://github.com/frankbria/ralph-claude-code) | MIT | 3-state circuit breaker, session persistence | Reimplemented in Python; per-model instead of global; exponential backoff |
+| [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) | MIT | 4-type memory taxonomy (Pattern/Decision/Fix/Context) | Reimplemented in Python; changed "Context" to "Signs" (saturation indicators) |
+| [coleam00/ralph-loop-quickstart](https://github.com/coleam00/ralph-loop-quickstart) | -- | Minimal bash loop philosophy | Kept bash as orchestrator; moved logic to standalone Python scripts |
+| [snwfdhmp/awesome-ralph](https://github.com/snwfdhmp/awesome-ralph) | -- | "3 Phases, 2 Prompts, 1 Loop" framework | Simplified to single phase, single prompt per iteration |
+
+The circuit breaker pattern originates from Michael Nygard's *Release It!* (2007).

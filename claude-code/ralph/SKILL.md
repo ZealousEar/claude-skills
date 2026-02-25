@@ -429,7 +429,7 @@ One JSON object per line, one line per iteration:
 
 ### `memory.json` — Cross-Iteration Learning
 
-Four-type taxonomy inspired by [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien):
+Four-type taxonomy inspired by [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator):
 
 ```json
 {
@@ -765,11 +765,15 @@ python3 circuit_breaker.py --cooldown-remaining --model opus --state /tmp/test-c
 
 ## Acknowledgments
 
-Architecture derived from a convolutional debate analysis of four major Ralph Loop implementations:
+The Ralph Wiggum Loop technique was created by **Geoffrey Huntley** ([ghuntley.com/ralph](https://ghuntley.com/ralph/), [how-to-ralph-wiggum](https://github.com/ghuntley/how-to-ralph-wiggum)). The core insight — discard the entire context and restart fresh each iteration, with state persisting to disk — is his.
 
-| Implementation | Key Pattern |
-|---------------|------------|
-| [frankbria/ralph-claude-code](https://github.com/frankbria/ralph-claude-code) | Circuit breaker, session persistence |
-| [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien) | Memory taxonomy, multi-model routing |
-| [coleam00/ralph-loop-quickstart](https://github.com/coleam00) | Bash loop simplicity |
-| [awesome-ralph (snwfdhmp)](https://github.com/snwfdhmp) | "3 Phases, 2 Prompts, 1 Loop" framework |
+Architecture derived from a convolutional debate analysis of four community implementations. No code was copied; the following design ideas were adapted:
+
+| Implementation | License | Architectural Idea Borrowed | How We Adapted It |
+|---------------|---------|----------------------------|-------------------|
+| [frankbria/ralph-claude-code](https://github.com/frankbria/ralph-claude-code) | MIT | 3-state circuit breaker (`lib/circuit_breaker.sh`), session persistence (`lib/response_analyzer.sh`) | Reimplemented in Python; per-model instead of global; exponential backoff cooldown |
+| [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) | MIT | 4-type memory taxonomy (`crates/ralph-core/src/memory.rs`: Pattern/Decision/Fix/Context) | Reimplemented in Python; changed "Context" to "Signs" (early saturation indicators); capped at 50 entries per type |
+| [coleam00/ralph-loop-quickstart](https://github.com/coleam00/ralph-loop-quickstart) | — | Minimal bash loop philosophy (`ralph.sh`, ~110 lines) | Kept bash as orchestrator; moved all logic to standalone Python scripts |
+| [snwfdhmp/awesome-ralph](https://github.com/snwfdhmp/awesome-ralph) | — | "3 Phases, 2 Prompts, 1 Loop" framework | Simplified to single phase (idea generation), single prompt per iteration |
+
+The circuit breaker pattern itself originates from Michael Nygard's *Release It!* (2007).
