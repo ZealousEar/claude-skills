@@ -1,0 +1,50 @@
+{
+  "_papers": [
+    "arxiv:2411.12990 — BetterBench: Assessing AI Benchmarks (NeurIPS 2024 Spotlight, Stanford)",
+    "arxiv:2407.04065 — LBOps: Workflows and Smells of Leaderboard Operations (IEEE TSE 2025, SAIL/Queen's)"
+  ],
+  "_methodology": "BetterBench scores from 46-criteria assessment across 5 lifecycle stages; LBOps operational smell analysis across 711 leaderboards",
+  "benchmarks": {
+    "gpqa_diamond": {
+      "betterbench_score": 11.0,
+      "quality": "high",
+      "contamination_resistant": true,
+      "notes": "Highest-scoring benchmark. PhD-level science questions. Expert-validated."
+    },
+    "chatbot_arena": {
+      "betterbench_score": 10.5,
+      "quality": "high",
+      "contamination_resistant": true,
+      "notes": "Human preference Elo. Continuous fresh data from live users."
+    },
+    "livebench": {
+      "betterbench_score": 10.0,
+      "quality": "high",
+      "contamination_resistant": true,
+      "notes": "Monthly-refreshed questions. Already covered via Epoch AI data."
+    },
+    "swe_bench": {
+      "betterbench_score": 9.0,
+      "quality": "medium",
+      "contamination_resistant": true,
+      "notes": "Real GitHub issues. Verified subset is higher quality."
+    },
+    "math_level_5": {
+      "betterbench_score": 8.5,
+      "quality": "medium",
+      "contamination_resistant": false,
+      "notes": "Competition-level math. Some contamination risk from training data."
+    },
+    "mmlu_pro": {
+      "betterbench_score": 5.5,
+      "quality": "low",
+      "contamination_resistant": false,
+      "notes": "Lowest-scoring major benchmark. High contamination risk. Still widely reported."
+    },
+    "aa_intelligence_index": {
+      "quality": "high",
+      "contamination_resistant": true,
+      "notes": "Composite of 10 evaluations, 95% CI < ±1%. Not in original BetterBench study but meets high-quality criteria."
+    }
+  }
+}
