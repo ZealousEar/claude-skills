@@ -1,0 +1,84 @@
+# Creative Lenses — Divergence-forcing constraints for idea generation
+# Each lens pushes the model to approach the problem from an unusual angle.
+# Applied stochastically: one lens per iteration, weighted by recency (avoid repeats).
+
+lenses:
+  - id: inversion
+    name: "Inversion Lens"
+    prompt: "Instead of solving the obvious problem, invert it. If everyone optimizes X, what happens if you deliberately minimize X? What would a deliberately contrarian approach reveal?"
+
+  - id: cross_pollination
+    name: "Cross-Pollination Lens"
+    prompt: "Borrow a technique from a completely different field (biology, physics, network science, linguistics, game theory) and apply it to quantitative finance. The more alien the source field, the better."
+
+  - id: failure_mode
+    name: "Failure Mode Lens"
+    prompt: "What assumptions in current models WILL break in the next decade? Design research around the failure of a commonly-held assumption (e.g., Gaussian returns, constant correlations, rational agents)."
+
+  - id: scale_shift
+    name: "Scale Shift Lens"
+    prompt: "Take a phenomenon studied at one scale (e.g., daily returns) and study it at a radically different scale (microseconds or decades). What new patterns emerge when you zoom in or out by 3+ orders of magnitude?"
+
+  - id: data_first
+    name: "Data-First Lens"
+    prompt: "Start from an unusual, underexploited data source (satellite imagery, social media sentiment, shipping data, patent filings, court records). What financial questions can ONLY this data answer?"
+
+  - id: adversarial
+    name: "Adversarial Lens"
+    prompt: "Design a model that explicitly accounts for adversarial agents — other traders trying to exploit the same signals. How does optimal strategy change when your counterparties are intelligent and adaptive?"
+
+  - id: simplicity
+    name: "Radical Simplicity Lens"
+    prompt: "Take a complex existing model (e.g., stochastic volatility, deep hedging) and ask: what is the simplest possible model that captures 80% of the phenomenon? Sometimes the contribution is showing that complexity is unnecessary."
+
+  - id: regime_aware
+    name: "Regime-Aware Lens"
+    prompt: "Design research that explicitly handles regime changes (crisis vs. normal, low vs. high volatility). Most models assume stationarity — what breaks when you don't?"
+
+  - id: network
+    name: "Network/Graph Lens"
+    prompt: "Model the financial system as a network. What graph-theoretic properties (centrality, clustering, contagion paths) reveal insights invisible to time-series analysis?"
+
+  - id: information_asymmetry
+    name: "Information Asymmetry Lens"
+    prompt: "Focus on what different market participants know and when they know it. Where are the biggest information gaps, and how do they create exploitable or systemic-risk-generating dynamics?"
+
+  - id: temporal_structure
+    name: "Temporal Structure Lens"
+    prompt: "Challenge the standard temporal assumptions. What if causality is not unidirectional? What if lead-lag relationships are nonlinear? What if memory in financial time series has a fundamentally different structure than assumed?"
+
+  - id: behavioral
+    name: "Behavioral Finance Lens"
+    prompt: "Start from a documented cognitive bias (loss aversion, anchoring, herding) and build a quantitative model that generates testable predictions. Bridge the gap between behavioral insight and mathematical rigor."
+
+  - id: market_microstructure
+    name: "Market Microstructure Lens"
+    prompt: "Focus on the mechanics of how trades actually happen: order books, latency, market makers, dark pools. What microstructure phenomena have macroscopic consequences that current models ignore?"
+
+  - id: synthetic_data
+    name: "Synthetic Data Lens"
+    prompt: "Design research that uses synthetic/simulated data as a first-class citizen — not just for validation, but as the primary methodology. When can simulation-based inference outperform traditional econometrics?"
+
+  - id: tail_risk
+    name: "Tail Risk Lens"
+    prompt: "Focus exclusively on extreme events. What methods from extreme value theory, catastrophe modeling, or reliability engineering could improve how finance handles tail risk?"
+
+  - id: multi_asset
+    name: "Multi-Asset Lens"
+    prompt: "Cross asset class boundaries. What happens when you model equities, fixed income, commodities, and crypto as a single interconnected system rather than separate markets?"
+
+  - id: regulatory
+    name: "Regulatory Arbitrage Lens"
+    prompt: "Regulations create market distortions. Identify a specific regulation and model its unintended consequences on pricing, liquidity, or risk. The gap between regulatory intent and market reality is fertile research ground."
+
+  - id: ml_interpretability
+    name: "ML Interpretability Lens"
+    prompt: "If you use machine learning in finance, make interpretability the primary contribution — not prediction accuracy. What can an interpretable ML model teach us about financial mechanisms that a black box cannot?"
+
+  - id: climate_esg
+    name: "Climate/ESG Lens"
+    prompt: "Model the intersection of climate risk and financial markets. Not ESG scoring (overdone) — instead, focus on physical risk pricing, transition dynamics, or stranded asset valuation."
+
+  - id: decentralized
+    name: "DeFi/Decentralized Lens"
+    prompt: "Apply traditional finance theory to decentralized finance (AMMs, lending protocols, MEV). Where does classical theory hold, where does it break, and what new theory is needed?"
