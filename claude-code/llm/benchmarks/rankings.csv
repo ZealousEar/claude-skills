@@ -1,0 +1,936 @@
+model,provider,arena_elo,gpqa,mmlu,coding,math,swe_bench,aa_index,eci,quality_index,simpleqa,arc_agi,frontier_math,speed_tps,speed_ttft,context,price_in,price_out,benchmark_quality,registry_name,sources
+gemini-3-pro,Google DeepMind,1487,92.6,,,,72.9,,154.2,,72.9,75.0,37.6,,,1048576,2.00,12.00,medium,gemini-3-pro,epoch
+claude-haiku-4-5-20251001,Anthropic,1384,71.2,,,96.4,,,140.7,,5.9,,5.9,,,200000,1.00,5.00,medium,haiku,epoch
+claude-opus-4-6,Anthropic,,90.5,,,,78.7,,152.7,,46.5,94.0,39.7,,,1000000,5.00,25.00,low,opus,epoch
+claude-sonnet-4-6,Anthropic,,87.4,,,,75.2,,,,29.0,,32.4,,,1000000,3.00,15.00,low,sonnet,epoch
+gemini-3-flash-preview,Google DeepMind,,83.2,,,,75.4,,152.6,,67.4,,35.6,,,1048576,0.50,3.00,low,gemini-3-flash,epoch
+glm-5,Z.ai (Zhipu AI),,87.8,,,,72.1,,,,,,16.4,,,204800,0.95,2.55,low,glm-5,epoch
+gpt-5.2-2025-12-11,OpenAI,,91.4,,,,73.8,,152.9,,35.4,86.2,40.7,,,400000,1.75,14.00,low,gpt-5.2,epoch
+gpt-5.3-codex,OpenAI,,,,,,74.8,,,,,,,,,400000,1.75,14.00,low,gpt-5.3-codex,epoch
+kimi-k2.5,Moonshot,,,,,,73.8,,147.7,,,,,,,262144,0.45,2.20,low,kimi-2.5,epoch
+gemini-2.5-pro,Google DeepMind,1464,85.3,,,,57.6,,146.1,,56.0,,14.1,,,,,,medium,,epoch
+grok-4.1-thinking,,1451,,,,,,,,,,,,,,,,,low,,
+claude-opus-4-5-20251101,Anthropic,1446,85.5,,,,76.7,,150.0,,41.8,80.0,20.7,,,,,,medium,,epoch
+ernie-5.0-preview-1103,,1446,,,,,,,,,,,,,,,,,low,,
+gpt-5.1-high,,1446,,,,,,,,,,,,,,,,,low,,
+grok-4.1,,1443,,,,,,,,,,,,,,,,,low,,
+claude-opus-4-5-20251101-thinking-32k,,1442,,,,,,,,,,,,,,,,,low,,
+glm-4.6,"Z.ai (Zhipu AI),Tsinghua University",1441,,,,,,,,,,,,,,,,,low,,epoch
+qwen3-max-preview,,1438,,,,,,,,,,,,,,,,,low,,
+mistral-large-3,,1432,,,,,,,,,,,,,,,,,low,,
+mistral-medium-2508,,1430,,,,,,,,,,,,,,,,,low,,epoch
+glm-4.5,"Z.ai (Zhipu AI),Tsinghua University",1428,,,,,,,,,,,,,,,,,low,,epoch
+chatgpt-4o-latest-20250326,,1427,,,,,,,,,,,,,,,,,low,,
+claude-sonnet-4-5-20250929,Anthropic,1427,78.8,,,97.7,71.3,,146.6,,23.6,,9.3,,,,,,medium,,epoch
+claude-sonnet-4-5-20250929-thinking-32k,,1427,,,,,,,,,,,,,,,,,low,,
+deepseek-r1-0528,DeepSeek,1426,76.3,,71.4,96.6,,,141.8,,27.4,21.2,,,,,,,medium,,epoch
+deepseek-v3.2-exp,DeepSeek,1424,,,70.2,,,,144.7,,,,,,,,,,medium,,epoch
+grok-3-preview-02-24,,1424,,,,,,,,,,,,,,,,,low,,
+longcat-flash-chat,,1423,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.2-exp-thinking,,1422,,,,,,,,,,,,,,,,,low,,
+qwen3-vl-235b-a22b-instruct,,1422,,,,,,,,,,,,,,,,,low,,
+gpt-5.1,,1421,,,,,,,,,,,,,,,,,low,,
+claude-opus-4-1-20250805-thinking-16k,,1420,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.1,DeepSeek,1419,,,,,,,138.6,,,,,,,,,,low,,epoch
+deepseek-v3.1-terminus,,1419,,,,,,,,,,,,,,,,,low,,
+qwen3-235b-a22b-instruct-2507,Alibaba,1419,,,,,,,,,,,,,,,,,low,,epoch
+qwen3-next-80b-a3b-instruct,,1418,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.1-terminus-thinking,,1417,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.1-thinking,,1417,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.2,,1417,,,,,,,,,,,,,,,,,low,,
+deepseek-v3.2-thinking,,1417,,,,,,,,,,,,,,,,,low,,
+gpt-4.5-preview-2025-02-27,OpenAI,1417,68.7,,44.9,78.6,,,137.3,69.0,,10.3,,,,,,,medium,,epoch
+gemini-2.5-flash,Google DeepMind,1415,,,,,,,,,,,4.8,,,,,,low,,epoch
+qwen3-max-2025-09-23,Alibaba,1414,72.6,,,97.1,,,145.0,,67.5,,,,,,,,medium,,epoch
+claude-opus-4-1-20250805,Anthropic,1413,76.8,,,,73.3,,143.9,,34.8,,7.2,,,,,,medium,,epoch
+qwen3-235b-a22b-thinking-2507,Alibaba,1413,80.1,,,,,,,,50.1,,,,,,,,medium,,epoch
+o3-2025-04-16,OpenAI,1411,81.8,,81.3,97.8,62.3,,146.6,,53.0,60.8,9.7,,,,,,medium,,epoch
+kimi-k2-thinking-turbo,Moonshot,1410,84.2,,,,,,145.6,,31.6,,,,,,,,medium,,epoch
+grok-4-0709,xAI,1409,87.0,,79.6,,,,147.1,,47.9,,19.7,,,,,,medium,,epoch
+grok-4-1-fast-reasoning,xAI,1409,,,,,,,,,,,,,,,,,low,,epoch
+grok-4-fast-chat,,1408,,,,,,,,,,,,,,,,,low,,
+gemini-2.5-flash-preview-09-2025,Google DeepMind,1407,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5-high,,1407,,,,,,,,,,,,,,,,,low,,
+hunyuan-vision-1.5-thinking,,1404,,,,,,,,,,,,,,,,,low,,
+gpt-5-chat,OpenAI,1403,,,,,,,150.0,,,,,,,,,,low,,epoch
+qwen3-vl-235b-a22b-thinking,,1401,,,,,,,,,,,,,,,,,low,,
+hunyuan-t1-20250711,,1398,,,,,,,,,,,,,,,,,low,,
+amazon-nova-experimental-chat-10-20,,1397,,,,,,,,,,,,,,,,,low,,
+grok-4-fast-reasoning,,1396,,,,,,,,,,,,,,,,,low,,
+mai-1-preview,,1393,,,,,,,,,,,,,,,,,low,,
+qwen3-235b-a22b-no-thinking,,1392,,,,,,,,,,,,,,,,,low,,
+qwen3-30b-a3b-instruct-2507,,1384,,,,,,,,,,,,,,,,,low,,
+glm-4.5-air,,1382,,,,,,,,,,,,,,,,,low,,
+gpt-4.1-2025-04-14,OpenAI,1382,66.9,,52.4,83.0,48.5,,137.4,,,5.5,5.5,,,,,,medium,,epoch
+kimi-k2-0905-preview,,1380,,,,,,,,,,,,,,,,,low,,
+gemini-2.5-flash-lite-preview-09-2025-no-thinking,,1379,,,,,,,,,,,,,,,,,low,,
+hunyuan-turbos-20250416,,1376,,,,,,,,,,,,,,,,,low,,
+claude-opus-4-20250514-thinking-16k,,1375,,,,,,,,,,,,,,,,,low,,
+gpt-5-mini-high,,1375,,,,,,,,,,,,,,,,,low,,
+deepseek-v3-0324,DeepSeek,1374,67.6,,55.1,75.5,,,136.8,66.9,,,,,,,,,medium,,epoch
+deepseek-r1,DeepSeek,1373,69.2,,56.9,93.1,,,139.4,71.6,,15.8,,,,,,,medium,,epoch
+kimi-k2-0711-preview,,1372,,,,,,,,,,,,,,,,,low,,
+gemini-2.5-flash-lite-preview-06-17-thinking,Google DeepMind,1369,,,,,,,,,,,,,,,,,low,,epoch
+mistral-medium-2505,Mistral AI,1369,59.5,,,81.6,,,135.1,,,,0.3,,,,,,medium,,epoch
+grok-3-mini-high,,1368,,,,,,,,,,,,,,,,,low,,
+qwen2.5-max,Alibaba,1367,,,,,,,133.1,62.3,,,,,,,,,low,,epoch
+qwen3-235b-a22b,Alibaba,1367,70.7,,59.6,68.9,,,139.3,,,,,,,,,,medium,,epoch
+qwen3-next-80b-a3b-thinking,,1367,,,,,,,,,,,,,,,,,low,,
+o1-2024-12-17,OpenAI,1366,76.8,,61.7,94.7,,,142.3,75.7,,30.7,9.3,,,,,,medium,,epoch
+gpt-oss-120b,OpenAI,1365,,,41.8,,,,139.8,,,,,,,,,,medium,,epoch
+claude-opus-4-20250514,Anthropic,1364,76.3,,72.0,85.0,70.7,,143.0,,,35.7,4.1,,,,,,medium,,epoch
+ling-flash-2.0,,1364,,,,,,,,,,,,,,,,,low,,
+grok-3-mini-beta,xAI,1363,74.6,,49.3,90.9,,,140.8,,21.1,16.5,2.8,,,,,,medium,,epoch
+nova-2-lite,,1363,,,,,,,,,,,,,,,,,low,,
+amazon-nova-experimental-chat-10-09,,1358,,,,,,,,,,,,,,,,,low,,
+gemma-3-27b-it,Google DeepMind,1358,48.9,,4.9,74.0,,,130.9,50.0,,,,,,,,,medium,,epoch
+qwen3-coder-480b-a35b-instruct,Alibaba,1356,,,,,,,143.0,,,,,,,,,,low,,epoch
+gemini-2.0-flash-001,"Google DeepMind,Google",1354,64.1,,,82.2,,,135.0,61.5,,,1.7,,,,,,medium,,epoch
+o4-mini-2025-04-16,OpenAI,1354,79.6,,72.0,97.8,,,145.1,,23.9,58.7,10.7,,,,,,medium,,epoch
+o1-preview,,1353,,,,,,,,,,,,,,,,,low,,
+step-3,,1350,,,,,,,,,,,,,,,,,low,,
+claude-sonnet-4-20250514-thinking-32k,,1349,,,,,,,,,,,,,,,,,low,,
+intellect-3,,1347,,,,,,,,,,,,,,,,,low,,
+minimax-m1,,1346,,,,,,,,,,,,,,,,,low,,
+minimax-m2,,1343,,,,,,,,,,,,,,,,,low,,
+gpt-4.1-mini-2025-04-14,OpenAI,1341,65.8,,32.4,87.3,,,135.4,,,3.5,4.5,,,,,,medium,,epoch
+qwen3-32b,Alibaba,1340,,,40.0,,,,,,,,,,,,,,medium,,epoch
+mistral-small-2506,,1339,,,,,,,,,,,,,,,,,low,,
+claude-sonnet-4-20250514,Anthropic,1338,77.8,,61.3,84.4,,,142.3,,,40.0,4.1,,,,,,medium,,epoch
+nvidia-llama-3.3-nemotron-super-49b-v1.5,,1337,,,,,,,,,,,,,,,,,low,,
+o3-mini-high,,1336,,,,,,,,,,,,,,,,,low,,
+step-1o-turbo-202506,,1336,,,,,,,,,,,,,,,,,low,,
+gemma-3-12b-it,,1334,,,,,,,,,,,,,,,,,low,,
+glm-4.5v,,1334,,,,,,,,,,,,,,,,,low,,
+deepseek-v3,DeepSeek,1333,56.5,87.2,48.4,64.9,,,133.0,60.5,,,1.7,,,,,,medium,,epoch
+ring-flash-2.0,,1333,,,,,,,,,,,,,,,,,low,,
+glm-4-plus-0111,,1332,,,,,,,,,,,,,,,,,low,,
+command-a-03-2025,,1331,,,,,,,,,,,,,,,,,low,,
+gemini-2.0-flash-lite-preview-02-05,Google DeepMind,1330,,,,,,,,53.2,,,,,,,,,low,,epoch
+qwq-32b,Alibaba,1329,,,20.9,,,,,72.0,,,,,,,,,medium,,epoch
+qwen-plus-0125,,1327,,,,,,,,,,,,,,,,,low,,
+gpt-5-nano-high,,1321,,,,,,,,,,,,,,,,,low,,
+step-2-16k-exp-202412,,1321,,,,,,,,,,,,,,,,,low,,
+gemini-1.5-pro-002,Google DeepMind,1320,57.2,86.9,,70.4,,,132.6,,,,,,,,,,medium,,epoch
+llama-3.1-nemotron-ultra-253b-v1,,1320,,,,,,,,,,,,,,,,,low,,
+o3-mini,,1320,,,,,,,,,,,,,,,,,low,,
+hunyuan-turbos-20250226,,1319,,,,,,,,,,,,,,,,,low,,
+o1-mini,,1318,,,,,,,,,,,,,,,,,low,,
+qwen3-30b-a3b,Alibaba,1318,,,,,,,,,,,,,,,,,low,,epoch
+claude-3-7-sonnet-20250219-thinking-32k,,1315,,,,,,,,,,,,,,,,,low,,
+hunyuan-turbo-0110,,1311,,,,,,,,,,,,,,,,,low,,
+llama-3.3-nemotron-49b-super-v1,,1309,,,,,,,,,,,,,,,,,low,,
+gemma-3n-e4b-it,,1307,,,,,,,,,,,,,,,,,low,,
+olmo-3-32b-think,,1306,,,,,,,,,,,,,,,,,low,,
+grok-2-2024-08-13,,1305,,,,,,,,,,,,,,,,,low,,
+yi-lightning,01.AI,1303,,,12.9,,,,,,,,,,,,,,medium,,epoch
+gpt-4o-2024-05-13,OpenAI,1301,48.9,84.2,,51.0,,,,,,,,,,,,,medium,,epoch
+claude-3-7-sonnet-20250219,Anthropic,1300,78.5,,64.9,91.2,61.0,,141.6,76.1,,28.6,3.1,,,,,,medium,,epoch
+qwen2.5-plus-1127,,1299,,,,,,,,,,,,,,,,,low,,
+claude-3-5-sonnet-20241022,Anthropic,1298,55.3,87.3,51.6,56.9,,,134.1,59.0,,,2.1,,,,,,medium,,epoch
+deepseek-v2.5-1210,,1295,,,,,,,,,,,,,,,,,low,,
+athene-v2-chat,,1292,,,,,,,,,,,,,,,,,low,,
+gemma-3-4b-it,,1291,,,,,,,,,,,,,,,,,low,,
+glm-4-plus,,1290,,,,,,,,,,,,,,,,,low,,
+gpt-oss-20b,OpenAI,1289,,,,,,,,,,,,,,,,,low,,epoch
+llama-4-maverick-17b-128e-instruct,Meta AI,1289,,,15.6,,,,132.8,,,4.4,,,,,,,medium,,epoch
+gemini-1.5-flash-002,Google DeepMind,1288,47.3,73.9,,61.9,,,,,,,0.0,,,,,,medium,,epoch
+hunyuan-large-2025-02-10,,1288,,,,,,,,,,,,,,,,,low,,
+gpt-4o-mini-2024-07-18,OpenAI,1287,37.7,81.8,3.6,52.6,,,127.3,41.3,,,,,,,,,medium,,epoch
+mercury,,1287,,,,,,,,,,,,,,,,,low,,
+gpt-4.1-nano-2025-04-14,OpenAI,1285,48.9,,8.9,70.0,,,130.6,,,0.0,1.0,,,,,,medium,,epoch
+llama-3.1-405b-instruct-bf16,,1284,,,,,,,,,,,,,,,,,low,,
+gpt-4o-2024-08-06,OpenAI,1283,49.2,84.3,23.1,53.3,,,,55.3,,,0.3,,,,,,medium,,epoch
+llama-3.1-405b-instruct-fp8,,1283,,,,,,,,,,,,,,,,,low,,
+llama-3.1-nemotron-70b-instruct,,1283,,,,,,,,,,,,,,,,,low,,
+qwen-max-0919,,1283,,,,,,,,,,,,,,,,,low,,
+claude-3-5-sonnet-20240620,Anthropic,1282,54.0,86.5,,51.7,,,130.0,,,,1.0,,,,,,medium,,epoch
+grok-2-mini-2024-08-13,,1282,,,,,,,,,,,,,,,,,low,,
+llama-4-scout-17b-16e-instruct,Meta AI,1282,51.8,,,62.3,,,130.1,,,0.5,0.0,,,,,,medium,,epoch
+gemini-advanced-0514,,1279,,,,,,,,,,,,,,,,,low,,
+mistral-small-3.1-24b-instruct-2503,,1279,,,,,,,,,,,,,,,,,low,,
+llama-3.3-70b-instruct,Meta AI,1276,47.4,79.1,,41.6,,,127.3,50.2,,,,,,,,,medium,,epoch
+hunyuan-standard-2025-02-10,,1275,,,,,,,,,,,,,,,,,low,,
+gemini-1.5-pro-001,Google DeepMind,1274,45.9,82.7,,40.7,,,132.6,,,,,,,,,,medium,,epoch
+deepseek-v2.5,DeepSeek,1272,,,17.8,,,,,,,,,,,,,,medium,,epoch
+gpt-4-turbo-2024-04-09,OpenAI,1272,46.6,81.3,,46.7,,,127.5,,,,,,,,,,medium,,epoch
+qwen2.5-72b-instruct,Alibaba,1270,49.1,85.3,,63.2,,,129.4,,,,,,,,,,medium,,epoch
+mistral-large-2407,Mistral AI,1267,49.0,80.0,,44.8,,,128.5,,,,,,,,,,medium,,epoch
+hunyuan-large-vision,,1266,,,,,,,,,,,,,,,,,low,,
+mistral-large-2411,Mistral AI,1266,51.3,,,50.3,,,128.5,48.4,,,0.3,,,,,,medium,,epoch
+athene-70b-0725,,1265,,,,,,,,,,,,,,,,,low,,
+gpt-4-1106-preview,OpenAI,1264,42.4,,,40.0,,,,,,,,,,,,,medium,,epoch
+claude-3-opus-20240229,Anthropic,1263,47.2,84.6,,37.5,,,126.9,49.2,,,,,,,,,medium,,epoch
+gpt-4-0125-preview,OpenAI,1263,42.3,,,35.4,,,,,,,,,,,,,medium,,epoch
+llama-3.1-70b-instruct,Meta AI,1262,44.2,80.1,,36.7,,,125.3,,,,,,,,,,medium,,epoch
+amazon-nova-pro-v1.0,,1259,,,,,,,,,,,,,,,,,low,,
+claude-3-5-haiku-20241022,Anthropic,1257,38.1,74.3,28.0,46.4,,,127.5,43.5,6.7,,0.3,,,,,,medium,,epoch
+llama-3.1-tulu-3-70b,,1256,,,,,,,,,,,,,,,,,low,,
+magistral-medium-2506,,1256,,,,,,,,,,,,,,,,,low,,
+reka-core-20240904,,1249,,,,,,,,,,,,,,,,,low,,
+gemini-1.5-flash-001,Google DeepMind,1240,40.4,77.9,,25.1,,,,,,,,,,,,,medium,,epoch
+jamba-1.5-large,,1238,,,,,,,,,,,,,,,,,low,,
+mistral-small-24b-instruct-2501,,1234,,,,,,,,,,,,,,,,,low,,
+gemma-2-27b-it,Google DeepMind,1232,36.5,75.7,,27.9,,,122.5,38.2,,,,,,,,,medium,,epoch
+command-r-plus-08-2024,,1230,,,,,,,,,,,,,,,,,low,,
+qwen2.5-coder-32b-instruct,Alibaba,1230,,,16.4,,,,121.3,46.2,,,,,,,,,medium,,epoch
+amazon-nova-lite-v1.0,,1229,,,,,,,,,,,,,,,,,low,,
+gemma-2-9b-it-simpo,,1228,,,,,,,,,,,,,,,,,low,,
+llama-3.1-nemotron-51b-instruct,,1228,,,,,,,,,,,,,,,,,low,,
+gemini-1.5-flash-8b-001,Google DeepMind,1227,33.0,,,,,,,,,,,,,,,,medium,,epoch
+glm-4-0520,,1227,,,,,,,,,,,,,,,,,low,,
+nemotron-4-340b-instruct,,1226,,,,,,,,,,,,,,,,,low,,
+c4ai-aya-expanse-32b,,1225,,,,,,,,,,,,,,,,,low,,
+llama-3-70b-instruct,,1222,,,,,,,,,,,,,,,,,low,,
+claude-3-sonnet-20240229,Anthropic,1219,40.6,75.9,,18.2,,,120.1,,,,,,,,,,medium,,epoch
+olmo-2-0325-32b-instruct,,1219,,,,,,,,,,,,,,,,,low,,
+reka-flash-20240904,,1219,,,,,,,,,,,,,,,,,low,,
+phi-4,Microsoft Research,1217,56.1,84.8,,64.9,,,131.0,41.6,,,,,,,,,medium,,epoch
+amazon-nova-micro-v1.0,,1210,,,,,,,,,,,,,,,,,low,,
+gemma-2-9b-it,Google DeepMind,1208,27.5,72.1,,21.0,,,119.7,28.7,,,,,,,,,medium,,epoch
+gpt-4-0314,OpenAI,1206,35.7,86.4,,,,,126.1,,,,,,,,,,medium,,epoch
+command-r-plus,,1205,,,,,,,,,,,,,,,,,low,,
+hunyuan-standard-256k,,1204,,,,,,,,,,,,,,,,,low,,
+qwen2-72b-instruct,Alibaba,1204,40.8,82.4,,39.1,,,125.6,,,,,,,,,,medium,,epoch
+claude-3-haiku-20240307,Anthropic,1196,36.3,73.8,,14.9,,,117.7,,,,,,,,,,medium,,epoch
+llama-3.1-tulu-3-8b,,1195,,,,,,,,,,,,,,,,,low,,
+deepseek-coder-v2,,1192,,,,,,,,,,,,,,,,,low,,
+ministral-8b-2410,Mistral AI,1192,27.1,,,14.9,,,,,,,,,,,,,medium,,epoch
+command-r-08-2024,,1189,,,,,,,,,,,,,,,,,low,,
+jamba-1.5-mini,,1188,,,,,,,,,,,,,,,,,low,,
+llama-3.1-8b-instruct,Meta AI,1188,25.9,56.1,,22.9,,,115.6,,,,,,,,,,medium,,epoch
+c4ai-aya-expanse-8b,,1187,,,,,,,,,,,,,,,,,low,,
+gpt-4-0613,OpenAI,1187,30.7,82.4,,23.0,,,122.0,,,,,,,,,,medium,,epoch
+mistral-large-2402,Mistral AI,1177,38.8,68.8,,24.5,,,121.2,,,,,,,,,,medium,,epoch
+qwen1.5-110b-chat,,1176,,,,,,,,,,,,,,,,,low,,
+yi-1.5-34b-chat,01.AI,1174,32.0,,,25.5,,,,,,,,,,,,,medium,,epoch
+reka-flash-21b-20240226-online,,1172,,,,,,,,,,,,,,,,,low,,
+qwen1.5-72b-chat,Alibaba,1168,28.8,,,,,,,,,,,,,,,,medium,,epoch
+llama-3-8b-instruct,,1167,,,,,,,,,,,,,,,,,low,,
+mistral-medium,,1166,,,,,,,,,,,,,,,,,low,,
+reka-flash-21b-20240226,,1166,,,,,,,,,,,,,,,,,low,,
+command-r,,1165,,,,,,,,,,,,,,,,,low,,
+mixtral-8x22b-instruct-v0.1,Mistral AI,1163,,,,,,,121.2,,,,,,,,,,low,,epoch
+qwq-32b-preview,Alibaba,1163,,,,,,,,40.2,,,,,,,,,low,,epoch
+internlm2_5-20b-chat,,1161,,,,,,,,,,,,,,,,,low,,
+gemma-2-2b-it,,1157,,,,,,,,,,,,,,,,,low,,
+granite-3.1-8b-instruct,,1152,,,,,,,,,,,,,,,,,low,,
+gemini-pro-dev-api,,1150,,,,,,,,,,,,,,,,,low,,
+zephyr-orpo-141b-A35b-v0.1,,1146,,,,,,,,,,,,,,,,,low,,
+phi-3-medium-4k-instruct,,1139,,,,,,,,,,,,,,,,,low,,
+qwen1.5-32b-chat,Alibaba,1139,30.7,,,,,,,,,,,,,,,,medium,,epoch
+starling-lm-7b-beta,,1134,,,,,,,,,,,,,,,,,low,,
+mixtral-8x7b-instruct-v0.1,Mistral AI,1133,30.6,,,9.3,,,118.5,,,,,,,,,,medium,,epoch
+gemini-pro,,1132,,,,,,,,,,,,,,,,,low,,
+granite-3.1-2b-instruct,,1130,,,,,,,,,,,,,,,,,low,,
+qwen1.5-14b-chat,,1130,,,,,,,,,,,,,,,,,low,,
+yi-34b-chat,01.AI,1130,14.7,67.6,,5.1,,,117.6,,,,,,,,,,medium,,epoch
+gpt-3.5-turbo-0125,OpenAI,1126,27.2,67.3,,11.6,,,,,,,,,,,,,medium,,epoch
+tulu-2-dpo-70b,,1123,,,,,,,,,,,,,,,,,low,,
+wizardlm-70b,,1121,,,,,,,,,,,,,,,,,low,,
+dbrx-instruct-preview,,1120,,,,,,,,,,,,,,,,,low,,
+llama-2-70b-chat,Meta AI,1117,,59.4,,,,,114.2,,,,,,,,,,low,,epoch
+nous-hermes-2-mixtral-8x7b-dpo,,1114,,,,,,,,,,,,,,,,,low,,
+phi-3-small-8k-instruct,Microsoft,1111,,75.7,,,,,123.0,24.0,,,,,,,,,low,,epoch
+llama-3.2-3b-instruct,Meta AI,1110,,,,,,,,,,,,,,,,,low,,epoch
+starling-lm-7b-alpha,,1109,,,,,,,,,,,,,,,,,low,,
+openchat-3.5-0106,,1108,,,,,,,,,,,,,,,,,low,,
+vicuna-33b,,1107,,,,,,,,,,,,,,,,,low,,
+deepseek-llm-67b-chat,DeepSeek,1106,24.6,,,6.4,,,,,,,,,,,,,medium,,epoch
+snowflake-arctic-instruct,,1103,,,,,,,,,,,,,,,,,low,,
+llama2-70b-steerlm-chat,,1100,,,,,,,,,,,,,,,,,low,,
+granite-3.0-8b-instruct,,1099,,,,,,,,,,,,,,,,,low,,
+openchat-3.5,,1098,,,,,,,,,,,,,,,,,low,,
+gemma-1.1-7b-it,,1096,,,,,,,,,,,,,,,,,low,,
+gpt-3.5-turbo-1106,OpenAI,1095,28.0,71.4,,15.9,,,,,,,,,,,,,medium,,epoch
+openhermes-2.5-mistral-7b,,1095,,,,,,,,,,,,,,,,,low,,
+mistral-7b-instruct-v0.2,Mistral AI,1091,,62.5,,,,,111.5,,,,,,,,,,low,,epoch
+llama-2-13b-chat,Meta AI,1086,,50.9,,,,,105.0,,,,,,,,,,low,,epoch
+qwen1.5-7b-chat,,1085,,,,,,,,,,,,,,,,,low,,
+solar-10.7b-instruct-v1.0,,1085,,,,,,,,,,,,,,,,,low,,
+dolphin-2.2.1-mistral-7b,,1082,,,,,,,,,,,,,,,,,low,,
+granite-3.0-2b-instruct,,1082,,,,,,,,,,,,,,,,,low,,
+phi-3-mini-4k-instruct-june-2024,,1081,,,,,,,,,,,,,,,,,low,,
+wizardlm-13b,,1079,,,,,,,,,,,,,,,,,low,,
+phi-3-mini-4k-instruct,Microsoft,1075,,68.8,,,,,117.6,22.4,,,,,,,,,low,,epoch
+zephyr-7b-beta,,1071,,,,,,,,,,,,,,,,,low,,
+mpt-30b-chat,,1070,,,,,,,,,,,,,,,,,low,,
+codellama-34b-instruct,,1067,,,,,,,,,,,,,,,,,low,,
+zephyr-7b-alpha,,1061,,,,,,,,,,,,,,,,,low,,
+vicuna-13b,,1060,,,,,,,,,,,,,,,,,low,,
+codellama-70b-instruct,,1058,,,,,,,,,,,,,,,,,low,,
+gemma-7b-it,,1057,,,,,,,,,,,,,,,,,low,,
+llama-3.2-1b-instruct,Meta AI,1057,,,,,,,,,,,,,,,,,low,,epoch
+falcon-180b-chat,,1056,,,,,,,,,,,,,,,,,low,,
+guanaco-33b,,1056,,,,,,,,,,,,,,,,,low,,
+llama-2-7b-chat,,1055,,,,,,,,,,,,,,,,,low,,
+phi-3-mini-128k-instruct,,1053,,,,,,,,,,,,,,,,,low,,
+qwen-14b-chat,Alibaba,1053,,64.0,,,,,112.5,,,,,,,,,,low,,epoch
+smollm2-1.7b-instruct,,1048,,,,,,,,,,,,,,,,,low,,
+stripedhyena-nous-7b,,1039,,,,,,,,,,,,,,,,,low,,
+vicuna-7b,,1033,,,,,,,,,,,,,,,,,low,,
+olmo-7b-instruct,,1032,,,,,,,,,,,,,,,,,low,,
+palm-2,,1029,,,,,,,,,,,,,,,,,low,,
+mistral-7b-instruct,,1026,,,,,,,,,,,,,,,,,low,,
+gemma-1.1-2b-it,,1025,,,,,,,,,,,,,,,,,low,,
+gemma-2b-it,,1004,,,,,,,,,,,,,,,,,low,,
+qwen1.5-4b-chat,,999,,,,,,,,,,,,,,,,,low,,
+koala-13b,,991,,,,,,,,,,,,,,,,,low,,
+chatglm3-6b,,974,,,,,,,,,,,,,,,,,low,,
+gpt4all-13b-snoozy,,957,,,,,,,,,,,,,,,,,low,,
+mpt-7b-chat,,957,,,,,,,,,,,,,,,,,low,,
+RWKV-4-Raven-14B,,951,,,,,,,,,,,,,,,,,low,,
+chatglm2-6b,,941,,47.9,,,,,,,,,,,,,,,low,,epoch
+alpaca-13b,,935,,,,,,,,,,,,,,,,,low,,
+chatglm-6b,,920,,,,,,,,,,,,,,,,,low,,
+oasst-pythia-12b,,918,,,,,,,,,,,,,,,,,low,,
+fastchat-t5-3b,,896,,,,,,,,,,,,,,,,,low,,
+stablelm-tuned-alpha-7b,,868,,,,,,,,,,,,,,,,,low,,epoch
+dolly-v2-12b,Databricks,853,,26.2,,,,,83.4,,,,,,,,,,low,,epoch
+llama-13b,Meta AI,835,,46.9,,,,,98.4,,,,,,,,,,low,,epoch
+AI21: Jamba Large 1.7,ai21,,,,,,,,,,,,,,,256000,2.00,8.00,low,,
+AionLabs: Aion-1.0,aion-labs,,,,,,,,,,,,,,,131072,4.00,8.00,low,,
+AionLabs: Aion-1.0-Mini,aion-labs,,,,,,,,,,,,,,,131072,0.70,1.40,low,,
+AionLabs: Aion-2.0,aion-labs,,,,,,,,,,,,,,,131072,0.80,1.60,low,,
+AionLabs: Aion-RP 1.0 (8B),aion-labs,,,,,,,,,,,,,,,32768,0.80,1.60,low,,
+AlfredPros: CodeLLaMa 7B Instruct Solidity,alfredpros,,,,,,,,,,,,,,,4096,0.80,1.20,low,,
+AllenAI: Molmo2 8B,allenai,,,,,,,,,,,,,,,36864,0.20,0.20,low,,
+AllenAI: Olmo 2 32B Instruct,allenai,,,,,,,,,,,,,,,128000,0.05,0.20,low,,
+AllenAI: Olmo 3 32B Think,allenai,,,,,,,,,,,,,,,65536,0.15,0.50,low,,
+AllenAI: Olmo 3 7B Instruct,allenai,,,,,,,,,,,,,,,65536,0.10,0.20,low,,
+AllenAI: Olmo 3 7B Think,allenai,,,,,,,,,,,,,,,65536,0.12,0.20,low,,
+AllenAI: Olmo 3.1 32B Instruct,allenai,,,,,,,,,,,,,,,65536,0.20,0.60,low,,
+AllenAI: Olmo 3.1 32B Think,allenai,,,,,,,,,,,,,,,65536,0.15,0.50,low,,
+Amazon: Nova 2 Lite,amazon,,,,,,,,,,,,,,,1000000,0.30,2.50,low,,
+Amazon: Nova Lite 1.0,amazon,,,,,,,,,,,,,,,300000,0.06,0.24,low,,
+Amazon: Nova Micro 1.0,amazon,,,,,,,,,,,,,,,128000,0.04,0.14,low,,
+Amazon: Nova Premier 1.0,amazon,,,,,,,,,,,,,,,1000000,2.50,12.50,low,,
+Amazon: Nova Pro 1.0,amazon,,,,,,,,,,,,,,,300000,0.80,3.20,low,,
+Anthropic: Claude 3 Haiku,anthropic,,,,,,,,,,,,,,,200000,0.25,1.25,low,,
+Anthropic: Claude 3.5 Haiku,anthropic,,,,,,,,,,,,,,,200000,0.80,4.00,low,,
+Anthropic: Claude 3.5 Sonnet,anthropic,,,,,,,,,,,,,,,200000,6.00,30.00,low,,
+Anthropic: Claude 3.7 Sonnet,anthropic,,,,,,,,,,,,,,,200000,3.00,15.00,low,,
+Anthropic: Claude 3.7 Sonnet (thinking),anthropic,,,,,,,,,,,,,,,200000,3.00,15.00,low,,
+Anthropic: Claude Opus 4,anthropic,,,,,,,,,,,,,,,200000,15.00,75.00,low,,
+Anthropic: Claude Opus 4.1,anthropic,,,,,,,,,,,,,,,200000,15.00,75.00,low,,
+Anthropic: Claude Opus 4.5,anthropic,,,,,,,,,,,,,,,200000,5.00,25.00,low,,
+Anthropic: Claude Sonnet 4,anthropic,,,,,,,,,,,,,,,1000000,3.00,15.00,low,,
+Anthropic: Claude Sonnet 4.5,anthropic,,,,,,,,,,,,,,,1000000,3.00,15.00,low,,
+Arcee AI: Coder Large,arcee-ai,,,,,,,,,,,,,,,32768,0.50,0.80,low,,
+Arcee AI: Maestro Reasoning,arcee-ai,,,,,,,,,,,,,,,131072,0.90,3.30,low,,
+Arcee AI: Spotlight,arcee-ai,,,,,,,,,,,,,,,131072,0.18,0.18,low,,
+Arcee AI: Trinity Large Preview (free),arcee-ai,,,,,,,,,,,,,,,131000,,,low,,
+Arcee AI: Trinity Mini,arcee-ai,,,,,,,,,,,,,,,131072,0.04,0.15,low,,
+Arcee AI: Trinity Mini (free),arcee-ai,,,,,,,,,,,,,,,131072,,,low,,
+Arcee AI: Virtuoso Large,arcee-ai,,,,,,,,,,,,,,,131072,0.75,1.20,low,,
+Aria,,,,,,,,,,,,,,,,,,,low,,epoch
+Auto Router,openrouter,,,,,,,,,,,,,,,2000000,,,low,,
+Baichuan-13B-Base,Baichuan,,,51.6,,,,,,,,,,,,,,,low,,epoch
+Baichuan-2-13B-Base,Baichuan,,,59.2,,,,,101.7,,,,,,,,,,low,,epoch
+Baichuan-2-7B-Base,Baichuan,,,54.2,,,,,94.2,,,,,,,,,,low,,epoch
+Baichuan-7B,Baichuan,,,42.3,,,,,88.0,,,,,,,,,,low,,epoch
+Baichuan2-13B-Chat,,,,55.1,,,,,,,,,,,,,,,low,,epoch
+Baidu: ERNIE 4.5 21B A3B,baidu,,,,,,,,,,,,,,,120000,0.07,0.28,low,,
+Baidu: ERNIE 4.5 21B A3B Thinking,baidu,,,,,,,,,,,,,,,131072,0.07,0.28,low,,
+Baidu: ERNIE 4.5 300B A47B ,baidu,,,,,,,,,,,,,,,123000,0.28,1.10,low,,
+Baidu: ERNIE 4.5 VL 28B A3B,baidu,,,,,,,,,,,,,,,30000,0.14,0.56,low,,
+Baidu: ERNIE 4.5 VL 424B A47B ,baidu,,,,,,,,,,,,,,,123000,0.42,1.25,low,,
+Body Builder (beta),openrouter,,,,,,,,,,,,,,,128000,,,low,,
+ByteDance Seed: Seed 1.6,bytedance-seed,,,,,,,,,,,,,,,262144,0.25,2.00,low,,
+ByteDance Seed: Seed 1.6 Flash,bytedance-seed,,,,,,,,,,,,,,,262144,0.07,0.30,low,,
+ByteDance: UI-TARS 7B ,bytedance,,,,,,,,,,,,,,,128000,0.10,0.20,low,,
+ByteVideoLLM-14B,,,,,,,,,,,,,,,,,,,low,,epoch
+Cerebras-GPT-13B,Cerebras Systems,,,26.2,,,,,74.5,,,,,,,,,,low,,epoch
+Chat-Uni-Vi-7B-v1.5 + 100k SG-WV,,,,,,,,,,,,,,,,,,,low,,epoch
+Chat-UniVi-7B-v1.5,,,,,,,,,,,,,,,,,,,low,,epoch
+Chinchilla (70B),DeepMind,,,67.5,,,,,,,,,,,,,,,low,,epoch
+CodeQwen1.5-7B,,,,40.5,,,,,,,,,,,,,,,low,,epoch
+Cohere: Command A,cohere,,,,,,,,,,,,,,,256000,2.50,10.00,low,,
+Cohere: Command R+ (08-2024),cohere,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+Cohere: Command R7B (12-2024),cohere,,,,,,,,,,,,,,,128000,0.04,0.15,low,,
+Deep Cogito: Cogito v2.1 671B,deepcogito,,,,,,,,,,,,,,,128000,1.25,1.25,low,,
+DeepSeek-Coder-V2-Base,DeepSeek,,,,,,,,,,,,,,,,,,low,,epoch
+DeepSeek-Coder-V2-Instruct,DeepSeek,,,,,,,,,,,,,,,,,,low,,epoch
+DeepSeek-Coder-V2-Lite-Base,,,,60.5,,,,,,,,,,,,,,,low,,epoch
+DeepSeek-Coder-V2-Lite-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+DeepSeek-R1-Distill-Llama-70B,DeepSeek,,55.7,,,89.9,,,,54.5,,,,,,,,,low,,epoch
+DeepSeek-R1-Distill-Qwen-14B,DeepSeek,,44.7,,,87.1,,,,,,,,,,,,,low,,epoch
+DeepSeek-R1-Distill-Qwen-32B,DeepSeek,,,,,,,,,45.5,,,,,,,,,low,,epoch
+DeepSeek-V2,DeepSeek,,,78.4,,,,,125.4,,,,,,,,,,low,,epoch
+DeepSeek-V3-Base,DeepSeek,,,,,,,,133.0,,,,,,,,,,low,,epoch
+DeepSeek-V3.1_thinking,DeepSeek,,,,,,,,138.6,,,,,,,,,,low,,epoch
+DeepSeek-V3.2-Exp_thinking,DeepSeek,,,,74.2,,,,144.7,,,,,,,,,,low,,epoch
+DeepSeek: DeepSeek V3,deepseek,,,,,,,,,,,,,,,163840,0.32,0.89,low,,
+DeepSeek: DeepSeek V3 0324,deepseek,,,,,,,,,,,,,,,163840,0.19,0.87,low,,
+DeepSeek: DeepSeek V3.1,deepseek,,,,,,,,,,,,,,,32768,0.15,0.75,low,,
+DeepSeek: DeepSeek V3.1 Terminus,deepseek,,,,,,,,,,,,,,,163840,0.21,0.79,low,,
+DeepSeek: DeepSeek V3.1 Terminus (exacto),deepseek,,,,,,,,,,,,,,,163840,0.21,0.79,low,,
+DeepSeek: DeepSeek V3.2 Exp,deepseek,,,,,,,,,,,,,,,163840,0.27,0.41,low,,
+DeepSeek: DeepSeek V3.2 Speciale,deepseek,,,,,,,,,,,,,,,163840,0.40,1.20,low,,
+DeepSeek: R1,deepseek,,,,,,,,,,,,,,,64000,0.70,2.50,low,,
+DeepSeek: R1 0528,deepseek,,,,,,,,,,,,,,,163840,0.40,1.75,low,,
+DeepSeek: R1 Distill Llama 70B,deepseek,,,,,,,,,,,,,,,131072,0.70,0.80,low,,
+DeepSeek: R1 Distill Qwen 32B,deepseek,,,,,,,,,,,,,,,32768,0.29,0.29,low,,
+Dracarys2-72B-Instruct,,,,,,,,,,52.6,,,,,,,,,low,,epoch
+Dracarys2-Llama-3.1-70B-Instruct,,,,,,,,,,46.2,,,,,,,,,low,,epoch
+EleutherAI: Llemma 7b,eleutherai,,,,,,,,,,,,,,,4096,0.80,1.20,low,,
+EssentialAI: Rnj 1 Instruct,essentialai,,,,,,,,,,,,,,,32768,0.15,0.15,low,,
+Eurus-2-7B-PRIME,"Tsinghua University,University of Illinois Urbana-Champaign (UIUC),Shanghai AI Lab,Peking University,Shanghai Jiao Tong University,CUHK Shenzhen Research Institute",,33.9,,,,,,,,,,,,,,,,low,,epoch
+Free Models Router,openrouter,,,,,,,,,,,,,,,200000,,,low,,
+GLaM (MoE),Google,,,,,,,,,,,,,,,,,,low,,epoch
+Goliath 120B,alpindale,,,,,,,,,,,,,,,6144,3.75,7.50,low,,
+Google: Gemini 2.0 Flash,google,,,,,,,,,,,,,,,1048576,0.10,0.40,low,,
+Google: Gemini 2.0 Flash Lite,google,,,,,,,,,,,,,,,1048576,0.07,0.30,low,,
+Google: Gemini 2.5 Flash,google,,,,,,,,,,,,,,,1048576,0.30,2.50,low,,
+Google: Gemini 2.5 Flash Image (Nano Banana),google,,,,,,,,,,,,,,,32768,0.30,2.50,low,,
+Google: Gemini 2.5 Flash Lite,google,,,,,,,,,,,,,,,1048576,0.10,0.40,low,,
+Google: Gemini 2.5 Flash Lite Preview 09-2025,google,,,,,,,,,,,,,,,1048576,0.10,0.40,low,,
+Google: Gemini 2.5 Pro,google,,,,,,,,,,,,,,,1048576,1.25,10.00,low,,
+Google: Gemini 2.5 Pro Preview 05-06,google,,,,,,,,,,,,,,,1048576,1.25,10.00,low,,
+Google: Gemini 2.5 Pro Preview 06-05,google,,,,,,,,,,,,,,,1048576,1.25,10.00,low,,
+Google: Gemini 3.1 Pro Preview,google,,,,,,,,,,,,,,,1048576,2.00,12.00,low,,
+Google: Gemma 2 27B,google,,,,,,,,,,,,,,,8192,0.65,0.65,low,,
+Google: Gemma 2 9B,google,,,,,,,,,,,,,,,8192,0.03,0.09,low,,
+Google: Gemma 3 12B,google,,,,,,,,,,,,,,,131072,0.04,0.13,low,,
+Google: Gemma 3 12B (free),google,,,,,,,,,,,,,,,32768,,,low,,
+Google: Gemma 3 27B,google,,,,,,,,,,,,,,,128000,0.04,0.15,low,,
+Google: Gemma 3 27B (free),google,,,,,,,,,,,,,,,131072,,,low,,
+Google: Gemma 3 4B,google,,,,,,,,,,,,,,,131072,0.04,0.08,low,,
+Google: Gemma 3 4B (free),google,,,,,,,,,,,,,,,32768,,,low,,
+Google: Gemma 3n 2B (free),google,,,,,,,,,,,,,,,8192,,,low,,
+Google: Gemma 3n 4B,google,,,,,,,,,,,,,,,32768,0.02,0.04,low,,
+Google: Gemma 3n 4B (free),google,,,,,,,,,,,,,,,8192,,,low,,
+Google: Nano Banana Pro (Gemini 3 Pro Image Preview),google,,,,,,,,,,,,,,,65536,2.00,12.00,low,,
+Gopher (280B),DeepMind,,,60.0,,,,,,,,,,,,,,,low,,epoch
+Hermes-2-Theta-Llama-3-70B,"Nous Research,Arcee AI",,37.5,,,22.7,,,,,,,,,,,,,low,,epoch
+IBM: Granite 4.0 Micro,ibm-granite,,,,,,,,,,,,,,,131000,0.02,0.11,low,,
+INTELLECT-1-Instruct,"Prime Intellect,Hugging Face,Arcee AI",,,49.9,,,,,99.4,,,,,,,,,,low,,epoch
+Inception: Mercury,inception,,,,,,,,,,,,,,,128000,0.25,1.00,low,,
+Inception: Mercury Coder,inception,,,,,,,,,,,,,,,128000,0.25,1.00,low,,
+Inflection-1,Inflection AI,,,72.7,,,,,,,,,,,,,,,low,,epoch
+Inflection: Inflection 3 Pi,inflection,,,,,,,,,,,,,,,8000,2.50,10.00,low,,
+Inflection: Inflection 3 Productivity,inflection,,,,,,,,,,,,,,,8000,2.50,10.00,low,,
+InternVL-Chat-V1-5,,,,,,,,,,,,,,,,,,,low,,epoch
+InternVL-Chat-ViT-6B-Vicuna-13B,,,,,,,,,,,,,,,,,,,low,,epoch
+InternVL-Chat-ViT-6B-Vicuna-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+InternVL2-40B,Shanghai AI Lab,,,,,,,,,,,,,,,,,,low,,epoch
+InternVL2_5-78B,"Shanghai AI Lab,SenseTime,Tsinghua University,Nanjing University,Fudan University,Chinese University of Hong Kong (CUHK),Shanghai Jiao Tong University",,,,,,,,,,,,,,,,,,low,,epoch
+Kimi-K2-Instruct,Moonshot,,,,59.1,,,,140.5,,,,,,,,,,low,,epoch
+Kimi-K2-Instruct-0905,Moonshot,,,,,,,,140.5,,,,,,,,,,low,,epoch
+Kwaipilot: KAT-Coder-Pro V1,kwaipilot,,,,,,,,,,,,,,,256000,0.21,0.83,low,,
+LLaMA-33B,Meta AI,,,57.8,,,,,106.6,,,,,,,,,,low,,epoch
+LLaMA-65B,Meta AI,,,63.4,,,,,109.7,,,,,,,,,,low,,epoch
+LLaMA-7B,Meta AI,,,35.1,,,,,93.5,,,,,,,,,,low,,epoch
+LLaVA-OneVision 72B,,,,,,,,,,,,,,,,,,,low,,epoch
+LLaVA-Video-72B-Qwen2,,,,,,,,,,,,,,,,,,,low,,epoch
+LLaVA-Video-7B-Qwen2,,,,,,,,,,,,,,,,,,,low,,epoch
+LLaVA-Video-7B-Qwen2-TPO,,,,,,,,,,,,,,,,,,,low,,epoch
+LinVT,,,,,,,,,,,,,,,,,,,low,,epoch
+LiquidAI: LFM2-2.6B,liquid,,,,,,,,,,,,,,,32768,0.01,0.02,low,,
+LiquidAI: LFM2-8B-A1B,liquid,,,,,,,,,,,,,,,32768,0.01,0.02,low,,
+LiquidAI: LFM2.5-1.2B-Instruct (free),liquid,,,,,,,,,,,,,,,32768,,,low,,
+LiquidAI: LFM2.5-1.2B-Thinking (free),liquid,,,,,,,,,,,,,,,32768,,,low,,
+LiveCC-7B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Llama Guard 3 8B,meta-llama,,,,,,,,,,,,,,,131072,0.02,0.06,low,,
+Llama-2-13b,Meta AI,,,55.4,,,,,105.0,,,,,,,,,,low,,epoch
+Llama-2-34b,Meta AI,,,62.6,,,,,104.0,,,,,,,,,,low,,epoch
+Llama-2-70b-chat-hf,Meta AI,,26.3,,,3.3,,,114.2,,,,,,,,,,low,,epoch
+Llama-2-70b-hf,Meta AI,,,69.5,,,,,114.2,,,,,,,,,,low,,epoch
+Llama-2-7b,Meta AI,,,45.8,,,,,96.4,,,,,,,,,,low,,epoch
+Llama-3.1-405B,Meta AI,,,84.4,,,,,127.9,,,,,,,,,,low,,epoch
+Llama-3.1-405B-Instruct,Meta AI,,50.9,84.5,,49.8,,,127.9,,,,,,,,,,low,,epoch
+Llama-3.1-Tulu-3-70B-DPO,"Allen Institute for AI,University of Washington",,46.3,,,42.7,,,,,,,,,,,,,low,,epoch
+Llama-3.2-11B-Vision-Instruct,Meta AI,,,56.5,,,,,,,,,,,,,,,low,,epoch
+Llama-3.2-90B-Vision-Instruct,Meta AI,,41.0,80.3,,39.4,,,125.6,,,,,,,,,,low,,epoch
+Llama-4-Maverick-17B-128E-Instruct-FP8,Meta AI,,67.0,,,73.0,,,132.8,,,,0.7,,,,,,low,,epoch
+LongVA-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+MM1-3B-Chat,,,,,,,,,,,,,,,,,,,low,,epoch
+MM1-7B-Chat,,,,,,,,,,,,,,,,,,,low,,epoch
+Magnum v4 72B,anthracite-org,,,,,,,,,,,,,,,16384,3.00,5.00,low,,
+Mancer: Weaver (alpha),mancer,,,,,,,,,,,,,,,8000,0.75,1.00,low,,
+Megatron-Turing NLG 530B,"Microsoft,NVIDIA",,,,,,,,,,,,,,,,,,low,,epoch
+Meituan: LongCat Flash Chat,meituan,,,,,,,,,,,,,,,131072,0.20,0.80,low,,
+Meta-Llama-3-70B,Meta AI,,,,,,,,119.7,,,,,,,,,,low,,epoch
+Meta-Llama-3-70B-Instruct,Meta AI,,40.6,79.3,,22.6,,,119.7,,,,,,,,,,low,,epoch
+Meta-Llama-3-8B,Meta AI,,,,,,,,116.7,,,,,,,,,,low,,epoch
+Meta-Llama-3-8B-Instruct,Meta AI,,26.1,68.8,,6.1,,,116.7,,,,,,,,,,low,,epoch
+Meta: Llama 3 70B Instruct,meta-llama,,,,,,,,,,,,,,,8192,0.51,0.74,low,,
+Meta: Llama 3 8B Instruct,meta-llama,,,,,,,,,,,,,,,8192,0.03,0.04,low,,
+Meta: Llama 3.1 405B (base),meta-llama,,,,,,,,,,,,,,,32768,4.00,4.00,low,,
+Meta: Llama 3.1 405B Instruct,meta-llama,,,,,,,,,,,,,,,131000,4.00,4.00,low,,
+Meta: Llama 3.1 70B Instruct,meta-llama,,,,,,,,,,,,,,,131072,0.40,0.40,low,,
+Meta: Llama 3.1 8B Instruct,meta-llama,,,,,,,,,,,,,,,16384,0.02,0.05,low,,
+Meta: Llama 3.2 11B Vision Instruct,meta-llama,,,,,,,,,,,,,,,131072,0.05,0.05,low,,
+Meta: Llama 3.2 1B Instruct,meta-llama,,,,,,,,,,,,,,,60000,0.03,0.20,low,,
+Meta: Llama 3.2 3B Instruct,meta-llama,,,,,,,,,,,,,,,131072,0.02,0.02,low,,
+Meta: Llama 3.2 3B Instruct (free),meta-llama,,,,,,,,,,,,,,,131072,,,low,,
+Meta: Llama 3.3 70B Instruct,meta-llama,,,,,,,,,,,,,,,131072,0.10,0.32,low,,
+Meta: Llama 3.3 70B Instruct (free),meta-llama,,,,,,,,,,,,,,,128000,,,low,,
+Meta: Llama 4 Maverick,meta-llama,,,,,,,,,,,,,,,1048576,0.15,0.60,low,,
+Meta: Llama 4 Scout,meta-llama,,,,,,,,,,,,,,,327680,0.08,0.30,low,,
+Meta: Llama Guard 4 12B,meta-llama,,,,,,,,,,,,,,,163840,0.18,0.18,low,,
+Meta: LlamaGuard 2 8B,meta-llama,,,,,,,,,,,,,,,8192,0.20,0.20,low,,
+Microsoft: Phi 4,microsoft,,,,,,,,,,,,,,,16384,0.06,0.14,low,,
+MiniCPM-V-2_6,,,,,,,,,,,,,,,,,,,low,,epoch
+MiniCPM-o-2_6,,,,,,,,,,,,,,,,,,,low,,epoch
+MiniMax-M1-80k,MiniMax,,,,,,,,,,,,,,,,,,low,,epoch
+MiniMax: MiniMax M1,minimax,,,,,,,,,,,,,,,1000000,0.40,2.20,low,,
+MiniMax: MiniMax M2,minimax,,,,,,,,,,,,,,,196608,0.26,1.00,low,,
+MiniMax: MiniMax M2-her,minimax,,,,,,,,,,,,,,,65536,0.30,1.20,low,,
+MiniMax: MiniMax M2.1,minimax,,,,,,,,,,,,,,,196608,0.27,0.95,low,,
+MiniMax: MiniMax M2.5,minimax,,,,,,,,,,,,,,,196608,0.30,1.10,low,,
+MiniMax: MiniMax-01,minimax,,,,,,,,,,,,,,,1000192,0.20,1.10,low,,
+Mistral Large,mistralai,,,,,,,,,,,,,,,128000,2.00,6.00,low,,
+Mistral Large 2407,mistralai,,,,,,,,,,,,,,,131072,2.00,6.00,low,,
+Mistral Large 2411,mistralai,,,,,,,,,,,,,,,131072,2.00,6.00,low,,
+Mistral-7B-Instruct-v0.1,Mistral AI,,,,,,,,111.5,,,,,,,,,,low,,epoch
+Mistral-7B-Instruct-v0.3,Mistral AI,,15.2,59.9,,3.6,,,111.5,,,,,,,,,,low,,epoch
+Mistral-7B-v0.1,Mistral AI,,,62.5,,,,,111.5,,,,,,,,,,low,,epoch
+Mistral-Nemo-Base-2407,Mistral AI,,,,,,,,118.3,,,,,,,,,,low,,epoch
+Mistral-Nemo-Instruct-2407,Mistral AI,,,,,,,,118.3,,,,,,,,,,low,,epoch
+Mistral: Codestral 2508,mistralai,,,,,,,,,,,,,,,256000,0.30,0.90,low,,
+Mistral: Devstral 2 2512,mistralai,,,,,,,,,,,,,,,262144,0.40,2.00,low,,
+Mistral: Devstral Medium,mistralai,,,,,,,,,,,,,,,131072,0.40,2.00,low,,
+Mistral: Devstral Small 1.1,mistralai,,,,,,,,,,,,,,,131072,0.10,0.30,low,,
+Mistral: Ministral 3 14B 2512,mistralai,,,,,,,,,,,,,,,262144,0.20,0.20,low,,
+Mistral: Ministral 3 3B 2512,mistralai,,,,,,,,,,,,,,,131072,0.10,0.10,low,,
+Mistral: Ministral 3 8B 2512,mistralai,,,,,,,,,,,,,,,262144,0.15,0.15,low,,
+Mistral: Mistral 7B Instruct,mistralai,,,,,,,,,,,,,,,32768,0.20,0.20,low,,
+Mistral: Mistral 7B Instruct v0.1,mistralai,,,,,,,,,,,,,,,2824,0.11,0.19,low,,
+Mistral: Mistral 7B Instruct v0.2,mistralai,,,,,,,,,,,,,,,32768,0.20,0.20,low,,
+Mistral: Mistral 7B Instruct v0.3,mistralai,,,,,,,,,,,,,,,32768,0.20,0.20,low,,
+Mistral: Mistral Large 3 2512,mistralai,,,,,,,,,,,,,,,262144,0.50,1.50,low,,
+Mistral: Mistral Medium 3,mistralai,,,,,,,,,,,,,,,131072,0.40,2.00,low,,
+Mistral: Mistral Medium 3.1,mistralai,,,,,,,,,,,,,,,131072,0.40,2.00,low,,
+Mistral: Mistral Nemo,mistralai,,,,,,,,,,,,,,,131072,0.02,0.04,low,,
+Mistral: Mistral Small 3,mistralai,,,,,,,,,,,,,,,32768,0.05,0.08,low,,
+Mistral: Mistral Small 3.1 24B,mistralai,,,,,,,,,,,,,,,128000,0.35,0.56,low,,
+Mistral: Mistral Small 3.1 24B (free),mistralai,,,,,,,,,,,,,,,128000,,,low,,
+Mistral: Mistral Small 3.2 24B,mistralai,,,,,,,,,,,,,,,131072,0.06,0.18,low,,
+Mistral: Mistral Small Creative,mistralai,,,,,,,,,,,,,,,32768,0.10,0.30,low,,
+Mistral: Mixtral 8x22B Instruct,mistralai,,,,,,,,,,,,,,,65536,2.00,6.00,low,,
+Mistral: Mixtral 8x7B Instruct,mistralai,,,,,,,,,,,,,,,32768,0.54,0.54,low,,
+Mistral: Pixtral Large 2411,mistralai,,,,,,,,,,,,,,,131072,2.00,6.00,low,,
+Mistral: Saba,mistralai,,,,,,,,,,,,,,,32768,0.20,0.60,low,,
+Mistral: Voxtral Small 24B 2507,mistralai,,,,,,,,,,,,,,,32000,0.10,0.30,low,,
+Mixtral-8x22B-v0.1,Mistral AI,,,77.8,,,,,121.2,,,,,,,,,,low,,epoch
+Mixtral-8x7B-v0.1,Mistral AI,,,70.6,,,,,118.5,,,,,,,,,,low,,epoch
+MoonshotAI: Kimi K2 0711,moonshotai,,,,,,,,,,,,,,,131072,0.50,2.40,low,,
+MoonshotAI: Kimi K2 0905 (exacto),moonshotai,,,,,,,,,,,,,,,262144,0.60,2.50,low,,
+Morph: Morph V3 Fast,morph,,,,,,,,,,,,,,,81920,0.80,1.20,low,,
+Morph: Morph V3 Large,morph,,,,,,,,,,,,,,,262144,0.90,1.90,low,,
+MythoMax 13B,gryphe,,,,,,,,,,,,,,,4096,0.06,0.06,low,,
+NVIDIA: Llama 3.1 Nemotron 70B Instruct,nvidia,,,,,,,,,,,,,,,131072,1.20,1.20,low,,
+NVIDIA: Llama 3.3 Nemotron Super 49B V1.5,nvidia,,,,,,,,,,,,,,,131072,0.10,0.40,low,,
+NVIDIA: Nemotron 3 Nano 30B A3B,nvidia,,,,,,,,,,,,,,,262144,0.05,0.20,low,,
+NVIDIA: Nemotron 3 Nano 30B A3B (free),nvidia,,,,,,,,,,,,,,,256000,,,low,,
+NVIDIA: Nemotron Nano 12B 2 VL,nvidia,,,,,,,,,,,,,,,131072,0.07,0.20,low,,
+NVIDIA: Nemotron Nano 12B 2 VL (free),nvidia,,,,,,,,,,,,,,,128000,,,low,,
+NVIDIA: Nemotron Nano 9B V2,nvidia,,,,,,,,,,,,,,,131072,0.04,0.16,low,,
+NVIDIA: Nemotron Nano 9B V2 (free),nvidia,,,,,,,,,,,,,,,128000,,,low,,
+NVILA-8B,"NVIDIA,Massachusetts Institute of Technology (MIT),University of California (UC) Berkeley,University of California San Diego,University of Washington,Tsinghua University",,,,,,,,,,,,,,,,,,low,,epoch
+Nemotron-4 15B,NVIDIA,,,58.7,,,,,106.5,,,,,,,,,,low,,epoch
+NeverSleep: Lumimaid v0.2 8B,neversleep,,,,,,,,,,,,,,,32768,0.09,0.60,low,,
+Nex AGI: DeepSeek V3.1 Nex N1,nex-agi,,,,,,,,,,,,,,,131072,0.27,1.00,low,,
+Noromaid 20B,neversleep,,,,,,,,,,,,,,,4096,1.00,1.75,low,,
+Nous: Hermes 3 405B Instruct,nousresearch,,,,,,,,,,,,,,,131072,1.00,1.00,low,,
+Nous: Hermes 3 405B Instruct (free),nousresearch,,,,,,,,,,,,,,,131072,,,low,,
+Nous: Hermes 3 70B Instruct,nousresearch,,,,,,,,,,,,,,,65536,0.30,0.30,low,,
+Nous: Hermes 4 405B,nousresearch,,,,,,,,,,,,,,,131072,1.00,3.00,low,,
+Nous: Hermes 4 70B,nousresearch,,,,,,,,,,,,,,,131072,0.13,0.40,low,,
+NousResearch: Hermes 2 Pro - Llama-3 8B,nousresearch,,,,,,,,,,,,,,,8192,0.14,0.14,low,,
+OLMo-2-1124-13B-Instruct,"Allen Institute for AI,University of Washington,New York University (NYU)",,,,,,,,,22.1,,,,,,,,,low,,epoch
+OpenAI: GPT Audio,openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT Audio Mini,openai,,,,,,,,,,,,,,,128000,0.60,2.40,low,,
+OpenAI: GPT-3.5 Turbo,openai,,,,,,,,,,,,,,,16385,0.50,1.50,low,,
+OpenAI: GPT-3.5 Turbo (older v0613),openai,,,,,,,,,,,,,,,4095,1.00,2.00,low,,
+OpenAI: GPT-3.5 Turbo 16k,openai,,,,,,,,,,,,,,,16385,3.00,4.00,low,,
+OpenAI: GPT-3.5 Turbo Instruct,openai,,,,,,,,,,,,,,,4095,1.50,2.00,low,,
+OpenAI: GPT-4,openai,,,,,,,,,,,,,,,8191,30.00,60.00,low,,
+OpenAI: GPT-4 (older v0314),openai,,,,,,,,,,,,,,,8191,30.00,60.00,low,,
+OpenAI: GPT-4 Turbo,openai,,,,,,,,,,,,,,,128000,10.00,30.00,low,,
+OpenAI: GPT-4 Turbo (older v1106),openai,,,,,,,,,,,,,,,128000,10.00,30.00,low,,
+OpenAI: GPT-4 Turbo Preview,openai,,,,,,,,,,,,,,,128000,10.00,30.00,low,,
+OpenAI: GPT-4.1,openai,,,,,,,,,,,,,,,1047576,2.00,8.00,low,,
+OpenAI: GPT-4.1 Mini,openai,,,,,,,,,,,,,,,1047576,0.40,1.60,low,,
+OpenAI: GPT-4.1 Nano,openai,,,,,,,,,,,,,,,1047576,0.10,0.40,low,,
+OpenAI: GPT-4o,openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT-4o (2024-05-13),openai,,,,,,,,,,,,,,,128000,5.00,15.00,low,,
+OpenAI: GPT-4o (2024-08-06),openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT-4o (2024-11-20),openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT-4o (extended),openai,,,,,,,,,,,,,,,128000,6.00,18.00,low,,
+OpenAI: GPT-4o Audio,openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT-4o Search Preview,openai,,,,,,,,,,,,,,,128000,2.50,10.00,low,,
+OpenAI: GPT-4o-mini,openai,,,,,,,,,,,,,,,128000,0.15,0.60,low,,
+OpenAI: GPT-4o-mini (2024-07-18),openai,,,,,,,,,,,,,,,128000,0.15,0.60,low,,
+OpenAI: GPT-4o-mini Search Preview,openai,,,,,,,,,,,,,,,128000,0.15,0.60,low,,
+OpenAI: GPT-5,openai,,,,,,,,,,,,,,,400000,1.25,10.00,low,,
+OpenAI: GPT-5 Chat,openai,,,,,,,,,,,,,,,128000,1.25,10.00,low,,
+OpenAI: GPT-5 Codex,openai,,,,,,,,,,,,,,,400000,1.25,10.00,low,,
+OpenAI: GPT-5 Image,openai,,,,,,,,,,,,,,,400000,10.00,10.00,low,,
+OpenAI: GPT-5 Image Mini,openai,,,,,,,,,,,,,,,400000,2.50,2.00,low,,
+OpenAI: GPT-5 Mini,openai,,,,,,,,,,,,,,,400000,0.25,2.00,low,,
+OpenAI: GPT-5 Nano,openai,,,,,,,,,,,,,,,400000,0.05,0.40,low,,
+OpenAI: GPT-5 Pro,openai,,,,,,,,,,,,,,,400000,15.00,120.00,low,,
+OpenAI: GPT-5.1,openai,,,,,,,,,,,,,,,400000,1.25,10.00,low,,
+OpenAI: GPT-5.1 Chat,openai,,,,,,,,,,,,,,,128000,1.25,10.00,low,,
+OpenAI: GPT-5.1-Codex,openai,,,,,,,,,,,,,,,400000,1.25,10.00,low,,
+OpenAI: GPT-5.1-Codex-Max,openai,,,,,,,,,,,,,,,400000,1.25,10.00,low,,
+OpenAI: GPT-5.1-Codex-Mini,openai,,,,,,,,,,,,,,,400000,0.25,2.00,low,,
+OpenAI: GPT-5.2 Pro,openai,,,,,,,,,,,,,,,400000,21.00,168.00,low,,
+OpenAI: gpt-oss-120b (exacto),openai,,,,,,,,,,,,,,,131072,0.04,0.19,low,,
+OpenAI: gpt-oss-120b (free),openai,,,,,,,,,,,,,,,131072,,,low,,
+OpenAI: gpt-oss-20b,openai,,,,,,,,,,,,,,,131072,0.03,0.14,low,,
+OpenAI: gpt-oss-20b (free),openai,,,,,,,,,,,,,,,131072,,,low,,
+OpenAI: gpt-oss-safeguard-20b,openai,,,,,,,,,,,,,,,131072,0.07,0.30,low,,
+OpenAI: o1,openai,,,,,,,,,,,,,,,200000,15.00,60.00,low,,
+OpenAI: o1-pro,openai,,,,,,,,,,,,,,,200000,150.00,600.00,low,,
+OpenAI: o3,openai,,,,,,,,,,,,,,,200000,2.00,8.00,low,,
+OpenAI: o3 Deep Research,openai,,,,,,,,,,,,,,,200000,10.00,40.00,low,,
+OpenAI: o3 Mini,openai,,,,,,,,,,,,,,,200000,1.10,4.40,low,,
+OpenAI: o3 Mini High,openai,,,,,,,,,,,,,,,200000,1.10,4.40,low,,
+OpenAI: o3 Pro,openai,,,,,,,,,,,,,,,200000,20.00,80.00,low,,
+OpenAI: o4 Mini,openai,,,,,,,,,,,,,,,200000,1.10,4.40,low,,
+OpenAI: o4 Mini Deep Research,openai,,,,,,,,,,,,,,,200000,2.00,8.00,low,,
+OpenAI: o4 Mini High,openai,,,,,,,,,,,,,,,200000,1.10,4.40,low,,
+OpenGVLab: InternVL3 78B,opengvlab,,,,,,,,,,,,,,,32768,0.15,0.60,low,,
+Oryx-1.5-32B,,,,,,,,,,,,,,,,,,,low,,epoch
+PaLM 2-L,,,,,,,,,,,,,,,,,,,low,,epoch
+PaLM 2-M,,,,,,,,,,,,,,,,,,,low,,epoch
+PaLM 2-S,,,,,,,,,,,,,,,,,,,low,,epoch
+PaLM 540B,Google Research,,,69.3,,,,,,,,,,,,,,,low,,epoch
+PaLM 62B,,,,53.7,,,,,,,,,,,,,,,low,,epoch
+Perplexity: Sonar,perplexity,,,,,,,,,,,,,,,127072,1.00,1.00,low,,
+Perplexity: Sonar Deep Research,perplexity,,,,,,,,,,,,,,,128000,2.00,8.00,low,,
+Perplexity: Sonar Pro,perplexity,,,,,,,,,,,,,,,200000,3.00,15.00,low,,
+Perplexity: Sonar Pro Search,perplexity,,,,,,,,,,,,,,,200000,3.00,15.00,low,,
+Perplexity: Sonar Reasoning Pro,perplexity,,,,,,,,,,,,,,,128000,2.00,8.00,low,,
+Phi-3-medium-128k-instruct,Microsoft,,27.6,77.5,,17.6,,,121.5,,,,,,,,,,low,,epoch
+Phi-3.5-MoE-instruct,Microsoft,,,,,,,,,,,,,,,,,,low,,epoch
+Phi-3.5-mini-instruct,Microsoft,,,,,,,,,,,,,,,,,,low,,epoch
+Phi-3.5-vision-instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Pixtral-12B-2409,Mistral AI,,,,,,,,,,,,,,,,,,low,,epoch
+Prime Intellect: INTELLECT-3,prime-intellect,,,,,,,,,,,,,,,131072,0.20,1.10,low,,
+QwQ-32B (16K thinking),Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen-14B,Alibaba,,,66.3,,,,,112.5,,,,,,,,,,low,,epoch
+Qwen-1_8B,,,,28.2,,,,,,,,,,,,,,,low,,epoch
+Qwen-7B,Alibaba,,,45.0,,,,,105.9,,,,,,,,,,low,,epoch
+Qwen-VL-Chat,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen-VL-Max,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen/Qwen3-235B-A22B-Thinking-2507,Alibaba,,,,,,,,,,,,8.5,,,131072,,,low,,epoch
+Qwen1.5-7B,Alibaba,,,62.6,,,,,,,,,,,,,,,low,,epoch
+Qwen2-VL-72B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen2-VL-7B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5 72B Instruct,qwen,,,,,,,,,,,,,,,32768,0.12,0.39,low,,
+Qwen2.5 Coder 32B Instruct,qwen,,,,,,,,,,,,,,,32768,0.20,0.20,low,,
+Qwen2.5-72B,Alibaba,,,85.0,,,,,129.4,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-0.5B,,,,42.0,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-1.5B,Alibaba,,,53.6,,,,,102.0,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-14B,,,,75.2,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-14B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-32B,Alibaba,,,61.2,,,,,121.3,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-3B,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-3B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-7B,Alibaba,,,68.0,,,,,112.7,,,,,,,,,,low,,epoch
+Qwen2.5-Coder-7B-Instruct,Alibaba,,,,,,,,112.7,,,,,,,,,,low,,epoch
+Qwen2.5-VL-72B-Instruct,Alibaba,,,,,,,,129.4,,,,,,,,,,low,,epoch
+Qwen: QwQ 32B,qwen,,,,,,,,,,,,,,,32768,0.15,0.40,low,,
+Qwen: Qwen Plus 0728,qwen,,,,,,,,,,,,,,,1000000,0.40,1.20,low,,
+Qwen: Qwen Plus 0728 (thinking),qwen,,,,,,,,,,,,,,,1000000,0.40,1.20,low,,
+Qwen: Qwen VL Max,qwen,,,,,,,,,,,,,,,131072,0.80,3.20,low,,
+Qwen: Qwen VL Plus,qwen,,,,,,,,,,,,,,,131072,0.21,0.63,low,,
+Qwen: Qwen-Max ,qwen,,,,,,,,,,,,,,,32768,1.60,6.40,low,,
+Qwen: Qwen-Plus,qwen,,,,,,,,,,,,,,,1000000,0.40,1.20,low,,
+Qwen: Qwen-Turbo,qwen,,,,,,,,,,,,,,,131072,0.05,0.20,low,,
+Qwen: Qwen2.5 7B Instruct,qwen,,,,,,,,,,,,,,,32768,0.04,0.10,low,,
+Qwen: Qwen2.5 Coder 7B Instruct,qwen,,,,,,,,,,,,,,,32768,0.03,0.09,low,,
+Qwen: Qwen2.5 VL 32B Instruct,qwen,,,,,,,,,,,,,,,128000,0.20,0.60,low,,
+Qwen: Qwen2.5 VL 72B Instruct,qwen,,,,,,,,,,,,,,,32768,0.80,0.80,low,,
+Qwen: Qwen2.5-VL 7B Instruct,qwen,,,,,,,,,,,,,,,32768,0.20,0.20,low,,
+Qwen: Qwen3 14B,qwen,,,,,,,,,,,,,,,40960,0.06,0.24,low,,
+Qwen: Qwen3 235B A22B,qwen,,,,,,,,,,,,,,,131072,0.45,1.82,low,,
+Qwen: Qwen3 235B A22B Instruct 2507,qwen,,,,,,,,,,,,,,,262144,0.07,0.10,low,,
+Qwen: Qwen3 30B A3B,qwen,,,,,,,,,,,,,,,40960,0.08,0.28,low,,
+Qwen: Qwen3 30B A3B Instruct 2507,qwen,,,,,,,,,,,,,,,262144,0.09,0.30,low,,
+Qwen: Qwen3 30B A3B Thinking 2507,qwen,,,,,,,,,,,,,,,32768,0.05,0.34,low,,
+Qwen: Qwen3 32B,qwen,,,,,,,,,,,,,,,40960,0.08,0.24,low,,
+Qwen: Qwen3 4B (free),qwen,,,,,,,,,,,,,,,40960,,,low,,
+Qwen: Qwen3 8B,qwen,,,,,,,,,,,,,,,32000,0.05,0.40,low,,
+Qwen: Qwen3 Coder 30B A3B Instruct,qwen,,,,,,,,,,,,,,,160000,0.07,0.27,low,,
+Qwen: Qwen3 Coder 480B A35B,qwen,,,,,,,,,,,,,,,262144,0.22,1.00,low,,
+Qwen: Qwen3 Coder 480B A35B (exacto),qwen,,,,,,,,,,,,,,,262144,0.22,1.80,low,,
+Qwen: Qwen3 Coder 480B A35B (free),qwen,,,,,,,,,,,,,,,262000,,,low,,
+Qwen: Qwen3 Coder Flash,qwen,,,,,,,,,,,,,,,1000000,0.30,1.50,low,,
+Qwen: Qwen3 Coder Next,qwen,,,,,,,,,,,,,,,262144,0.12,0.75,low,,
+Qwen: Qwen3 Coder Plus,qwen,,,,,,,,,,,,,,,1000000,1.00,5.00,low,,
+Qwen: Qwen3 Max,qwen,,,,,,,,,,,,,,,262144,1.20,6.00,low,,
+Qwen: Qwen3 Max Thinking,qwen,,,,,,,,,,,,,,,262144,1.20,6.00,low,,
+Qwen: Qwen3 Next 80B A3B Instruct,qwen,,,,,,,,,,,,,,,262144,0.09,1.10,low,,
+Qwen: Qwen3 Next 80B A3B Instruct (free),qwen,,,,,,,,,,,,,,,262144,,,low,,
+Qwen: Qwen3 Next 80B A3B Thinking,qwen,,,,,,,,,,,,,,,128000,0.15,1.20,low,,
+Qwen: Qwen3 VL 235B A22B Instruct,qwen,,,,,,,,,,,,,,,262144,0.20,0.88,low,,
+Qwen: Qwen3 VL 235B A22B Thinking,qwen,,,,,,,,,,,,,,,131072,,,low,,
+Qwen: Qwen3 VL 30B A3B Instruct,qwen,,,,,,,,,,,,,,,131072,0.13,0.52,low,,
+Qwen: Qwen3 VL 30B A3B Thinking,qwen,,,,,,,,,,,,,,,131072,,,low,,
+Qwen: Qwen3 VL 32B Instruct,qwen,,,,,,,,,,,,,,,131072,0.10,0.42,low,,
+Qwen: Qwen3 VL 8B Instruct,qwen,,,,,,,,,,,,,,,131072,0.08,0.50,low,,
+Qwen: Qwen3 VL 8B Thinking,qwen,,,,,,,,,,,,,,,131072,0.12,1.36,low,,
+Qwen: Qwen3.5 397B A17B,qwen,,,,,,,,,,,,,,,262144,0.55,3.50,low,,
+Qwen: Qwen3.5 Plus 2026-02-15,qwen,,,,,,,,,,,,,,,1000000,0.40,2.40,low,,
+ReMM SLERP 13B,undi95,,,,,,,,,,,,,,,6144,0.45,0.65,low,,
+RedPajama-INCITE-7B-Base,,,,26.3,,,,,,,,,,,,,,,low,,epoch
+Relace: Relace Apply 3,relace,,,,,,,,,,,,,,,256000,0.85,1.25,low,,
+Relace: Relace Search,relace,,,,,,,,,,,,,,,256000,1.00,3.00,low,,
+ST-LLM,,,,,,,,,,,,,,,,,,,low,,epoch
+Sao10K: Llama 3 8B Lunaris,sao10k,,,,,,,,,,,,,,,8192,0.04,0.05,low,,
+Sao10K: Llama 3.1 70B Hanami x1,sao10k,,,,,,,,,,,,,,,16000,3.00,3.00,low,,
+Sao10K: Llama 3.1 Euryale 70B v2.2,sao10k,,,,,,,,,,,,,,,32768,0.65,0.75,low,,
+Sao10K: Llama 3.3 Euryale 70B,sao10k,,,,,,,,,,,,,,,131072,0.65,0.75,low,,
+Sao10k: Llama 3 Euryale 70B v2.1,sao10k,,,,,,,,,,,,,,,8192,1.48,1.48,low,,
+SliME-Llama3-8B,,,,,,,,,,,,,,,,,,,low,,epoch
+SorcererLM 8x22B,raifle,,,,,,,,,,,,,,,16000,4.50,4.50,low,,
+StableBeluga2,Stability AI,,,68.6,,,,,116.8,,,,,,,,,,low,,epoch
+StepFun: Step 3.5 Flash,stepfun,,,,,,,,,,,,,,,256000,0.10,0.30,low,,
+StepFun: Step 3.5 Flash (free),stepfun,,,,,,,,,,,,,,,256000,,,low,,
+Switch-Base,,,,,,,,,,,,,,,,,,,low,,epoch
+Switch-Large,,,,,,,,,,,,,,,,,,,low,,epoch
+Switchpoint Router,switchpoint,,,,,,,,,,,,,,,131072,0.85,3.40,low,,
+T5-11B,Google,,,,,,,,,,,,,,,,,,low,,epoch
+T5-3B,Google,,,,,,,,,,,,,,,,,,low,,epoch
+T5-Base,,,,,,,,,,,,,,,,,,,low,,epoch
+T5-Large,,,,,,,,,,,,,,,,,,,low,,epoch
+T5-Small,,,,,,,,,,,,,,,,,,,low,,epoch
+TNG: DeepSeek R1T2 Chimera,tngtech,,,,,,,,,,,,,,,163840,0.25,0.85,low,,
+Tencent: Hunyuan A13B Instruct,tencent,,,,,,,,,,,,,,,131072,0.14,0.57,low,,
+TheDrummer: Cydonia 24B V4.1,thedrummer,,,,,,,,,,,,,,,131072,0.30,0.50,low,,
+TheDrummer: Rocinante 12B,thedrummer,,,,,,,,,,,,,,,32768,0.17,0.43,low,,
+TheDrummer: Skyfall 36B V2,thedrummer,,,,,,,,,,,,,,,32768,0.55,0.80,low,,
+TheDrummer: UnslopNemo 12B,thedrummer,,,,,,,,,,,,,,,32768,0.40,0.40,low,,
+TimeMarker,,,,,,,,,,,,,,,,,,,low,,epoch
+Tongyi DeepResearch 30B A3B,alibaba,,,,,,,,,,,,,,,131072,0.09,0.45,low,,
+Upstage: Solar Pro 3 (free),upstage,,,,,,,,,,,,,,,128000,,,low,,
+VITA,,,,,,,,,,,,,,,,,,,low,,epoch
+VITA-1.5,,,,,,,,,,,,,,,,,,,low,,epoch
+Venice: Uncensored (free),cognitivecomputations,,,,,,,,,,,,,,,32768,,,low,,
+ViLAMP-llava-qwen,,,,,,,,,,,,,,,,,,,low,,epoch
+Video-CCAM-7B-v1.2,,,,,,,,,,,,,,,,,,,low,,epoch
+Video-LLaVA-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+Video-XL-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+VideoChat-Flash-Qwen2-7B_res448,,,,,,,,,,,,,,,,,,,low,,epoch
+VideoLLAMA2-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+VideoLLAMA3-7B,,,,,,,,,,,,,,,,,,,low,,epoch
+WizardLM-2 8x22B,microsoft,,,,,,,,,,,,,,,65535,0.62,0.62,low,,
+WizardLM-2-8x22B,Microsoft,,43.4,,,25.7,,,,,,,,,,,,,low,,epoch
+Writer: Palmyra X5,writer,,,,,,,,,,,,,,,1040000,0.60,6.00,low,,
+Xiaomi: MiMo-V2-Flash,xiaomi,,,,,,,,,,,,,,,262144,0.09,0.29,low,,
+Yi-34B,01.AI,,,76.2,,,,,117.6,,,,,,,,,,low,,epoch
+Yi-6B,01.AI,,,64.0,,,,,103.5,,,,,,,,,,low,,epoch
+Yi-6B-Chat,01.AI,,,58.2,,,,,103.5,,,,,,,,,,low,,epoch
+Yi-9B,,,,68.4,,,,,,,,,,,,,,,low,,epoch
+Yi-large,01.AI,,,79.3,,,,,,,,,,,,,,,low,,epoch
+Z.ai: GLM 4 32B ,z-ai,,,,,,,,,,,,,,,128000,0.10,0.10,low,,
+Z.ai: GLM 4.5,z-ai,,,,,,,,,,,,,,,131000,0.55,2.00,low,,
+Z.ai: GLM 4.5 Air,z-ai,,,,,,,,,,,,,,,131072,0.13,0.85,low,,
+Z.ai: GLM 4.5 Air (free),z-ai,,,,,,,,,,,,,,,131072,,,low,,
+Z.ai: GLM 4.5V,z-ai,,,,,,,,,,,,,,,65536,0.60,1.80,low,,
+Z.ai: GLM 4.6,z-ai,,,,,,,,,,,,,,,202752,0.35,1.71,low,,
+Z.ai: GLM 4.6 (exacto),z-ai,,,,,,,,,,,,,,,204800,0.44,1.76,low,,
+Z.ai: GLM 4.6V,z-ai,,,,,,,,,,,,,,,131072,0.30,0.90,low,,
+Z.ai: GLM 4.7,z-ai,,,,,,,,,,,,,,,202752,0.30,1.40,low,,
+Z.ai: GLM 4.7 Flash,z-ai,,,,,,,,,,,,,,,202752,0.06,0.40,low,,
+ada,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+amazon.nova-lite-v1:0,Amazon,,,77.0,,,,,,36.4,,,,,,,,,low,,epoch
+amazon.nova-micro-v1:0,Amazon,,,70.8,,,,,,29.6,,,,,,,,,low,,epoch
+amazon.nova-pro-v1:0,Amazon,,,82.0,,,,,,43.5,,,,,,,,,low,,epoch
+babbage,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+blip2-opt-2.7b,Salesforce Research,,,,,,,,,,,,,,,,,,low,,epoch
+bloom,"Hugging Face,BigScience",,,,,,,,,,,,,,,,,,low,,epoch
+c4ai-command-a-03-2025,Cohere,,,,12.0,,,,,,,,,,,,,,low,,epoch
+c4ai-command-r-08-2024,,,,65.2,,,,,,27.5,,,,,,,,,low,,epoch
+c4ai-command-r-plus-08-2024,"Cohere,Cohere for AI",,,69.4,,,,,,31.8,,,,,,,,,low,,epoch
+chatgpt-4o-01-29-2025,OpenAI,,,,27.1,,,,,,,,,,,,,,low,,epoch
+chatgpt-4o-03-27-2025,OpenAI,,,,45.3,,,,,,,,,,,,,,low,,epoch
+chutes/DeepSeek-R1-0528,DeepSeek,,,,,,,,141.8,,,,,,,,,,low,,epoch
+chutes/DeepSeek-V3-0324,DeepSeek,,,,,,,,136.8,,,,,,,,,,low,,epoch
+chutes/GLM-4.5-FP8,,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Gemma-3-27b-It,Google DeepMind,,,,,,,,130.9,,,,,,,,,,low,,epoch
+chutes/Llama-4-Maverick-17B-128E-Instruct,Meta AI,,,,,,,,132.8,,,,,,,,,,low,,epoch
+chutes/Llama-4-Scout-17B-16E Instruct,Meta AI,,,,,,,,130.1,,,,,,,,,,low,,epoch
+chutes/QwQ-32B,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-14B,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-235B-A22B,Alibaba,,,,,,,,139.3,,,,,,,,,,low,,epoch
+chutes/Qwen3-235B-A22B-Thinking-2507,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-30B-A3B,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-32B,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-8B,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/Qwen3-Next-80B-A3B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+chutes/gpt-oss-120b,OpenAI,,,,,,,,139.8,,,,,,,,,,low,,epoch
+claude-1.3,Anthropic,,,77.0,,,,,,,,,,,,,,,low,,epoch
+claude-2.0,Anthropic,,34.7,78.5,,11.7,,,119.5,,,,,,,,,,low,,epoch
+claude-2.1,Anthropic,,33.0,73.5,,,,,118.2,,,,,,,,,,low,,epoch
+claude-instant-1.1,Anthropic,,,73.4,,,,,121.3,,,,,,,,,,low,,epoch
+claude-instant-1.2,Anthropic,,,68.8,,,,,121.3,,,,,,,,,,low,,epoch
+claude-opus-4-6_max,Anthropic,,,,,,,,152.7,,41.0,,40.7,,,,,,low,,epoch
+code-davinci-002,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+codestral-2501,Mistral AI,,,,11.1,,,,,,,,,,,,,,low,,epoch
+codex-mini-2025-05-16,,,,,,,,,,,,27.3,,,,,,,low,,epoch
+computer-use-preview-2025-03-11,,,,,,,,,,,,,,,,,,,low,,epoch
+curie,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+davinci,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+davinci-002,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+dbrx-instruct,Databricks,,32.9,,,11.7,,,,,,,,,,,,,low,,epoch
+deepinfra/Qwen3-Next-80B-A3B-Instruct,,,,,,,,,,,,,,,,,,,low,,epoch
+deepseek-coder-1.3b-base,"DeepSeek,Peking University",,,25.8,,,,,57.9,,,,,,,,,,low,,epoch
+deepseek-coder-33b-base,"DeepSeek,Peking University",,,39.4,,,,,94.7,,,,,,,,,,low,,epoch
+deepseek-coder-6.7b-base,"DeepSeek,Peking University",,,36.4,,,,,87.4,,,,,,,,,,low,,epoch
+deepseek-reasoner,DeepSeek,,83.4,,,,,,145.3,,27.5,,,,,,,,low,,epoch
+deepseek/deepseek-v3.2,DeepSeek,,,,,,,,145.3,,,,,,,163840,0.25,0.40,low,,epoch
+falcon-11B-vlm,,,,,,,,,,,,,,,,,,,low,,epoch
+falcon-11b,Technology Innovation Institute,,,58.4,,,,,108.8,,,,,,,,,,low,,epoch
+falcon-180B,Technology Innovation Institute,,,70.6,,,,,111.9,,,,,,,,,,low,,epoch
+falcon-40b,Technology Innovation Institute,,,56.9,,,,,103.0,,,,,,,,,,low,,epoch
+falcon-40b-instruct,Technology Innovation Institute,,,,,,,,103.0,,,,,,,,,,low,,epoch
+falcon-7b,Technology Innovation Institute,,,35.0,,,,,91.6,,,,,,,,,,low,,epoch
+fireworks/Kimi-K2-Instruct-0905,Moonshot,,,,,,,,140.5,,,,,,,,,,low,,epoch
+fireworks/deepseek-v3p2,DeepSeek,,,,,,,,145.3,,,,22.1,,,,,,low,,epoch
+fireworks/kimi-k2p5,Moonshot,,87.6,,,,,,147.7,,33.9,,27.9,,,,,,low,,epoch
+gemini-1.0-pro-001,Google DeepMind,,34.0,70.0,,11.2,,,117.0,,,,,,,,,,low,,epoch
+gemini-1.0-pro-vision,Google DeepMind,,,,,,,,,,,,,,,,,,low,,epoch
+gemini-1.5-flash-0514,Google DeepMind,,,77.8,,,,,,,,,,,,,,,low,,epoch
+gemini-2.0-flash-exp,"Google DeepMind,Google",,,79.7,22.2,,,,135.0,59.3,,,,,,,,,low,,epoch
+gemini-2.0-flash-lite,Google DeepMind,,,,,,,,,54.3,,,,,,,,,low,,epoch
+gemini-2.0-flash-thinking-exp-01-21,"Google DeepMind,Google",,57.1,,18.2,,,,,66.9,,,,,,,,,medium,,epoch
+gemini-2.0-pro-exp-02-05,Google DeepMind,,65.7,,35.6,83.5,,,135.4,65.1,,,,,,,,,medium,,epoch
+gemini-2.5-deep-think-2025-08-01-webapp,"Google,Google DeepMind",,,,,,,,,,,,29.0,,,,,,low,,epoch
+gemini-2.5-flash-lite-preview-06-17,Google DeepMind,,,,,,,,,,,,,,,,,,low,,epoch
+gemini-2.5-flash-lite-preview-09-2025,Google DeepMind,,,,,,,,,,,,,,,,,,low,,epoch
+gemini-2.5-flash-preview-04-17,Google DeepMind,,,,47.1,,,,,,,,,,,,,,low,,epoch
+gemini-2.5-flash-preview-04-17 (24K thinking),Google DeepMind,,,,,,,,,,,32.3,,,,,,,low,,epoch
+gemini-2.5-flash-preview-05-20,Google DeepMind,,,,55.1,,,,,,,33.3,,,,,,,low,,epoch
+gemini-2.5-flash-preview-09-2025_16k,Google DeepMind,,,,,,,,,,,,,,,,,,low,,epoch
+gemini-2.5-pro-exp-03-25,Google DeepMind,,83.8,,72.9,,,,144.1,82.3,,,,,,,,,medium,,epoch
+gemini-2.5-pro-preview-03-25,Google DeepMind,,,,,95.6,,,144.1,,,33.0,,,,,,,low,,epoch
+gemini-2.5-pro-preview-05-06,Google DeepMind,,66.7,,76.9,95.9,,,142.6,,,,,,,,,,medium,,epoch
+gemini-2.5-pro-preview-06-05,Google DeepMind,,84.8,,83.1,,,,146.1,,,31.3,10.3,,,,,,medium,,epoch
+gemini-3.1-pro-preview,Google DeepMind,,94.1,,,,,,,,77.3,,36.9,,,,,,low,,epoch
+gemini-3.1-pro-preview-customtools,Google DeepMind,,,,,,75.6,,,,,,,,,,,,low,,epoch
+gemini-exp-1206,"Google DeepMind,Google",,,,38.2,,,,135.0,64.1,,,,,,,,,low,,epoch
+gemini-robotics-er-1.5-preview,,,,,,,,,,,,,,,,,,,low,,epoch
+gemma-2-9b,Google DeepMind,,,,,,,,119.7,,,,,,,,,,low,,epoch
+gemma-2b,Google DeepMind,,,42.3,,,,,91.8,,,,,,,,,,low,,epoch
+gemma-7b,Google DeepMind,,,66.1,,,,,111.2,,,,,,,,,,low,,epoch
+glm-4.5_thinking,"Z.ai (Zhipu AI),Tsinghua University",,,,,,,,,,,,,,,,,,low,,epoch
+glm-4.7,Z.ai (Zhipu AI),,83.3,,,,,,144.0,,31.5,,,,,,,,low,,epoch
+gpt-3.5-turbo-0613,OpenAI,,,68.9,,,,,,,,,,,,,,,low,,epoch
+gpt-3.5-turbo-instruct,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-4-1106-vision-preview,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-4-32k-0314,OpenAI,,,,,,,,126.1,,,,,,,,,,low,,epoch
+gpt-4-turbo,OpenAI,,,79.6,,,,,,,,,,,,,,,low,,epoch
+gpt-4o-2024-11-20,OpenAI,,47.9,88.1,18.2,49.8,31.0,,,52.2,,4.5,0.3,,,,,,medium,,epoch
+gpt-5-2025-08-07,OpenAI,,86.2,,88.0,98.1,73.6,,150.0,,50.6,65.7,32.4,,,,,,medium,,epoch
+gpt-5-2025-08-07_minimal,OpenAI,,,,,,,,150.0,,,,,,,,,,low,,epoch
+gpt-5-codex,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5-mini-2025-08-07,OpenAI,,75.0,,,97.8,64.7,,144.3,,21.0,,27.2,,,,,,low,,epoch
+gpt-5-nano-2025-08-07,OpenAI,,69.4,,,95.2,,,139.9,,12.2,,8.3,,,,,,low,,epoch
+gpt-5-pro-2025-10-06,OpenAI,,,,,,,,150.4,,,70.2,,,,,,,low,,epoch
+gpt-5.1-2025-11-13,OpenAI,,85.0,,,,68.0,,149.7,78.8,48.9,72.8,17.3,,,,,,low,,epoch
+gpt-5.1-2025-11-13_none,OpenAI,,,,,,,,149.7,,,,2.1,,,,,,low,,epoch
+gpt-5.1-codex,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5.1-codex-max,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5.1-codex-mini,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5.2-pro-2025-12-11,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-5.2-pro-2025-12-11-webapp,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-j-6b,"EleutherAI,LAION",,,25.1,,,,,,,,,,,,,,,low,,epoch
+gpt-neo-2.7B,EleutherAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt-neox-20b,EleutherAI,,,,,,,,,,,,,,,,,,low,,epoch
+gpt2-xl,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+grok-2-1212,xAI,,53.8,,,63.5,,,130.6,54.3,,,0.7,,,,,,low,,epoch
+grok-3,xAI,,,,,,,,138.8,,,5.5,,,,,,,low,,epoch
+grok-3-beta,xAI,,67.6,,53.3,88.7,,,138.8,,,,3.8,,,,,,medium,,epoch
+grok-3-mini,xAI,,,,,,,,140.8,,,,,,,,,,low,,epoch
+grok-4-1-fast-non-reasoning,xAI,,,,,,,,,,,,,,,,,,low,,epoch
+grok-4-fast,xAI,,,,,,,,,,,,,,,,,,low,,epoch
+grok-4-heavy-web-app,xAI,,,,,,,,,,,,,,,,,,low,,epoch
+grok-code-fast-1,,,,,,,,,,,,,,,,,,,low,,epoch
+instructblip-vicuna-13b,,,,,,,,,,,,,,,,,,,low,,epoch
+instructblip-vicuna-7b,,,,,,,,,,,,,,,,,,,low,,epoch
+internlm-20b,,,,,,,,,,,,,,,,,,,low,,epoch
+internlm-7b,,,,51.0,,,,,,,,,,,,,,,low,,epoch
+internlm-chat-20b,,,,55.6,,,,,,,,,,,,,,,low,,epoch
+kangaroo,,,,,,,,,,,,,,,,,,,low,,epoch
+kimi-k2-thinking,Moonshot,,,,,,,,145.6,,,,,,,,,,low,,epoch
+learnlm-1.5-pro-experimental,,,,,,,,,,52.2,,,,,,,,,low,,epoch
+llama3-llava-next-8b,,,,,,,,,,,,,,,,,,,low,,epoch
+llava-v1.5-7b,,,,,,,,,,,,,,,,,,,low,,epoch
+llava-v1.6-mistral-7b,,,,,,,,,,,,,,,,,,,low,,epoch
+llava-v1.6-vicuna-13b,,,,,,,,,,,,,,,,,,,low,,epoch
+llava-v1.6-vicuna-7b,,,,,,,,,,,,,,,,,,,low,,epoch
+long-llava-qwen2-7b,,,,,,,,,,,,,,,,,,,low,,epoch
+mPLUG-Owl3-7B-241101,,,,,,,,,,,,,,,,,,,low,,epoch
+magistral-small-2506,Mistral AI,,48.4,,,,,,,,,,,,,,,,low,,epoch
+ministral-3b-2410,Mistral AI,,25.3,,,14.4,,,,,,,,,,,,,low,,epoch
+mistral-small-2402,,,,68.7,,,,,,,,,,,,,,,low,,epoch
+mistral-small-2501,Mistral AI,,45.3,,,44.8,,,,42.5,,,,,,,,,low,,epoch
+mistral-small-2503,Mistral AI,,47.5,,,46.8,,,,44.0,,,,,,,,,low,,epoch
+ml-elephant,,,,,,,,,,,,,,,,,,,low,,epoch
+moonshotai/Kimi-K2-Thinking,Moonshot,,,,,,,,145.6,,,,21.4,,,131072,0.47,2.00,low,,epoch
+moonshotai/kimi-k2-0905,Moonshot,,,,,,,,140.5,,,,,,,131072,0.40,2.00,low,,epoch
+mpt-30b,MosaicML,,,47.9,,,,,98.9,,,,,,,,,,low,,epoch
+mpt-30b-instruct,MosaicML,,,,,,,,98.9,,,,,,,,,,low,,epoch
+mpt-7b,MosaicML,,,30.8,,,,,90.9,,,,,,,,,,low,,epoch
+nvidia-nemotron-nano-9b-v2,,,,,,,,,,,,,,,,,,,low,,epoch
+o1-mini-2024-09-12,OpenAI,,62.4,,,89.2,,,136.6,57.8,,14.0,1.7,,,,,,low,,epoch
+o1-preview-2024-09-12,OpenAI,,50.3,,,81.6,,,135.4,,,18.0,,,,,,,low,,epoch
+o1-pro-2025-03-19,OpenAI,,,,,,,,,,,23.3,,,,,,,low,,epoch
+o3-mini-2025-01-31,OpenAI,,77.0,,60.4,96.5,,,141.1,75.9,,34.5,12.4,,,,,,medium,,epoch
+o3-pro-2025-06-10,OpenAI,,,,84.9,,,,148.6,,,59.3,,,,,,,low,,epoch
+open-mistral-7b,Mistral AI,,13.2,,,3.7,,,111.5,,,,,,,,,,low,,epoch
+open-mistral-nemo-2407,Mistral AI,,29.9,,,10.8,,,118.3,,,,,,,,,,low,,epoch
+open-mixtral-8x22b,Mistral AI,,34.1,,,24.2,,,121.2,,,,,,,,,,low,,epoch
+open-mixtral-8x7b,Mistral AI,,29.8,,,10.0,,,118.5,,,,,,,,,,low,,epoch
+open_llama_7b,,,,29.9,,,,,,,,,,,,,,,low,,epoch
+openai/gpt-oss-120b,OpenAI,,75.8,,,,,,139.8,,13.9,,,,,131072,0.04,0.19,low,,epoch
+openhands-lm-32b-v0.1,,,,,10.2,,,,,,,,,,,,,,low,,epoch
+opt-1.3b,Meta AI,,,,,,,,,,,,,,,,,,low,,epoch
+opt-13b,,,,25.1,,,,,,,,,,,,,,,low,,epoch
+opt-175b,Meta AI,,,,,,,,,,,,,,,,,,low,,epoch
+opt-66b,Meta AI,,,,,,,,,,,,,,,,,,low,,epoch
+parasail-qwen3-235b-a22b-instruct-2507,Alibaba,,,,,,,,,,,,,,,,,,low,,epoch
+phi-1_5,Microsoft,,,37.6,,,,,87.3,,,,,,,,,,low,,epoch
+phi-2,Microsoft,,,58.4,,,,,106.8,,,,,,,,,,low,,epoch
+qwen-max-2025-01-25,Alibaba,,56.1,,21.8,67.2,,,133.1,,,,1.0,,,,,,medium,,epoch
+qwen-plus-2025-01-25,Alibaba,,48.1,,,65.3,,,131.1,,,,,,,,,,low,,epoch
+qwen-plus-2025-04-28,Alibaba,,,,,,,,131.1,,,,1.7,,,,,,low,,epoch
+qwen-turbo-2024-11-01,Alibaba,,41.8,,,56.2,,,,,,,,,,,,,low,,epoch
+qwen1.5-14B,Alibaba,,,68.6,,,,,,,,,,,,,,,low,,epoch
+qwen1.5-32B,Alibaba,,,74.4,,,,,,,,,,,,,,,low,,epoch
+qwen2.5-14b-instruct,Alibaba,,,79.9,,,,,,,,,,,,,,,low,,epoch
+qwen2.5-32b-instruct,Alibaba,,46.1,,,56.1,,,,,,,,,,,,,low,,epoch
+qwen2.5-7b-instruct,Alibaba,,,72.9,,,,,,,,,,,,,,,low,,epoch
+qwq-plus,Alibaba,,65.4,,,,,,,,,,,,,,,,low,,epoch
+reka-flash-3,Reka AI,,,,,,,,,,,,,,,,,,low,,epoch
+sharegpt4video-8b,,,,,,,,,,,,,,,,,,,low,,epoch
+sonar,,,,,,,,,,46.9,,,,,,,,,low,,epoch
+starcoder2-15b,"Hugging Face,ServiceNow,NVIDIA,BigCode",,,64.1,,,,,103.9,,,,,,,,,,low,,epoch
+starcoder2-3b,"Hugging Face,ServiceNow,NVIDIA,BigCode",,,36.6,,,,,86.4,,,,,,,,,,low,,epoch
+starcoder2-7b,"Hugging Face,ServiceNow,NVIDIA,BigCode",,,38.8,,,,,91.7,,,,,,,,,,low,,epoch
+text-ada-001,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+text-babbage-001,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+text-curie-001,OpenAI,,,,,,,,,,,,,,,,,,low,,epoch
+text-davinci-001,OpenAI,,,43.9,,,,,,,,,,,,,,,low,,epoch
+text-davinci-002,OpenAI,,,70.0,,,,,,,,,,,,,,,low,,epoch
+text-davinci-003,,,,,,,,,,,,,,,,,,,low,,epoch
+vicuna-13b-v1.1,,,,,,,,,,,,,,,,,,,low,,epoch
+vicuna-13b-v1.3,"Large Model Systems Organization,University of California (UC) Berkeley",,,,,,,,,,,,,,,,,,low,,epoch
+video_chat2_mistral,,,,,,,,,,,,,,,,,,,low,,epoch
+xAI: Grok 3,x-ai,,,,,,,,,,,,,,,131072,3.00,15.00,low,,
+xAI: Grok 3 Beta,x-ai,,,,,,,,,,,,,,,131072,3.00,15.00,low,,
+xAI: Grok 3 Mini,x-ai,,,,,,,,,,,,,,,131072,0.30,0.50,low,,
+xAI: Grok 3 Mini Beta,x-ai,,,,,,,,,,,,,,,131072,0.30,0.50,low,,
+xAI: Grok 4,x-ai,,,,,,,,,,,,,,,256000,3.00,15.00,low,,
+xAI: Grok 4 Fast,x-ai,,,,,,,,,,,,,,,2000000,0.20,0.50,low,,
+xAI: Grok 4.1 Fast,x-ai,,,,,,,,,,,,,,,2000000,0.20,0.50,low,,
+xAI: Grok Code Fast 1,x-ai,,,,,,,,,,,,,,,256000,0.20,1.50,low,,
+xgen-7b-8k-base,Salesforce,,,36.3,,,,,88.9,,,,,,,,,,low,,epoch
+zai-org/GLM-4.6,"Z.ai (Zhipu AI),Tsinghua University",,,,,,,,,,,,3.8,,,,,,low,,epoch
+zai-org/GLM-4.7,Z.ai (Zhipu AI),,,,,,,,144.0,,,,2.4,,,,,,low,,epoch

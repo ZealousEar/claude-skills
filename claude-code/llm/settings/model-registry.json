@@ -1,0 +1,156 @@
+{
+  "_meta": {
+    "last_discovery": null,
+    "tier1_count": 11,
+    "tier2_count": 0,
+    "tier3_count": 0,
+    "total_count": 11,
+    "_note": "tier1 = manually curated (never auto-overwritten), tier2 = auto-discovered notable, tier3 = auto-discovered everything else"
+  },
+
+  "providers": {
+    "claude-cli":   { "note": "Claude Code CLI — uses your Claude login, no key needed", "api_style": "claude-cli" },
+    "codex":        { "note": "Codex CLI — uses your ChatGPT login, no key needed", "api_style": "codex" },
+    "kimi-cli":     { "note": "Kimi CLI — uses your Kimi login, no key needed", "api_style": "kimi-cli" },
+    "google":       { "base_url": "https://generativelanguage.googleapis.com/v1beta", "env_key": "GOOGLE_API_KEY", "api_style": "google" },
+    "openrouter":   { "base_url": "https://openrouter.ai/api/v1", "env_key": "OPENROUTER_API_KEY", "api_style": "openai" },
+    "anthropic":    { "base_url": "https://api.anthropic.com/v1", "env_key": "ANTHROPIC_API_KEY", "api_style": "anthropic" },
+    "moonshot":     { "base_url": "https://api.moonshot.cn/v1", "env_key": "MOONSHOT_API_KEY", "api_style": "openai" }
+  },
+
+  "models": {
+    "opus": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Claude Opus 4.6 — most capable Claude model, extended thinking inherent",
+      "context_length": 200000,
+      "route": "claude-cli",
+      "reasoning": {"max_tokens": 16000},
+      "routes": {
+        "claude-cli":   { "api_model": "opus" },
+        "openrouter":   { "api_model": "anthropic/claude-opus-4-6" },
+        "anthropic":    { "api_model": "claude-opus-4-6" }
+      }
+    },
+    "sonnet": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Claude Sonnet 4.5 — fast, capable, good balance of speed and quality",
+      "context_length": 200000,
+      "route": "claude-cli",
+      "routes": {
+        "claude-cli":   { "api_model": "sonnet" },
+        "openrouter":   { "api_model": "anthropic/claude-sonnet-4-5-20250929" },
+        "anthropic":    { "api_model": "claude-sonnet-4-5-20250929" }
+      }
+    },
+    "haiku": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Claude Haiku 4.5 — fastest Claude, good for simple tasks",
+      "context_length": 200000,
+      "route": "claude-cli",
+      "routes": {
+        "claude-cli":   { "api_model": "haiku" },
+        "openrouter":   { "api_model": "anthropic/claude-haiku-4-5-20251001" },
+        "anthropic":    { "api_model": "claude-haiku-4-5-20251001" }
+      }
+    },
+    "gpt-5.3-codex": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "GPT-5.3 Codex — best for code generation, reasoning_effort=xhigh",
+      "context_length": 200000,
+      "route": "codex",
+      "reasoning": {"effort": "xhigh"},
+      "reasoning_effort": "xhigh",
+      "routes": {
+        "codex":        { "api_model": "gpt-5.3-codex" },
+        "openrouter":   { "api_model": "openai/gpt-5.3" }
+      }
+    },
+    "gpt-5.2": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "GPT-5.2 — strong general purpose, reasoning_effort=xhigh",
+      "context_length": 200000,
+      "route": "codex",
+      "reasoning": {"effort": "xhigh"},
+      "reasoning_effort": "xhigh",
+      "routes": {
+        "codex":        { "api_model": "gpt-5.2" },
+        "openrouter":   { "api_model": "openai/gpt-5.2" }
+      }
+    },
+    "gemini-3-pro": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Gemini 3 Pro — Google's most capable, thinkingLevel=HIGH",
+      "context_length": 1000000,
+      "route": "google",
+      "thinking_level": "HIGH",
+      "reasoning": {"effort": "xhigh"},
+      "routes": {
+        "google":       { "api_model": "gemini-3-pro-preview" },
+        "openrouter":   { "api_model": "google/gemini-3-pro-preview" }
+      }
+    },
+    "gemini-3-flash": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Gemini 3 Flash — fast Google model, thinkingLevel=HIGH + grounding",
+      "context_length": 1000000,
+      "route": "google",
+      "thinking_level": "HIGH",
+      "grounding": true,
+      "reasoning": {"effort": "high"},
+      "routes": {
+        "google":       { "api_model": "gemini-3-flash-preview" },
+        "openrouter":   { "api_model": "google/gemini-3-flash-preview" }
+      }
+    },
+    "kimi-2.5": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Kimi 2.5 — Moonshot's reasoning model, --thinking flag",
+      "context_length": 131072,
+      "route": "kimi-cli",
+      "thinking": true,
+      "routes": {
+        "kimi-cli":     { "api_model": "kimi-code/kimi-for-coding" },
+        "openrouter":   { "api_model": "moonshot/kimi-2.5" },
+        "moonshot":     { "api_model": "kimi-2.5" }
+      }
+    },
+    "glm-5": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "GLM-5 — ZhipuAI, built-in thinking, OpenRouter only ($0.75/$2.55 per 1M)",
+      "context_length": 128000,
+      "route": "openrouter",
+      "routes": {
+        "openrouter":   { "api_model": "z-ai/glm-5" }
+      }
+    },
+    "minimax-m2.5": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "MiniMax M2.5 — built-in thinking, OpenRouter only ($0.20/$1.00 per 1M)",
+      "context_length": 1000000,
+      "route": "openrouter",
+      "routes": {
+        "openrouter":   { "api_model": "minimax/minimax-m2.5" }
+      }
+    },
+    "aristotle": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Harmonic Aristotle — formal theorem prover (Lean 4), not a general LLM",
+      "context_length": null,
+      "route": "aristotle",
+      "routes": {
+        "aristotle":    { "api_model": "aristotle", "script": "~/.claude/skills/aristotle-prover/scripts/aristotle_submit.py" }
+      }
+    }
+  }
+}

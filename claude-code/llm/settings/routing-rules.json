@@ -1,0 +1,47 @@
+{
+  "_description": "Ordered routing rules for auto-assigning new models to providers. First match wins. Used by discover_models.py when adding new models to the registry.",
+  "rules": [
+    {
+      "pattern": "^anthropic/",
+      "provider": "claude-cli",
+      "api_style": "claude-cli",
+      "prefer_cli": true,
+      "cli_model_map": {
+        "anthropic/claude-opus-4-6": "opus",
+        "anthropic/claude-sonnet-4-5-20250929": "sonnet",
+        "anthropic/claude-haiku-4-5-20251001": "haiku"
+      },
+      "_note": "Anthropic models route to Claude CLI (subscription). CLI uses short aliases."
+    },
+    {
+      "pattern": "^openai/",
+      "provider": "codex",
+      "api_style": "codex",
+      "prefer_cli": true,
+      "cli_model_map": {
+        "openai/gpt-5.3": "gpt-5.3-codex",
+        "openai/gpt-5.2": "gpt-5.2"
+      },
+      "_note": "OpenAI models route to Codex CLI (subscription). CLI uses model names without prefix."
+    },
+    {
+      "pattern": "^google/",
+      "provider": "google",
+      "api_style": "google",
+      "_note": "Google models route to Google Generative AI API (supports thinkingLevel + grounding)."
+    },
+    {
+      "pattern": "^(moonshotai/|moonshot/)",
+      "provider": "kimi-cli",
+      "api_style": "kimi-cli",
+      "prefer_cli": true,
+      "_note": "Moonshot/Kimi models route to Kimi CLI (subscription)."
+    },
+    {
+      "pattern": ".*",
+      "provider": "openrouter",
+      "api_style": "openai",
+      "_note": "Everything else routes to OpenRouter (OpenAI-compatible API). Catch-all fallback."
+    }
+  ]
+}

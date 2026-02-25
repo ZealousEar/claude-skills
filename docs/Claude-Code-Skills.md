@@ -2,7 +2,7 @@
 
 These are the executable skills -- the ones that actually do things when you invoke them. Each lives in `~/.claude/skills/<name>/` and follows the same structure: a `SKILL.md` that defines behavior, a `scripts/` directory with supporting code, `settings/` for configuration, and `references/` for documentation the skill reads at runtime.
 
-They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/research`). When triggered, Claude reads the SKILL.md, loads context from the supporting files, and executes the workflow described.
+They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/research`, `/llm`). When triggered, Claude reads the SKILL.md, loads context from the supporting files, and executes the workflow described.
 
 ---
 
@@ -223,6 +223,55 @@ They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/r
 ```
 
 **Requirements:** Python 3.10+ (stdlib only), debate skill's `llm_runner.py` for LLM calls
+
+---
+
+## llm
+
+**Purpose:** Universal LLM router. Routes prompts to any model across all providers with a CLI-first approach for zero-cost routing, auto-discovery of new models, and benchmark tracking from public leaderboards.
+
+**How it works:** The core router (`llm_route.py`) resolves which provider to use for a given model based on a priority hierarchy: CLI tools first (Claude CLI, Codex CLI, Kimi CLI -- all subscription-based, zero marginal cost), then Google GenAI API for Gemini models, then OpenRouter for everything else. It auto-applies per-model prompting overrides (temperature, system preambles) from `settings/prompting-overrides.json`. The discovery script (`discover_models.py`) queries OpenRouter and Google APIs for new models and slots them into a tiered registry. The benchmark fetcher (`fetch_benchmarks.py`) aggregates rankings from Chatbot Arena, Epoch AI, OpenRouter, and Artificial Analysis into a unified CSV that other skills read for model selection decisions.
+
+**Key features:**
+- **CLI-first routing** -- Claude, GPT, and Kimi go through subscription CLIs (free), not paid APIs
+- **3-tier model registry** -- tier 1 curated (11 models), tier 2 auto-discovered notable, tier 3 everything else
+- **Auto-discovery** -- finds new models from OpenRouter and Google APIs, never overwrites curated entries
+- **Benchmark aggregation** -- unified `rankings.csv` from 4 public leaderboards with BetterBench quality tiers
+- **Per-model prompting** -- auto-applies optimal temperature and system prompt format per model family
+- **Provider override** -- `--route openrouter` forces any model through a specific provider
+- **JSON output** -- `--json` for programmatic consumption by other skills
+- **Shared credentials** -- falls back to the debate agent's `provider-keys.env` if env vars aren't set
+
+**Example invocation:**
+```
+/llm --model gpt-5.3-codex --prompt "Write a binary search in Rust"
+/llm --model gemini-3-pro --prompt "Explain transformer attention" --json
+/llm --list-models
+```
+
+**File structure:**
+```
+~/.claude/skills/llm/
+├── SKILL.md
+├── scripts/
+│   ├── llm_route.py                 # Core router (provider calls + CLI)
+│   ├── discover_models.py           # Auto-discovery from OpenRouter/Google
+│   └── fetch_benchmarks.py          # Benchmark aggregation from 4 sources
+├── settings/
+│   ├── model-registry.json          # All known models + routes + tiers
+│   ├── routing-rules.json           # Regex patterns for auto-routing
+│   ├── prompting-overrides.json     # Per-model temperature + system preambles
+│   └── benchmark-quality.json       # BetterBench quality metadata
+├── benchmarks/
+│   ├── rankings.csv                 # Unified rankings (THE file other skills read)
+│   └── _meta.json                   # Fetch timestamps and source status
+└── references/
+    ├── provider-setup.md            # Auth setup per provider
+    ├── betterbench-notes.md         # BetterBench methodology notes
+    └── model-lineup-2026-02.md      # Current model landscape
+```
+
+**Requirements:** Python 3.10+. At least one CLI tool (`claude`, `codex`, or `kimi`) or API key (`GOOGLE_API_KEY`, `OPENROUTER_API_KEY`).
 
 ---
 
