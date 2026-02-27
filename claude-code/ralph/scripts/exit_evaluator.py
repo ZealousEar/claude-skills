@@ -77,24 +77,24 @@ def check_hard_limits(session: dict, config: dict) -> str | None:
 # ---------------------------------------------------------------------------
 
 def extract_sorted_scores(ideas_bank: dict) -> list[float]:
-    """Extract combined_score values from ideas, sorted by iteration (ascending).
+    """Extract combined_score values from ideas, sorted by iteration.
 
-    Looks for ideas in ideas_bank["ideas"] (list of dicts). Each idea should
-    have a 'combined_score' field and an 'iteration' field for ordering.
+    Looks for items in ideas_bank["ideas"] (list of dicts).
+    Each item should have a 'combined_score' field and an 'iteration' field.
     Falls back to list order if 'iteration' is missing.
     """
-    ideas = ideas_bank.get("ideas", [])
-    if not ideas:
+    items = ideas_bank.get("ideas", [])
+    if not items:
         return []
 
     # Sort by iteration number; fall back to original order
-    def sort_key(idea: dict) -> int:
-        return idea.get("iteration", 0)
+    def sort_key(item: dict) -> int:
+        return item.get("iteration", 0)
 
-    sorted_ideas = sorted(ideas, key=sort_key)
+    sorted_items = sorted(items, key=sort_key)
     scores = []
-    for idea in sorted_ideas:
-        score = idea.get("combined_score")
+    for item in sorted_items:
+        score = item.get("combined_score")
         if score is not None:
             try:
                 scores.append(float(score))
@@ -117,7 +117,6 @@ def check_saturation(ideas_bank: dict, config: dict) -> str | None:
     if stats:
         unique_count = stats.get("unique", 0)
     else:
-        # Fallback: count ideas directly
         unique_count = len(ideas_bank.get("ideas", []))
 
     window = config["saturation_window"]

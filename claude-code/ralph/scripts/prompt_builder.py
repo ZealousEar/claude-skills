@@ -207,7 +207,6 @@ def build_anti_repetition_context(ideas_bank: dict) -> str:
         if novelty:
             entry += f" — {novelty}"
         lines.append(entry)
-
     return "\n".join(lines)
 
 
@@ -366,7 +365,7 @@ def main() -> int:
     # 5. Select a creative lens
     lens = select_lens(lenses, memory)
 
-    # 6. Load ideas bank (optional) — build anti-repetition context
+    # 6. Load ideas bank — build anti-repetition context
     anti_rep_context = ""
     if args.ideas_bank and os.path.isfile(args.ideas_bank):
         ideas_bank = load_json(args.ideas_bank)
