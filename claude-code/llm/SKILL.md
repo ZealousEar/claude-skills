@@ -30,7 +30,7 @@ Route prompts to any LLM model across all providers. CLI-first for Codex/Kimi/Cl
 python3 ~/.claude/skills/llm/scripts/llm_route.py --model opus --prompt "Say hello in 3 words"
 
 # With system prompt
-python3 ~/.claude/skills/llm/scripts/llm_route.py --model gpt-5.3-codex --prompt "Write fizzbuzz" --system "You are a Python expert"
+python3 ~/.claude/skills/llm/scripts/llm_route.py --model chatgpt-5.4 --prompt "Write fizzbuzz" --system "You are a Python expert"
 
 # From files
 python3 ~/.claude/skills/llm/scripts/llm_route.py --model gemini-3-pro --prompt-file prompt.txt --system-file system.txt
@@ -62,8 +62,8 @@ Models are routed to providers in this priority order:
 
 | Model prefix | Provider | Cost | Auth |
 |---|---|---|---|
-| Anthropic (opus, sonnet, haiku) | Claude CLI | Subscription (free) | `claude login` |
-| OpenAI (gpt-5.2, gpt-5.3-codex) | Codex CLI | Subscription (free) | `codex login` |
+| Anthropic (opus) | Claude CLI | Subscription (free) | `claude login` |
+| OpenAI (gpt-5.2, chatgpt-5.4) | Codex CLI | Subscription (free) | `codex login` |
 | Moonshot (kimi-2.5) | Kimi CLI | Subscription (free) | `kimi login` |
 | Google (gemini-3-pro, gemini-3-flash) | Google GenAI API | Free tier | `GOOGLE_API_KEY` |
 | Everything else | OpenRouter | Per-token | `OPENROUTER_API_KEY` |
@@ -81,7 +81,7 @@ Use `--route <provider>` to override the default route for any model. For exampl
 
 | Tier | Description | Auto-update | Default visibility |
 |---|---|---|---|
-| 1 | Manually curated (11 models) | Never overwritten | Always shown |
+| 1 | Manually curated (9 models) | Never overwritten | Always shown |
 | 2 | Auto-discovered notable (major provider, context >= 32k) | Added automatically | Shown by default |
 | 3 | Auto-discovered everything else | Added automatically | Hidden (use `--all`) |
 
@@ -89,10 +89,8 @@ Use `--route <provider>` to override the default route for any model. For exampl
 
 | Name | Provider | Description |
 |---|---|---|
-| opus | Claude CLI | Claude Opus 4.6 — most capable |
-| sonnet | Claude CLI | Claude Sonnet 4.5 — fast + capable |
-| haiku | Claude CLI | Claude Haiku 4.5 — fastest |
-| gpt-5.3-codex | Codex CLI | GPT-5.3 — best for code, reasoning_effort=xhigh |
+| opus | Claude CLI | Claude Opus 4.6 — most capable, 1M context |
+| chatgpt-5.4 | Codex CLI | GPT-5.3 — best for code, reasoning_effort=xhigh |
 | gpt-5.2 | Codex CLI | GPT-5.2 — strong general purpose |
 | gemini-3-pro | Google API | Gemini 3 Pro — thinkingLevel=HIGH |
 | gemini-3-flash | Google API | Gemini 3 Flash — fast + grounded |
@@ -123,8 +121,8 @@ Discovery never overwrites tier 1 models. New models from major providers with c
 
 Per-model temperature and system prompt wrapping is applied automatically from `settings/prompting-overrides.json`:
 
-- **Claude** (opus/sonnet/haiku): XML format preferred, no temperature override
-- **GPT** (gpt-5.2/gpt-5.3-codex): CTCO framework preamble, temperature not overridden (reasoning model)
+- **Claude** (opus): XML format preferred, no temperature override
+- **GPT** (gpt-5.2/chatgpt-5.4): CTCO framework preamble, temperature not overridden (reasoning model)
 - **Gemini** (gemini-3-pro/gemini-3-flash): Forced temperature=1.0, concise preamble
 - **Kimi** (kimi-2.5): temperature=1.0
 - **MiniMax** (minimax-m2.5): temperature=1.0
@@ -146,7 +144,9 @@ CLI tools (claude, codex, kimi) use their own stored logins — no API keys need
 ├── scripts/
 │   ├── llm_route.py                      # Core router (provider calls + CLI)
 │   ├── discover_models.py                # Auto-discovery from OpenRouter/Google
-│   └── fetch_benchmarks.py              # Fetch benchmarks from public leaderboards
+│   ├── fetch_benchmarks.py              # Fetch benchmarks from public leaderboards
+│   ├── scrape_vals.py                  # Headless scraper for vals.ai benchmarks
+│   └── .venv/                          # Python venv for Playwright (scrape_vals.py)
 ├── settings/
 │   ├── model-registry.json               # All known models + routes + tiers
 │   ├── routing-rules.json                # Regex patterns for auto-routing new models
@@ -154,6 +154,7 @@ CLI tools (claude, codex, kimi) use their own stored logins — no API keys need
 │   └── benchmark-quality.json            # BetterBench quality metadata per benchmark
 ├── benchmarks/
 │   ├── rankings.csv                      # Unified rankings — THE file other skills read
+│   ├── vals.json                         # Scraped vals.ai data (all 23 benchmarks)
 │   └── _meta.json                        # Fetch timestamps and source status
 └── references/
     ├── provider-setup.md                 # Auth setup per provider
@@ -172,6 +173,7 @@ Fetch and cache LLM benchmark rankings from public leaderboards. The unified CSV
 | **Epoch AI** | GPQA Diamond, MATH, SWE-bench, coding, LiveBench scores | Daily CSV updates (has 2026 data) | None |
 | **OpenRouter** | Pricing ($/1M tokens), context length | Real-time | None |
 | **Artificial Analysis** | Intelligence Index (0-100), speed (TPS/TTFT), eval scores | Continuous | `ARTIFICIAL_ANALYSIS_API_KEY` |
+| **Vals.ai** | Industry benchmarks: finance, legal, healthcare, coding agents (23 benchmarks) | Manual scrape via Playwright | None (headless browser) |
 
 **Evaluated but skipped**: LiveBench (already in Epoch AI data), LM Council (aggregator of our sources), LLM Stats/ZeroEval (aggregator of our sources).
 
@@ -188,6 +190,10 @@ python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --source arena
 python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --source epoch
 python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --source openrouter
 python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --source aa
+python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --source vals
+
+# Scrape vals.ai (requires Playwright venv, ~90s for all 23 benchmarks)
+~/.claude/skills/llm/scripts/.venv/bin/python3 ~/.claude/skills/llm/scripts/scrape_vals.py
 
 # View local rankings (no network calls)
 python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --list
@@ -217,6 +223,15 @@ python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --model gemini-3-pro --
 | `context` | Context window (tokens) | OpenRouter, AA |
 | `price_in` | Input price ($/1M tokens) | OpenRouter |
 | `price_out` | Output price ($/1M tokens) | OpenRouter |
+| `vals_index` | Vals Index composite — finance/law/coding weighted by GDP (%) | Vals.ai |
+| `vals_finance` | CorpFin v2 — credit agreement understanding (%) | Vals.ai |
+| `vals_fin_agent` | Finance Agent — financial analyst tasks (%) | Vals.ai |
+| `vals_legal` | CaseLaw v2 — legal QA on court cases (%) | Vals.ai |
+| `vals_medical` | MedQA — medical question answering (%) | Vals.ai |
+| `vals_lcb` | LiveCodeBench — Vals implementation (%) | Vals.ai |
+| `vals_swe` | SWE-bench — Vals implementation (%) | Vals.ai |
+| `vals_terminal` | Terminal-Bench 2.0 — terminal tasks (%) | Vals.ai |
+| `vals_aime` | AIME — national math exam (%) | Vals.ai |
 | `benchmark_quality` | BetterBench-informed quality tier: high/medium/low | Computed |
 | `registry_name` | Matching name in model-registry.json (empty if none) | Computed |
 | `sources` | Comma-separated list of data sources | Computed |
@@ -265,7 +280,7 @@ When invoked as `/llm` from Claude Code, the skill works as a reference for how 
 Example from Claude Code:
 ```bash
 # Get a response from GPT-5.3 and parse it
-response=$(python3 ~/.claude/skills/llm/scripts/llm_route.py --model gpt-5.3-codex --prompt "Your prompt" --json)
+response=$(python3 ~/.claude/skills/llm/scripts/llm_route.py --model chatgpt-5.4 --prompt "Your prompt" --json)
 ```
 
 ## Setup
@@ -286,7 +301,7 @@ response=$(python3 ~/.claude/skills/llm/scripts/llm_route.py --model gpt-5.3-cod
 3. **Verify**:
    ```bash
    python3 ~/.claude/skills/llm/scripts/llm_route.py --list-models
-   python3 ~/.claude/skills/llm/scripts/llm_route.py --model sonnet --prompt "Hello"
+   python3 ~/.claude/skills/llm/scripts/llm_route.py --model opus --prompt "Hello"
    ```
 
 See `references/provider-setup.md` for detailed per-provider instructions.

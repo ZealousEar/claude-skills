@@ -33,6 +33,38 @@ execution across Claude, ChatGPT, Gemini, Kimi, and any OpenAI-compatible API.
 /debate <your question or problem>
 ```
 
+## Step 0: Model Configuration Prompt
+
+**Before executing the debate**, check whether the user's message already specifies model preferences (e.g., "use budget mode", "all opus", "chatgpt-5.4 for solvers"). If it does, apply those preferences directly and skip this prompt. If it does NOT, present the following using AskUserQuestion:
+
+```
+Model configuration for /debate:
+
+PROFILE (choose one, or "custom"):
+  1. multi_model  — opus + chatgpt-5.4 + gpt-5.2 + kimi-2.5 + gemini-3.1-pro solvers (default)
+  2. balanced     — all opus solvers
+  3. max_quality  — same as multi_model, best debaters
+  4. cost_optimized — all gemini-3-flash
+  5. budget       — zero Claude subagents (chatgpt/gpt/kimi/gemini/glm)
+  6. custom       — specify models per role below
+
+REASONING EFFORT (optional — press Enter for defaults):
+  Claude (opus):    thinking budget → [16k tokens (default) / 32k / 64k / 128k]
+  ChatGPT (5.4/5.2): reasoning_effort → [xhigh (default) / high / medium / low]
+
+CONTEXT WINDOW (optional — press Enter for defaults):
+  [default / specify tokens / auto (orchestrator decides per task)]
+
+Enter choice (e.g. "1", "budget", "custom: solvers=opus,opus,chatgpt-5.4,kimi-2.5,gemini-3-pro debaters=opus,gpt-5.2,chatgpt-5.4,opus"):
+```
+
+**Parsing the response:**
+- If user picks a numbered profile or name → set `active_profile` in model-settings.json for this run
+- If user specifies reasoning effort → override `reasoning.max_tokens` for opus and/or `reasoning_effort` for ChatGPT models in the runtime config
+- If user specifies context window → apply as `context_length` override; if "auto", choose based on question complexity (short questions → default, long multi-file analysis → max available)
+- If user says "custom" → parse their per-role assignments and construct an ad-hoc profile
+- If user presses Enter or says "defaults" → use `grade_loop` profile (current active)
+
 ## Architecture
 
 The protocol uses a hybrid execution model:
@@ -41,6 +73,9 @@ The protocol uses a hybrid execution model:
 
 ```
 User Question
+     |
+     v
+[Model Config Prompt] — ask user for profile/reasoning/context preferences (skip if already specified)
      |
      v
 [Load Config] — read model-settings.json, determine routing
@@ -94,43 +129,43 @@ Configured in `settings/model-settings.json`. Seven profiles:
 
 | Profile           | Solver A        | Solver B          | Solver C        | Solver D  | Solver E      | Debaters (fallback)       | Synthesizer    |
 |-------------------|-----------------|-------------------|-----------------|-----------|---------------|---------------------------|----------------|
-| multi_model       | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | sonnet (static)           | opus           |
-| multi_model_full  | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
-| balanced          | opus            | opus              | opus            | opus      | opus          | sonnet (static)           | opus           |
-| cost_optimized    | sonnet          | sonnet            | sonnet          | sonnet    | sonnet        | haiku (static)            | sonnet         |
-| max_quality       | opus            | gpt-5.3-codex    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
-| **budget**        | gpt-5.3-codex   | gpt-5.2           | kimi-2.5        | gemini-3-pro | glm-5      | 2×GPT + Kimi + Gemini    | gpt-5.3-codex  |
+| multi_model       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | opus (static)             | opus           |
+| multi_model_full  | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
+| balanced          | opus            | opus              | opus            | opus      | opus          | opus (static)             | opus           |
+| cost_optimized    | gemini-3-flash  | gemini-3-flash    | gemini-3-flash  | gemini-3-flash | gemini-3-flash | gemini-3-flash (static)  | opus           |
+| max_quality       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
+| **budget**        | chatgpt-5.4   | gpt-5.2           | kimi-2.5        | gemini-3-pro | glm-5      | 2×GPT + Kimi + Gemini    | chatgpt-5.4  |
 
 **Standardized debater assignment:** All debaters use exactly **2 Opus + 2 ChatGPT** models to eliminate intelligence gaps between evaluators. When a domain is detected (Step 1.5), the debater assignment from `benchmark-profiles.json` overrides profile defaults, but all domains now use the standardized 2+2 split:
 
 | Domain   | D1 (Consistency)       | D2 (Counterexample)    | D3 (Constraint)        | D4 (Evidence)    |
 |----------|------------------------|------------------------|------------------------|------------------|
-| coding   | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
-| math     | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
-| finance  | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
-| legal    | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
-| academic | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
-| strategy | gpt-5.2                | opus                   | gpt-5.3-codex          | opus             |
-| general  | opus                   | gpt-5.2                | gpt-5.3-codex          | opus             |
+| coding   | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
+| math     | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
+| finance  | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
+| legal    | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
+| academic | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
+| strategy | gpt-5.2                | opus                   | chatgpt-5.4          | opus             |
+| general  | opus                   | gpt-5.2                | chatgpt-5.4          | opus             |
 
 **Budget mode debater assignment:** When the `budget` profile is active, `budget_debater_models` replaces `debater_models` — zero Claude in any slot:
 
 | Domain   | D1 (Consistency)       | D2 (Counterexample)    | D3 (Constraint)        | D4 (Evidence)    |
 |----------|------------------------|------------------------|------------------------|------------------|
-| coding   | gpt-5.3-codex          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
-| math     | gemini-3-pro           | gpt-5.2                | gpt-5.3-codex          | kimi-2.5         |
-| finance  | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
-| legal    | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
-| academic | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
-| strategy | gpt-5.2                | gpt-5.3-codex          | kimi-2.5               | gemini-3-pro     |
-| general  | gpt-5.3-codex          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
+| coding   | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
+| math     | gemini-3-pro           | gpt-5.2                | chatgpt-5.4          | kimi-2.5         |
+| finance  | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
+| legal    | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
+| academic | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
+| strategy | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
+| general  | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
 
 ### Supported Providers
 
 | Provider   | API Style         | Models Available                          | Env Key           |
 |------------|-------------------|-------------------------------------------|--------------------|
-| claude-code| Native Task tool  | opus, sonnet, haiku                       | None needed        |
-| codex      | Codex CLI         | gpt-5.3-codex, chatgpt-5.2, gpt-5.2 | None (uses `codex login`) |
+| claude-code| Native Task tool  | opus                                      | None needed        |
+| codex      | Codex CLI         | chatgpt-5.4, chatgpt-5.2, gpt-5.2 | None (uses `codex login`) |
 | google     | Generative AI API | gemini-3-pro                              | GOOGLE_API_KEY     |
 | moonshot   | OpenAI-compatible | kimi-2.5                                  | MOONSHOT_API_KEY   |
 | openrouter | OpenAI-compatible | all models (fallback route)               | OPENROUTER_API_KEY |
@@ -216,10 +251,31 @@ The model weights in `settings/benchmark-profiles.json` are derived from [Vals.a
 
 The `/llm` skill's `benchmarks/rankings.csv` aggregates data from Chatbot Arena, Epoch AI, OpenRouter, and Artificial Analysis with BetterBench quality tiers.
 
+## Output Persistence
+
+Every debate run saves all raw outputs to a timestamped scratchpad directory:
+```
+~/.claude/debates/<YYYY-MM-DD_HHMMSS>/
+  solver_A_opus_output.txt       # Raw solver A response
+  solver_B_codex_output.txt      # Raw solver B response
+  solver_C_gpt52_output.txt      # Raw solver C response
+  solver_D_kimi_output.txt       # Raw solver D response
+  solver_E_gemini_output.txt     # Raw solver E response
+  debater_1_output.txt           # Raw debater 1 response (with justifications)
+  debater_2_output.txt           # Raw debater 2 response
+  debater_3_output.txt           # Raw debater 3 response
+  debater_4_output.txt           # Raw debater 4 response (with pairwise reasoning)
+  rwea_payload.json              # RWEA scoring input
+  rwea_result.txt                # RWEA scoring output
+```
+
+This ensures debate evidence survives context compaction and can be reviewed across sessions. When the grade-loop skill invokes `/debate`, it uses `report/grade-loop-state/scratchpad/` as the scratchpad directory instead, with iteration-numbered filenames (e.g., `solver_A_opus_output_iter19.txt`).
+
 ## File Structure
 
 ```
 ~/.claude/commands/debate.md              # Slash command (orchestration)
+~/.claude/debates/                         # Timestamped debate output archives
 ~/.claude/skills/convolutional-debate-agent/
   SKILL.md                                 # This file
   errors.md                                # Persistent error log with solutions
@@ -252,6 +308,18 @@ The `/llm` skill's `benchmarks/rankings.csv` aggregates data from Chatbot Arena,
 
 ## Changelog
 
+### v6 — 2026-03-05 (Output Persistence)
+
+**1. Solver output persistence** — After all 5 solvers complete, raw responses are saved to `<scratchpad>/solver_<X>_<model>_output.txt`. Previously only prompts were saved; actual model outputs were lost on context compaction.
+
+**2. Debater output persistence** — After all 4 debaters complete, raw responses (including justifications and pairwise reasoning) are saved to `<scratchpad>/debater_<N>_output.txt`.
+
+**3. RWEA result persistence** — RWEA scorer output (scores, eliminations, decisions) saved to `<scratchpad>/rwea_result.txt`. Previously only the input payload was saved.
+
+**4. Timestamped scratchpad** — Standalone `/debate` runs create `~/.claude/debates/<YYYY-MM-DD_HHMMSS>/` for all artifacts. Grade-loop overrides to `report/grade-loop-state/scratchpad/` with iteration-numbered filenames.
+
+**Trigger:** 19 grade-loop iterations lost detailed solver analyses and debater justifications to context compaction. The summary in score-history.json preserved numbers but not the reasoning behind them, making it impossible to trace why specific feedback was given.
+
 ### v5 — 2026-02-25 (CLI Timeout Cascade Fix + Budget Mode)
 
 **1. CLI timeout increase** — `DEFAULT_CLI_TIMEOUT` raised from 300s to 600s in both `llm_runner.py` and `llm_route.py`. Codex, Kimi, and Claude CLI calls all default to 600s. A `--timeout` CLI flag is now available on both scripts for explicit control.
@@ -262,7 +330,7 @@ The `/llm` skill's `benchmarks/rankings.csv` aggregates data from Chatbot Arena,
 
 **4. Fallback detection in scoring** — Step 5 now checks stderr for fallback warnings and notes any CLI→API fallbacks in the debate summary, so the user knows which models ran via non-primary routes.
 
-**5. Budget mode** — New `budget` profile: zero Claude subagents. All solver/debater/synthesizer/formalizer calls route via Codex CLI, Kimi CLI, Google API, or OpenRouter. The only Claude instance is the main orchestrator. Domain-specific `budget_debater_models` added to all 7 domains in benchmark-profiles.json. Formalizer falls back to `budget_formalizer_model` (gpt-5.3-codex). Debate summary shows "Mode: budget (no Claude subagents)" when active.
+**5. Budget mode** — New `budget` profile: zero Claude subagents. All solver/debater/synthesizer/formalizer calls route via Codex CLI, Kimi CLI, Google API, or OpenRouter. The only Claude instance is the main orchestrator. Domain-specific `budget_debater_models` added to all 7 domains in benchmark-profiles.json. Formalizer falls back to `budget_formalizer_model` (chatgpt-5.4). Debate summary shows "Mode: budget (no Claude subagents)" when active.
 
 **Trigger:** Codex CLI timed out at 300s during a 30k-token debate run, cascading to cancel all sibling Bash calls. See `errors.md` for full incident details.
 
@@ -270,11 +338,11 @@ The `/llm` skill's `benchmarks/rankings.csv` aggregates data from Chatbot Arena,
 
 **1. Error logging** — Created `errors.md` persistent error log documenting all known failures and solutions. Includes Codex CLI model availability matrix, Gemini temperature quirks, Kimi model ID format, and JSON parsing edge cases.
 
-**2. ChatGPT model fix** — `gpt-5.2-extra-high` is NOT available via Codex CLI with a ChatGPT consumer account. Replaced with `gpt-5.2-codex` (verified working). Verified model availability: `gpt-5.3-codex`, `gpt-5.2-codex`, `gpt-5.2`, `gpt-5`, `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-max` all work. Models like `o3`, `o4-mini`, `gpt-4.1` do NOT work with ChatGPT accounts.
+**2. ChatGPT model fix** — `gpt-5.2-extra-high` is NOT available via Codex CLI with a ChatGPT consumer account. Replaced with `gpt-5.2-codex` (verified working). Verified model availability: `chatgpt-5.4`, `gpt-5.2-codex`, `gpt-5.2`, `gpt-5`, `gpt-5.1`, `gpt-5.1-codex`, `gpt-5.1-codex-max` all work. Models like `o3`, `o4-mini`, `gpt-4.1` do NOT work with ChatGPT accounts.
 
 **3. Gap-detection questioning** — Added Step 1.1 to `debate.md`. Before proceeding to domain classification, the agent now exhaustively analyzes the prompt for missing constraints, unstated assumptions, ambiguous terms, unclear scope, missing success criteria, and hidden dependencies. Uses iterative AskUserQuestion calls until all gaps are resolved. No fatigue — keeps asking until confident.
 
-**4. Standardized debater models** — All debater assignments across all 7 domains now use exactly **2 Opus + 2 ChatGPT** (gpt-5.3-codex and gpt-5.2-codex via alias). This eliminates intelligence gaps between debaters that occurred when mixing Gemini and Kimi (lower benchmark models) into evaluator roles. Gemini and Kimi remain as solvers where their diverse architectures add value.
+**4. Standardized debater models** — All debater assignments across all 7 domains now use exactly **2 Opus + 2 ChatGPT** (chatgpt-5.4 and gpt-5.2-codex via alias). This eliminates intelligence gaps between debaters that occurred when mixing Gemini and Kimi (lower benchmark models) into evaluator roles. Gemini and Kimi remain as solvers where their diverse architectures add value.
 
 **5. Gemini prompting optimization** — Applied Google's Gemini 3 prompting best practices:
    - Forced `temperature=1.0` for all Google API calls in `llm_runner.py` (Gemini degrades below 1.0)

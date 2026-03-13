@@ -104,6 +104,8 @@ def get_idea_text(idea: dict[str, object]) -> str:
         *[_x for _x in _as_list(idea.get("risk")) if _x],
         *[_x for _x in _as_list(idea.get("mvp")) if _x],
         *[_x for _x in _as_list(idea.get("body")) if _x],
+        *[_x for _x in _as_list(idea.get("text")) if _x],
+        *[_x for _x in _as_list(idea.get("raw_text")) if _x],
     ]
     return " ".join(parts).strip()
 

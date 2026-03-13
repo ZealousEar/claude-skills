@@ -1,5 +1,5 @@
 {
-  "_description": "Ralph Loop — autonomous fresh-context iteration for dissertation idea generation",
+  "_description": "Analytics config for Grapple Law — overrides creative_lenses path and adds SQL/analytics sections. Used by ralph-analytics.sh without modifying the original ralph-config.json.",
   "version": "1.0.0",
 
   "paths": {
@@ -8,7 +8,7 @@
     "rankings_csv": "~/.claude/skills/llm/benchmarks/rankings.csv",
     "model_registry": "~/.claude/skills/llm/settings/model-registry.json",
     "benchmark_profiles": "~/.claude/skills/ralph/settings/benchmark-profiles.json",
-    "creative_lenses": "~/.claude/skills/ralph/references/creative-lenses.yaml",
+    "creative_lenses": "~/.claude/skills/ralph/references/grapple-lenses.yaml",
     "state_dir": "~/.claude/skills/ralph/state"
   },
 
@@ -52,5 +52,20 @@
     "max_tokens": 4096,
     "timeout": 600,
     "system_prompt_max_length": 8000
+  },
+
+  "analytics_evaluation": {
+    "novelty_weight": 0.35,
+    "actionability_weight": 0.35,
+    "evidence_weight": 0.30,
+    "dedup_jaccard_threshold": 0.7,
+    "min_key_terms": 5
+  },
+
+  "sql_execution": {
+    "max_queries_per_iteration": 5,
+    "query_timeout_seconds": 30,
+    "max_rows_per_query": 200,
+    "db_name": "grapple"
   }
 }

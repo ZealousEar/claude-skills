@@ -1,0 +1,61 @@
+{
+  "_description": "Research topic prompts for GIB (GEPS Ideation Benchmark). Each topic is sent to all models under test to generate research ideas.",
+  "topics": [
+    {
+      "id": "microstructure_01",
+      "title": "Market Microstructure and Information Asymmetry",
+      "domain": "microstructure",
+      "smoke_test": true,
+      "prompt": "Generate a novel empirical research idea about how information asymmetry in limit order book dynamics affects price discovery in fragmented equity markets. The idea should propose a testable hypothesis linking order flow toxicity (e.g., VPIN or Kyle's lambda) to a measurable outcome such as price efficiency, bid-ask spreads, or adverse selection costs. Suggest a specific identification strategy—such as an exogenous exchange rule change, a natural experiment from market structure reforms (e.g., tick size pilot, MiFID II), or high-frequency event studies around earnings announcements—using TAQ, LOBSTER, or ITCH data. The hypothesis must be falsifiable and the causal channel clearly articulated."
+    },
+    {
+      "id": "asset_pricing_01",
+      "title": "Cross-Sectional Asset Pricing and Factor Zoo",
+      "domain": "asset_pricing",
+      "smoke_test": true,
+      "prompt": "Generate a novel research idea that addresses the replication crisis in cross-sectional asset pricing by proposing a new mechanism or identification strategy for distinguishing genuine risk premia from data-mined anomalies. The idea should go beyond existing factor zoo meta-analyses (Harvey, Liu, and Zhu 2016; Jensen, Kelly, and Pedersen 2023) by suggesting a testable hypothesis involving out-of-sample validation, international markets, or machine-learning-based variable selection applied to CRSP/Compustat, global Datastream, or Ken French's data library. Specify a clear causal or economic channel—such as limits to arbitrage, investor inattention, or institutional frictions—and an empirical design that distinguishes your mechanism from competing explanations."
+    },
+    {
+      "id": "derivatives_01",
+      "title": "Options Markets, Volatility Surfaces, and Hedging",
+      "domain": "derivatives",
+      "smoke_test": true,
+      "prompt": "Generate a research idea exploring how the information content of the implied volatility surface predicts future realized volatility or tail risk beyond what is captured by standard models (Black-Scholes, Heston, rough volatility). The hypothesis should identify a specific feature of the vol surface—such as skew dynamics, term-structure slope, or the volatility-of-volatility smile—that carries predictive power for jump risk, variance risk premium, or hedging error. Propose an empirical test using OptionMetrics IvyDB, CBOE indices (VIX, SKEW, VVIX), or SPX option chains, with a clear identification strategy such as difference-in-differences around FOMC announcements or portfolio sorts on surface features."
+    },
+    {
+      "id": "behavioral_01",
+      "title": "Behavioral Finance and Investor Decision-Making",
+      "domain": "behavioral",
+      "smoke_test": false,
+      "prompt": "Generate a research idea investigating how cognitive biases or attention constraints among retail investors affect aggregate market outcomes such as mispricing, return predictability, or volatility clustering. The idea should propose a testable hypothesis linking a specific behavioral mechanism—such as salience bias triggered by media coverage, disposition effect in tax-loss selling, or anchoring on round numbers—to a measurable asset pricing outcome. Suggest an identification strategy that uses granular retail trading data (e.g., Robinhood popularity data, SEC 13F filings, or Barber-and-Odean-style brokerage records) and a quasi-experimental design, such as staggered adoption of zero-commission trading or platform UI changes, to isolate the causal effect from confounders."
+    },
+    {
+      "id": "macro_01",
+      "title": "Macro-Finance and Monetary Policy Transmission",
+      "domain": "macro",
+      "smoke_test": false,
+      "prompt": "Generate a research idea about how monetary policy surprises propagate through financial markets to the real economy via a specific credit or asset-price channel. The hypothesis should identify a novel transmission mechanism—such as heterogeneous bank balance sheet exposure, collateral revaluation in repo markets, or duration risk redistribution among pension funds—that amplifies or dampens the effect of rate changes on corporate investment or household consumption. Propose an empirical strategy using high-frequency Fed Funds futures surprises (Gurkaynak, Sack, and Swanson identification), matched with bank call report data, Flow of Funds, or firm-level Compustat panels, to test the mechanism in a difference-in-differences or instrumental variable framework."
+    },
+    {
+      "id": "esg_01",
+      "title": "ESG Disclosure, Climate Risk, and Green Finance",
+      "domain": "esg",
+      "smoke_test": false,
+      "prompt": "Generate a research idea examining how mandatory ESG disclosure regulation affects the pricing of climate transition risk in corporate bond or equity markets. The hypothesis should propose a testable link between a specific regulatory shock—such as the EU SFDR implementation, SEC climate disclosure rules, or TCFD adoption mandates—and measurable changes in the carbon risk premium, green bond spread compression, or portfolio reallocation by institutional investors. Suggest an identification strategy using a staggered difference-in-differences design across jurisdictions or firm cohorts, drawing on data from Refinitiv ESG, Trucost carbon emissions, Bloomberg green bond indices, or 13F institutional holdings, with attention to parallel trends assumptions and spillover effects."
+    },
+    {
+      "id": "defi_01",
+      "title": "DeFi Protocols, AMMs, and MEV Extraction",
+      "domain": "defi",
+      "smoke_test": false,
+      "prompt": "Generate a research idea about how maximal extractable value (MEV) in decentralized finance affects liquidity provision, price efficiency, or welfare in automated market makers such as Uniswap v3 or Curve. The hypothesis should propose a testable mechanism—such as sandwich attacks raising the effective cost of liquidity for passive LPs, or just-in-time liquidity crowding out retail LPs—that can be measured using on-chain Ethereum data from Flashbots MEV-Explore, Dune Analytics, or The Graph. Suggest a causal identification approach, such as exploiting the Flashbots Protect rollout as a natural experiment or comparing welfare metrics across chains with different MEV mitigation designs (e.g., Ethereum vs. Solana vs. Flashbots-enabled blocks), to disentangle MEV effects from concurrent protocol upgrades."
+    },
+    {
+      "id": "risk_management_01",
+      "title": "Systemic Risk, Contagion, and Portfolio Risk Measurement",
+      "domain": "risk_management",
+      "smoke_test": false,
+      "prompt": "Generate a research idea about how network topology in the interbank or derivatives clearing network amplifies systemic risk during stress episodes beyond what is captured by standard measures (CoVaR, SRISK, MES). The hypothesis should propose a specific network mechanism—such as concentrated central counterparty exposures, fire-sale spirals via common asset holdings, or funding liquidity contagion through repo chains—that generates nonlinear tail dependence not reflected in pairwise correlations. Suggest an empirical test using data from the Federal Reserve's FR Y-9C bank holding company reports, BIS derivatives statistics, DTCC CDS trade repository, or Bankscope, with an identification strategy such as comparing realized contagion during the 2023 regional banking stress against model-predicted contagion from network simulations calibrated to pre-crisis data."
+    }
+  ]
+}

@@ -251,3 +251,26 @@ These rules apply universally across all models in the debate agent:
 5. **Positive instructions outperform negative ones** across all models — tell the model what to do, not what to avoid.
 
 6. **Preserve reasoning/thinking content** when available (GLM-5, MiniMax, Kimi) — don't strip or modify thinking blocks in multi-turn conversations.
+
+---
+
+## Prompt Harmonisation Rules
+
+When using multiple models in an ensemble (debate, grading panel, jury):
+
+1. **Harmonise task content**: All models receive identical evaluation criteria,
+   scoring rubrics, and domain focus instructions
+2. **Keep format adaptations**: XML tags for Claude, CTCO for GPT, constraint-last
+   for Gemini, plain for Kimi — these are structural, not content biases
+3. **Keep temperature as-is**: Gemini requires 1.0 (architectural); others use
+   caller default. Correct the resulting bias via post-hoc z-score normalisation
+4. **No tone instructions in preambles**: Remove "avoid hedging", "be concise",
+   "avoid verbose analysis" — these create systematic scoring bias
+5. **Benchmark callouts are OK**: "You are the top X model (Y%)" is factual,
+   not biasing — keep these per-model
+6. **Post-hoc normalisation**: Use rwea_score.py --normalise to z-score correct
+   residual model bias from non-harmonisable factors (temperature, architecture)
+
+Evidence: PoLL (Verga et al., 2024), ChatEval (Chan et al., ICLR 2024),
+prompt non-transferability (Sclar et al., 2024).
+Research note: `05 Research/LLM Ensemble Prompting Strategy/`

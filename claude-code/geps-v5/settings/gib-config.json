@@ -1,0 +1,69 @@
+{
+  "_description": "Configuration for GIB (GEPS Ideation Benchmark). Separate from geps-config.json to avoid polluting production settings.",
+  "modes": {
+    "smoke": {
+      "topics_count": 3,
+      "ideas_per_topic_per_model": 3,
+      "tournament_rounds": 3,
+      "bootstrap_samples": 50,
+      "field_cuts": {}
+    },
+    "full": {
+      "topics_count": 8,
+      "ideas_per_topic_per_model": 5,
+      "tournament_rounds": 6,
+      "bootstrap_samples": 200,
+      "field_cuts": {
+        "after_round_3": 30,
+        "after_round_5": 20
+      }
+    }
+  },
+  "self_exclusion": {
+    "enabled": true,
+    "min_remaining_judges": 3,
+    "exclusion_level": "model",
+    "_note": "When judging idea A vs B, remove source_model(A) and source_model(B) from judge pool. Model-level exclusion: GPT-5.2 and GPT-5.3-Codex are treated as independent models."
+  },
+  "generation": {
+    "temperature": 0.9,
+    "max_tokens": 4096,
+    "prompt_template": "gib_generate.md"
+  },
+  "judging": {
+    "temperature": 0.3,
+    "max_tokens": 1024,
+    "prompt_template": "judge_pairwise.md",
+    "schedule": "judging_schedule.json"
+  },
+  "bradley_terry": {
+    "rho_source": "calibration",
+    "theta_constraint": "sum_zero",
+    "pi_regularization": "l2",
+    "pi_lambda": 0.1,
+    "min_matches_per_idea": 3
+  },
+  "mechanical_gates": {
+    "complexity_threshold": 8,
+    "novelty_threshold": 0.90
+  },
+  "paths": {
+    "llm_runner": "~/.claude/skills/convolutional-debate-agent/scripts/llm_runner.py",
+    "model_settings": "~/.claude/skills/convolutional-debate-agent/settings/model-settings.json",
+    "style_normalizer": "~/.claude/skills/geps-v5/scripts/style_normalizer.py",
+    "mechanical_gates": "~/.claude/skills/geps-v5/scripts/mechanical_gates.py",
+    "swiss_tournament": "~/.claude/skills/geps-v5/scripts/swiss_tournament.py",
+    "judge_pairwise": "~/.claude/skills/geps-v5/scripts/judge_pairwise.py",
+    "bradley_terry": "~/.claude/skills/geps-v5/scripts/bradley_terry.py",
+    "calibration": "~/.claude/skills/geps-v5/scripts/calibration.py",
+    "topics": "~/.claude/skills/geps-v5/settings/gib-topics.json",
+    "gib_config": "~/.claude/skills/geps-v5/settings/gib-config.json",
+    "judging_schedule": "~/.claude/skills/geps-v5/settings/judging_schedule.json",
+    "calibration_pack": "~/.claude/skills/geps-v5/settings/calibration-pack.json",
+    "calibration_weights": "~/.claude/skills/geps-v5/settings/calibration-weights.json",
+    "model_pricing": "~/.claude/skills/geps-v5/settings/model_pricing.json",
+    "prompts_dir": "~/.claude/skills/geps-v5/prompts/"
+  },
+  "default_judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
+  "all_models": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "gemini-3-flash", "kimi-2.5", "glm-5", "minimax-m2.5"]
+}

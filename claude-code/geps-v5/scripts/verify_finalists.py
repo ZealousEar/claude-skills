@@ -57,7 +57,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--verifier-models",
-        default="opus,gpt-5.3-codex",
+        default="opus,chatgpt-5.4",
         help="Comma-separated verifier models",
     )
     parser.add_argument(

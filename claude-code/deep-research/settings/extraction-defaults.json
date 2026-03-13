@@ -38,7 +38,7 @@
     ]
   },
   "output": {
-    "vault_root": "${VAULT_ROOT}",
+    "vault_root": "/Users/farhad/Code/Agentic Obsidian Vault/Agentic",
     "default_location": "05 Research",
     "dissertation_location": "10 School/Dissertation Research/Papers",
     "note_suffix": ".md",

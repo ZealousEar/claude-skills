@@ -24,6 +24,41 @@ Claude acts as the **intelligent orchestrator** — analyzing the codebase, deco
 - **Codex agents execute**: autonomous coding via `codex exec` CLI, each in an isolated git worktree
 - **Claude synthesizes**: collects structured results, merges worktrees, resolves conflicts, verifies
 
+## Step 0: Model Configuration Prompt
+
+**Before launching agents**, check whether the user's message already specifies preferences (e.g., "--fast", "medium reasoning", "use 1M context"). If it does, apply those preferences directly and skip this prompt. If it does NOT, present the following using AskUserQuestion:
+
+```
+Model configuration for /CodexCode:
+
+MODEL: chatgpt-5.4 (fixed — Codex CLI only supports ChatGPT models)
+
+REASONING EFFORT (choose one):
+  1. xhigh  — maximum depth, slower (default)
+  2. high   — strong reasoning, moderate speed
+  3. medium — balanced speed/quality
+  4. low    — fastest, minimal reasoning
+
+CONTEXT WINDOW (choose one):
+  1. default (272k) — standard Codex CLI limit, best accuracy
+  2. 512k           — extended, good accuracy
+  3. 1M             — maximum (experimental, accuracy may degrade)
+  4. auto            — orchestrator decides per agent based on task scope
+
+Enter choice (e.g. "1 1", "medium default", "xhigh 1M"):
+```
+
+**Parsing the response:**
+- Reasoning effort → set `-c reasoning.effort=<value>` on all Codex CLI invocations
+- Context window:
+  - "default" → omit context window overrides (Codex CLI uses its built-in ~272k cap)
+  - "512k" → set `-c model_context_window=512000 -c model_auto_compact_token_limit=460000`
+  - "1M" → set `-c model_context_window=1000000 -c model_auto_compact_token_limit=900000 -c stream_idle_timeout_ms=300000`
+  - "auto" → Claude assesses each agent's task: large codebase reads → 1M, focused edits → default
+- If user presses Enter or says "defaults" → reasoning_effort=xhigh, context=default (272k)
+
+---
+
 ## Agent Limits
 
 - **Minimum**: N=1 (single focused agent)
@@ -57,7 +92,7 @@ Claude acts as the **intelligent orchestrator** — analyzing the codebase, deco
 
 ```bash
 codex exec \
-  -m gpt-5.3-codex \
+  -m chatgpt-5.4 \
   -c reasoning.effort=xhigh \
   --full-auto \
   --skip-git-repo-check \
@@ -73,7 +108,7 @@ codex exec \
 
 | Flag | Value | Purpose |
 |------|-------|---------|
-| `-m` | `gpt-5.3-codex` | Model — ALWAYS this, no exceptions |
+| `-m` | `chatgpt-5.4` | Model — ALWAYS this, no exceptions |
 | `-c` | `reasoning.effort=xhigh` | Maximum reasoning depth for highest code quality |
 | `--full-auto` | — | Non-interactive autonomous execution |
 | `--skip-git-repo-check` | — | Allow operation in any directory |
@@ -139,7 +174,7 @@ bash ~/.claude/skills/codex-code/scripts/preflight.sh --check-git --verbose
 This verifies:
 1. **Codex CLI installed** and in PATH
 2. **Authentication valid** (not expired/missing)
-3. **Model available** (`gpt-5.3-codex`)
+3. **Model available** (`chatgpt-5.4`)
 4. **Git repo status** (for worktree support)
 5. **Temp directory writable** with sufficient space
 
@@ -228,7 +263,7 @@ SESSION_ID=$(python3 ~/.claude/skills/codex-code/scripts/parse_jsonl.py \
 
 # Resume the session
 codex exec resume "$SESSION_ID" "Continue and finish the task" \
-  -m gpt-5.3-codex --full-auto --json \
+  -m chatgpt-5.4 --full-auto --json \
   -o /tmp/codex_swarm_<sid>_<i>_result.txt \
   > /tmp/codex_swarm_<sid>_<i>_events_resumed.jsonl 2>&1
 ```
@@ -249,7 +284,7 @@ codex exec resume "$SESSION_ID" "Continue and finish the task" \
 For UI/design tasks, attach mockups or screenshots to agent prompts:
 
 ```bash
-codex exec -m gpt-5.3-codex --full-auto \
+codex exec -m chatgpt-5.4 --full-auto \
   -i /path/to/mockup.png \
   -i /path/to/screenshot.jpg \
   - < prompt.txt > events.jsonl 2>&1
@@ -271,7 +306,7 @@ Claude should check if the user's request involves visual assets and proactively
 When agents need files outside their working directory (monorepo shared libs, config dirs):
 
 ```bash
-codex exec -m gpt-5.3-codex --full-auto \
+codex exec -m chatgpt-5.4 --full-auto \
   --add-dir /path/to/shared/libs \
   --add-dir /path/to/common/types \
   -C /path/to/agent/worktree \
@@ -295,8 +330,8 @@ All tunable parameters are in `settings/swarm-config.json`:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `model` | `gpt-5.3-codex` | Primary model |
-| `model_fallback` | `gpt-5.2-codex` | Fallback if primary unavailable |
+| `model` | `chatgpt-5.4` | Primary model |
+| `model_fallback` | `gpt-5.3-codex` | Fallback if primary unavailable |
 | `limits.max_agents` | 50 | Maximum agents per session |
 | `limits.wave_size` | 10 | Agents per parallel wave |
 | `limits.wave_completion_threshold` | 0.5 | % of wave done before next wave |
@@ -310,6 +345,18 @@ All tunable parameters are in `settings/swarm-config.json`:
 | `output.use_output_schema` | true | Enable structured output schema |
 | `preflight.check_auth` | true | Check auth before launch |
 | `session.enable_resume` | true | Enable session resume on timeout |
+
+---
+
+## Fast Mode
+
+When the user passes `--fast` (or mentions "fast mode" / "quick mode") in their request:
+- **Model**: Same `chatgpt-5.4`
+- **Reasoning effort**: `medium` instead of `xhigh` (via `-c reasoning.effort=medium`)
+- **Effect**: Significantly faster execution with slightly reduced reasoning depth
+- **Use case**: Simpler tasks, rapid prototyping, or when speed matters more than thoroughness
+
+The orchestrator detects fast mode from the user's `$ARGUMENTS` and adjusts all agent commands accordingly.
 
 ---
 
