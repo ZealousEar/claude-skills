@@ -59,6 +59,37 @@ codex exec resume <SESSION_ID> "continue"
 codex exec resume --last "continue"
 ```
 
+## 1M Context Window (ChatGPT 5.4)
+
+ChatGPT 5.4 supports 1,050,000 tokens but Codex CLI caps at ~272K by default. To enable the full 1M context:
+
+```bash
+# Enable 1M context window
+-c model_context_window=1000000
+
+# Set auto-compaction threshold (compact at 900K to preserve headroom)
+-c model_auto_compact_token_limit=900000
+
+# Extend stream idle timeout for large-context processing (5 min)
+-c stream_idle_timeout_ms=300000
+```
+
+**Full command example:**
+```bash
+codex exec -m chatgpt-5.4 -c reasoning.effort=xhigh \
+  -c model_context_window=1000000 \
+  -c model_auto_compact_token_limit=900000 \
+  -c stream_idle_timeout_ms=300000 \
+  --full-auto --skip-git-repo-check \
+  - < prompt.txt
+```
+
+**Best practices:**
+- Accuracy degrades to ~36% beyond 512K tokens — stay under 272K for accuracy-critical work
+- Use full 1M for: large codebase analysis, full-repo reads, completeness tasks
+- The auto-compact at 900K prevents hitting the hard 1.05M limit unexpectedly
+- 5-minute idle timeout prevents premature disconnects during large-context reasoning
+
 ## Network & Sandbox Config Overrides
 
 ```bash
@@ -73,7 +104,8 @@ codex exec resume --last "continue"
 
 | Model | Status | Notes |
 |-------|--------|-------|
-| `gpt-5.3-codex` | WORKING | Most capable agentic coding model |
+| `chatgpt-5.4` | WORKING | Latest flagship coding model (supersedes gpt-5.3-codex) |
+| `gpt-5.3-codex` | WORKING | Previous flagship agentic coding model |
 | `gpt-5.2-codex` | WORKING | Advanced coding model |
 | `gpt-5.2` | WORKING | General model (use -c reasoning_effort) |
 | `gpt-5.1` | WORKING | Great for coding/agentic tasks |

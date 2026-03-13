@@ -13,16 +13,10 @@
       "system_preamble": "Use XML tags to structure your reasoning. Be thorough but avoid unnecessary hedging.",
       "system_suffix": null
     },
-    "sonnet": {
+    "chatgpt-5.4": {
       "temperature": null,
-      "format": "xml",
-      "system_preamble": null,
-      "system_suffix": null
-    },
-    "haiku": {
-      "temperature": null,
-      "format": "xml",
-      "system_preamble": null,
+      "format": "ctco",
+      "system_preamble": "Follow the CTCO framework: provide Context, then Task, then Constraints, then Output format. Be concrete with length constraints.",
       "system_suffix": null
     },
     "gpt-5.3-codex": {

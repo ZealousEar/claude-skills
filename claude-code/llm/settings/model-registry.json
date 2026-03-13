@@ -1,10 +1,10 @@
 {
   "_meta": {
     "last_discovery": null,
-    "tier1_count": 11,
+    "tier1_count": 10,
     "tier2_count": 0,
     "tier3_count": 0,
-    "total_count": 11,
+    "total_count": 10,
     "_note": "tier1 = manually curated (never auto-overwritten), tier2 = auto-discovered notable, tier3 = auto-discovered everything else"
   },
 
@@ -22,8 +22,8 @@
     "opus": {
       "tier": 1,
       "_source": "manual",
-      "description": "Claude Opus 4.6 — most capable Claude model, extended thinking inherent",
-      "context_length": 200000,
+      "description": "Claude Opus 4.6 — most capable Claude model, extended thinking inherent, 1M context",
+      "context_length": 1000000,
       "route": "claude-cli",
       "reasoning": {"max_tokens": 16000},
       "routes": {
@@ -32,34 +32,29 @@
         "anthropic":    { "api_model": "claude-opus-4-6" }
       }
     },
-    "sonnet": {
+    "chatgpt-5.4": {
       "tier": 1,
       "_source": "manual",
-      "description": "Claude Sonnet 4.5 — fast, capable, good balance of speed and quality",
-      "context_length": 200000,
-      "route": "claude-cli",
+      "description": "ChatGPT 5.4 — latest flagship coding model, 1M context, reasoning_effort=xhigh",
+      "context_length": 1050000,
+      "route": "codex",
+      "reasoning": {"effort": "xhigh"},
+      "reasoning_effort": "xhigh",
+      "codex_config": {
+        "model_context_window": 1000000,
+        "model_auto_compact_token_limit": 900000,
+        "stream_idle_timeout_ms": 300000,
+        "_note": "Codex CLI caps at ~272K by default. These overrides enable the full 1M context. Accuracy degrades beyond 512K — stay under 272K for accuracy-critical work, use 1M for completeness tasks (large codebases, full-repo analysis)."
+      },
       "routes": {
-        "claude-cli":   { "api_model": "sonnet" },
-        "openrouter":   { "api_model": "anthropic/claude-sonnet-4-5-20250929" },
-        "anthropic":    { "api_model": "claude-sonnet-4-5-20250929" }
-      }
-    },
-    "haiku": {
-      "tier": 1,
-      "_source": "manual",
-      "description": "Claude Haiku 4.5 — fastest Claude, good for simple tasks",
-      "context_length": 200000,
-      "route": "claude-cli",
-      "routes": {
-        "claude-cli":   { "api_model": "haiku" },
-        "openrouter":   { "api_model": "anthropic/claude-haiku-4-5-20251001" },
-        "anthropic":    { "api_model": "claude-haiku-4-5-20251001" }
+        "codex":        { "api_model": "chatgpt-5.4" },
+        "openrouter":   { "api_model": "openai/chatgpt-5.4" }
       }
     },
     "gpt-5.3-codex": {
       "tier": 1,
       "_source": "manual",
-      "description": "GPT-5.3 Codex — best for code generation, reasoning_effort=xhigh",
+      "description": "GPT-5.3 Codex — previous flagship coding model, reasoning_effort=xhigh",
       "context_length": 200000,
       "route": "codex",
       "reasoning": {"effort": "xhigh"},
@@ -93,6 +88,19 @@
       "routes": {
         "google":       { "api_model": "gemini-3-pro-preview" },
         "openrouter":   { "api_model": "google/gemini-3-pro-preview" }
+      }
+    },
+    "gemini-3.1-pro": {
+      "tier": 1,
+      "_source": "manual",
+      "description": "Gemini 3.1 Pro — Google's latest, thinkingLevel=HIGH",
+      "context_length": 1000000,
+      "route": "google",
+      "thinking_level": "HIGH",
+      "reasoning": {"effort": "xhigh"},
+      "routes": {
+        "google":       { "api_model": "gemini-3.1-pro-preview" },
+        "openrouter":   { "api_model": "google/gemini-3.1-pro-preview" }
       }
     },
     "gemini-3-flash": {

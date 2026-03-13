@@ -222,7 +222,7 @@ def format_markdown(report: dict) -> str:
     lines.append("              CODEXCODE SWARM — EXECUTION REPORT")
     lines.append("=" * 63)
     lines.append("")
-    lines.append(f"Model: gpt-5.3-codex")
+    lines.append(f"Model: chatgpt-5.4")
     lines.append(f"Agents: {n}")
     lines.append(f"Session: {sid}")
     lines.append("")

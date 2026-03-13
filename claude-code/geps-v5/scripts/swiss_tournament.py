@@ -10,11 +10,13 @@ from pathlib import Path
 
 PROVIDER_MAP: dict[str, str] = {
     "opus": "anthropic",
-    "gpt-5.3-codex": "openai",
-    "gpt-5.2-codex": "openai",
+    "chatgpt-5.4": "openai",
     "gpt-5.2": "openai",
     "gemini-3-pro": "google",
+    "gemini-3-flash": "google",
     "kimi-2.5": "moonshot",
+    "glm-5": "zhipu",
+    "minimax-m2.5": "minimax",
 }
 
 COST_PER_TIER: dict[str, float] = {
@@ -46,7 +48,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--judge-pool",
         required=True,
-        help='Comma-separated judge models, e.g. "opus,gpt-5.3-codex,gemini-3-pro"',
+        help='Comma-separated judge models, e.g. "opus,chatgpt-5.4,gemini-3-pro"',
     )
     parser.add_argument(
         "--seed", type=int, default=42, help="Random seed for reproducibility"

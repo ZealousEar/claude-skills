@@ -3,27 +3,39 @@
     "channels": {
       "graph_explorer": {
         "model": "opus",
-        "weight": 0.30,
+        "weight": 0.25,
         "prompt": "solver_structural_hole_explorer.md",
         "description": "Concept-pair recombination from structural holes"
       },
       "analogy_transfer": {
-        "model": "gpt-5.3-codex",
-        "weight": 0.25,
+        "model": "chatgpt-5.4",
+        "weight": 0.20,
         "prompt": "solver_analogy_transfer.md",
         "description": "Cross-domain method import into finance"
       },
       "exploit_refiner": {
         "model": "gpt-5.2",
-        "weight": 0.25,
+        "weight": 0.20,
         "prompt": "solver_exploit_refiner.md",
         "description": "Sharpen promising ideas addressing gate failures"
       },
       "constraint_injection": {
         "model": "kimi-2.5",
-        "weight": 0.20,
+        "weight": 0.10,
         "prompt": "solver_identification_engineer.md",
         "description": "Force underused skill/method constraints"
+      },
+      "fast_explorer": {
+        "model": "gemini-3-flash",
+        "weight": 0.15,
+        "prompt": "solver_structural_hole_explorer.md",
+        "description": "Grounded search exploration via Gemini Flash"
+      },
+      "budget_diversity": {
+        "model": "glm-5",
+        "weight": 0.10,
+        "prompt": "solver_analogy_transfer.md",
+        "description": "Cheap cross-domain transfer via GLM-5"
       }
     },
     "ideas_per_channel": 10,
@@ -66,7 +78,7 @@
   },
   "tournament": {
     "rounds": 6,
-    "judge_pool": ["opus", "gpt-5.3-codex", "gpt-5.2", "gemini-3-pro", "kimi-2.5"],
+    "judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
     "max_same_provider_per_match": 1,
     "position_swap_fraction": 0.3,
     "judge_schedule": "judging_schedule.json",
@@ -90,7 +102,7 @@
     "free_mad_style": true,
     "bracket": "round_robin",
     "bracket_star_threshold": 7,
-    "verifier_models": ["opus", "gpt-5.3-codex"],
+    "verifier_models": ["opus", "chatgpt-5.4", "gemini-3-pro"],
     "use_aristotle": false
   },
   "portfolio": {

@@ -25,8 +25,8 @@ import time
 # Defaults
 # ---------------------------------------------------------------------------
 
-VAULT_ROOT = os.environ.get("VAULT_ROOT", os.getcwd())
-DEFAULT_ENV = os.environ.get("MATHPIX_ENV", os.path.join(VAULT_ROOT, ".credentials", "dissertation-research", ".env"))
+VAULT_ROOT = "/Users/farhad/Code/Agentic Obsidian Vault/Agentic"
+DEFAULT_ENV = os.path.join(VAULT_ROOT, ".credentials", "dissertation-research", ".env")
 MATHPIX_BASE = "https://api.mathpix.com/v3/pdf"
 POLL_INTERVAL = 5   # seconds
 POLL_TIMEOUT = 300   # seconds

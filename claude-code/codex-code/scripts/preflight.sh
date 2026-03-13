@@ -21,7 +21,7 @@
 
 set -uo pipefail
 
-MODEL="gpt-5.3-codex"
+MODEL="chatgpt-5.4"
 CHECK_GIT=false
 VERBOSE=false
 TEMP_DIR="/tmp"
@@ -101,9 +101,32 @@ else
     fi
 fi
 
-# 3. Check model availability (lightweight — just verify no immediate rejection)
-log "  Checking model $MODEL availability..."
-check_pass "Model configured: $MODEL"
+# 3. Verify model actually served (not just requested)
+# Uses RUST_LOG trace to inspect the actual model name in SSE responses.
+# Technique from: https://gist.github.com/banteg/0ea5484d58e80b8223fcba64bd0d29db
+log "  Verifying model $MODEL is actually served (not silently swapped)..."
+TRACE_FILE="/tmp/codex_model_verify_$$.txt"
+RUST_LOG="codex_api::sse::responses=trace" \
+    codex exec \
+        --skip-git-repo-check \
+        -s read-only \
+        -m "$MODEL" \
+        'Say exactly: "preflight check"' \
+        1>/dev/null 2>"$TRACE_FILE" || true
+ACTUAL_MODELS=$(grep -oE '"model":"[^"]+"' "$TRACE_FILE" 2>/dev/null | sed 's/"model":"//;s/"//' | sort -u | tr '\n' ',' | sed 's/,$//')
+rm -f "$TRACE_FILE"
+
+if [[ -z "$ACTUAL_MODELS" ]]; then
+    check_warn "Could not verify model (trace logs empty — CLI may have changed). Requested: $MODEL"
+elif [[ "$ACTUAL_MODELS" == "$MODEL" ]]; then
+    check_pass "Model verified: requested $MODEL, served $MODEL"
+else
+    check_fail "MODEL MISMATCH: requested $MODEL, actually served $ACTUAL_MODELS"
+    echo ""
+    echo "The API is silently substituting a different model."
+    echo "Check https://status.openai.com or try again later."
+    exit 3
+fi
 
 # 4. Git checks (optional)
 if $CHECK_GIT; then

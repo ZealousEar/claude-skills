@@ -206,6 +206,7 @@ def resolve_model(model_name: str, settings: dict) -> dict:
         "thinking": model_cfg.get("thinking"),
         "reasoning": model_cfg.get("reasoning"),
         "grounding": model_cfg.get("grounding"),
+        "codex_config": model_cfg.get("codex_config"),
     }
 
 
@@ -366,12 +367,14 @@ def call_codex(
     system: str | None = None,
     timeout: int = DEFAULT_CLI_TIMEOUT,
     reasoning_effort: str | None = None,
+    codex_config: dict | None = None,
 ) -> str:
     """Call an OpenAI model via the locally installed Codex CLI.
 
     Uses `codex exec` in non-interactive mode. Requires Codex CLI to be
     installed and authenticated (e.g., via `codex login`).
     No API key needed — Codex uses its own stored credentials.
+    codex_config: optional dict of -c key=value overrides (e.g. model_context_window for 1M context).
     """
     codex_bin = shutil.which("codex")
     if not codex_bin:
@@ -405,6 +408,12 @@ def call_codex(
         ]
         if reasoning_effort:
             cmd.extend(["-c", f'reasoning_effort="{reasoning_effort}"'])
+        # Apply codex_config overrides (e.g. model_context_window for 1M context)
+        if codex_config:
+            for key, value in codex_config.items():
+                if key.startswith("_"):
+                    continue  # skip metadata keys like _note
+                cmd.extend(["-c", f"{key}={value}"])
         # Pass prompt via stdin to handle arbitrarily long prompts
         result = subprocess.run(
             cmd,
@@ -654,7 +663,7 @@ def call_model(
     if api_style in ("codex", "kimi-cli", "claude-cli"):
         try:
             if api_style == "codex":
-                return call_codex(api_model, prompt, system, timeout=timeout, reasoning_effort=model_config.get("reasoning_effort"))
+                return call_codex(api_model, prompt, system, timeout=timeout, reasoning_effort=model_config.get("reasoning_effort"), codex_config=model_config.get("codex_config"))
             elif api_style == "kimi-cli":
                 return call_kimi(api_model, prompt, system, timeout=timeout, thinking=bool(model_config.get("thinking")))
             else:

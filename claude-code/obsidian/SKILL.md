@@ -72,7 +72,7 @@ User: /obsidian [command] [args]
 
 ## Vault Details
 
-- **Path**: `/path/to/vault/`
+- **Path**: `/Users/farhad/Code/Agentic Obsidian Vault/Agentic/`
 - **PARA folders**: 00 Inbox, 01 Projects, 02 Areas, 03 Resources, 09 Systems, 10 School, 99 Archive
 - **Templates** (12): in `09 Systems/Templates/` — Daily Note, Weekly Review, Project, Research Note, Literature Note, Company Research, Job Application, Learning Plan, Networking Log, Quant Prep, Skill Log, Template Index
 - **Installed plugins**: terminal, calendar, templater-obsidian

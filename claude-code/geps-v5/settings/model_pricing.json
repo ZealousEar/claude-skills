@@ -1,0 +1,72 @@
+{
+  "_description": "Centralized pricing for all models used by GEPS v5 benchmark and continuous runner. Prices in USD per 1M tokens. CLI models (Claude, GPT, Kimi) are subscription-based with high limits — treat as effectively unlimited for cost estimation purposes. Only OpenRouter-only models (glm-5, minimax-m2.5) and Google API models incur per-token costs.",
+
+  "_routing_philosophy": "CLI-first: always prefer native CLIs (claude, codex, kimi) over API routes. These are subscription-based — no marginal cost per token, high rate limits. Never downgrade model quality to save a few dollars on API costs. Use /CodexCode swarm for token-intensive grunt work. Google API for Gemini models (grounding + thinking support). OpenRouter only for models without CLI access (glm-5, minimax-m2.5).",
+
+  "models": {
+    "opus": {
+      "openrouter_id": "anthropic/claude-opus-4-6",
+      "primary_route": "claude-cli",
+      "cost_model": "subscription",
+      "input_per_1m": 15.00,
+      "output_per_1m": 75.00,
+      "_note": "Subscription via Claude CLI. Per-token prices only apply if OpenRouter fallback is used."
+    },
+    "chatgpt-5.4": {
+      "openrouter_id": "openai/gpt-5.3",
+      "primary_route": "codex",
+      "cost_model": "subscription",
+      "input_per_1m": 2.00,
+      "output_per_1m": 8.00,
+      "_note": "Subscription via Codex CLI (reasoning_effort=xhigh). Best for /CodexCode swarm token-intensive tasks. Per-token prices only apply if OpenRouter fallback is used."
+    },
+    "gpt-5.2": {
+      "openrouter_id": "openai/gpt-5.2",
+      "primary_route": "codex",
+      "cost_model": "subscription",
+      "input_per_1m": 3.00,
+      "output_per_1m": 12.00,
+      "_note": "Subscription via Codex CLI (reasoning_effort=xhigh). Per-token prices only apply if OpenRouter fallback is used."
+    },
+    "gemini-3-pro": {
+      "openrouter_id": "google/gemini-3-pro-preview",
+      "primary_route": "google",
+      "cost_model": "api",
+      "input_per_1m": 1.25,
+      "output_per_1m": 10.00,
+      "_note": "Google API primary (thinkingLevel=HIGH). OpenRouter fallback."
+    },
+    "gemini-3-flash": {
+      "openrouter_id": "google/gemini-3-flash-preview",
+      "primary_route": "google",
+      "cost_model": "api",
+      "input_per_1m": 0.50,
+      "output_per_1m": 3.00,
+      "_note": "Google API primary (thinkingLevel=HIGH + grounding). OpenRouter fallback without grounding."
+    },
+    "kimi-2.5": {
+      "openrouter_id": "moonshot/kimi-2.5",
+      "primary_route": "kimi-cli",
+      "cost_model": "subscription",
+      "input_per_1m": 1.00,
+      "output_per_1m": 5.00,
+      "_note": "Subscription via Kimi CLI (--thinking flag). Per-token prices only apply if OpenRouter/Moonshot fallback is used."
+    },
+    "glm-5": {
+      "openrouter_id": "z-ai/glm-5",
+      "primary_route": "openrouter",
+      "cost_model": "api",
+      "input_per_1m": 0.75,
+      "output_per_1m": 2.55,
+      "_note": "OpenRouter only. No CLI available. Built-in <think> reasoning."
+    },
+    "minimax-m2.5": {
+      "openrouter_id": "minimax/minimax-m2.5",
+      "primary_route": "openrouter",
+      "cost_model": "api",
+      "input_per_1m": 0.20,
+      "output_per_1m": 1.00,
+      "_note": "OpenRouter only. No CLI available. Built-in <think> reasoning."
+    }
+  }
+}

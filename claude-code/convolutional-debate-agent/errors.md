@@ -13,7 +13,7 @@ Persistent log of known errors, root causes, and solutions. Consult before debug
 ### Official ChatGPT-account models (source: developers.openai.com/codex/models/)
 | Model ID | Notes |
 |---|---|
-| `gpt-5.3-codex` | Most capable agentic coding model (recommended) |
+| `chatgpt-5.4` | Most capable agentic coding model (recommended) |
 | `gpt-5.2-codex` | Advanced coding model for real-world engineering |
 | `gpt-5.1-codex-mini` | Smaller, cost-effective variant |
 | `gpt-5.1-codex-max` | Optimized for long-horizon agentic tasks |
@@ -38,7 +38,7 @@ Persistent log of known errors, root causes, and solutions. Consult before debug
 | `gpt-4.1` | Not supported with ChatGPT account |
 
 ### Solution Applied (v4, 2026-02-09):
-- Removed all aliases. Models now use direct IDs: `gpt-5.3-codex`, `gpt-5.2`
+- Removed all aliases. Models now use direct IDs: `chatgpt-5.4`, `gpt-5.2`
 - `gpt-5.2` uses `reasoning_effort=high` via codex CLI (`-c reasoning_effort="high"`)
 - "high"/"xhigh" in the interactive Codex CLI are NOT separate models — they're the base `gpt-5.2` model with a reasoning effort parameter
 - The model self-reporting "reasoning effort: low" is unreliable — the actual effort is set by the CLI, not the model
@@ -92,7 +92,7 @@ Persistent log of known errors, root causes, and solutions. Consult before debug
 
 ## Codex CLI — Timeout Cascade in Parallel Batch (2026-02-25)
 
-**Problem:** During a `/debate` run with 30k token budget, Codex CLI timed out at 300s. Claude Code's parallel batch semantics cancelled ALL sibling Bash calls in the same batch. The orchestrator fell back to Task tool (Claude only), so D2 (gpt-5.2) and D3 (gpt-5.3-codex) both ran as Opus/Sonnet instead of their intended models — losing multi-model independence.
+**Problem:** During a `/debate` run with 30k token budget, Codex CLI timed out at 300s. Claude Code's parallel batch semantics cancelled ALL sibling Bash calls in the same batch. The orchestrator fell back to Task tool (Claude only), so D2 (gpt-5.2) and D3 (chatgpt-5.4) both ran as Opus/Sonnet instead of their intended models — losing multi-model independence.
 
 **Root causes:**
 1. CLI timeout default (300s) too low for high token budgets (30k tokens = long generation)
@@ -106,7 +106,7 @@ Persistent log of known errors, root causes, and solutions. Consult before debug
 3. **Batch isolation in protocol:** `debate.md` Steps 3 and 4 now mandate each external-model Bash call as a **separate Bash invocation** (separate tool call). This prevents cascade cancellation.
 4. **Fallback detection:** Step 5 now checks stderr for fallback warnings and notes them in the debate summary.
 
-**Key detail:** The auto-fallback preserves the model family (e.g., gpt-5.3-codex via codex → openai/gpt-5.3 via OpenRouter). The underlying model is the same, just accessed via API instead of CLI.
+**Key detail:** The auto-fallback preserves the model family (e.g., chatgpt-5.4 via codex → openai/gpt-5.3 via OpenRouter). The underlying model is the same, just accessed via API instead of CLI.
 
 ---
 

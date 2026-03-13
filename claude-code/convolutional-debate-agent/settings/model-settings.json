@@ -1,5 +1,5 @@
 {
-  "active_profile": "cli_primary",
+  "active_profile": "grade_loop",
 
   "token_budgets": {
     "small":  5000,
@@ -20,32 +20,30 @@
 
   "models": {
     "opus": {
-      "route": "claude-cli",
+      "route": "claude-code",
       "reasoning": {"max_tokens": 16000},
       "routes": {
-        "claude-cli":   { "api_model": "opus" },
         "claude-code":  { "task_model": "opus" },
+        "claude-cli":   { "api_model": "opus" },
         "openrouter":   { "api_model": "anthropic/claude-opus-4-6" }
       },
-      "_note": "Claude Opus 4.6. Primary route: Claude CLI (subscription, no per-token cost). Extended thinking is inherent. OpenRouter fallback available."
+      "_note": "Claude Opus 4.6. Primary route: Claude Code Task tool (subscription, no per-token cost). MUST use Task tool — claude-cli spawns a nested CLI which fails inside Claude Code. Extended thinking is inherent. OpenRouter fallback available."
     },
-    "sonnet": {
-      "route": "claude-code",
-      "routes": {
-        "claude-cli":   { "api_model": "sonnet" },
-        "claude-code":  { "task_model": "sonnet" },
-        "openrouter":   { "api_model": "anthropic/claude-sonnet-4-5-20250929" }
+    "chatgpt-5.4": {
+      "route": "codex",
+      "context_length": 1050000,
+      "reasoning": {"effort": "xhigh"},
+      "reasoning_effort": "xhigh",
+      "codex_config": {
+        "model_context_window": 1000000,
+        "model_auto_compact_token_limit": 900000,
+        "stream_idle_timeout_ms": 300000
       },
-      "_note": "Claude Sonnet 4.5. Primary route: Claude Code Task tool (subscription). OpenRouter fallback available."
-    },
-    "haiku": {
-      "route": "claude-code",
       "routes": {
-        "claude-cli":   { "api_model": "haiku" },
-        "claude-code":  { "task_model": "haiku" },
-        "openrouter":   { "api_model": "anthropic/claude-haiku-4-5-20251001" }
+        "codex":        { "api_model": "chatgpt-5.4" },
+        "openrouter":   { "api_model": "openai/chatgpt-5.4" }
       },
-      "_note": "Claude Haiku 4.5. Primary route: Claude Code Task tool (subscription). OpenRouter fallback available."
+      "_note": "ChatGPT 5.4. Latest flagship coding model, 1M context window. Primary route: Codex CLI (subscription, reasoning_effort=xhigh). Codex CLI defaults cap at ~272K — codex_config overrides enable full 1M. OpenRouter fallback."
     },
     "gpt-5.3-codex": {
       "route": "codex",
@@ -55,7 +53,7 @@
         "codex":        { "api_model": "gpt-5.3-codex" },
         "openrouter":   { "api_model": "openai/gpt-5.3" }
       },
-      "_note": "GPT-5.3 Codex. Primary route: Codex CLI (subscription, reasoning_effort=xhigh). Best for token-intensive generation and grunt work via /CodexCode swarm. OpenRouter fallback with reasoning.effort=xhigh."
+      "_note": "GPT-5.3 Codex. Previous flagship. Superseded by chatgpt-5.4. Kept for historical model-history.json compatibility."
     },
     "gpt-5.2": {
       "route": "codex",
@@ -76,6 +74,16 @@
         "openrouter":   { "api_model": "google/gemini-3-pro-preview" }
       },
       "_note": "Gemini 3 Pro. Primary route: Google API (thinkingLevel=HIGH). OpenRouter fallback with reasoning.effort=xhigh."
+    },
+    "gemini-3.1-pro": {
+      "route": "google",
+      "thinking_level": "HIGH",
+      "reasoning": {"effort": "xhigh"},
+      "routes": {
+        "google":       { "api_model": "gemini-3.1-pro-preview" },
+        "openrouter":   { "api_model": "google/gemini-3.1-pro-preview" }
+      },
+      "_note": "Gemini 3.1 Pro. 2.5x reasoning improvement over 3.0. Primary: Google API."
     },
     "gemini-3-flash": {
       "route": "google",
@@ -124,20 +132,20 @@
   "profiles": {
     "cli_primary": {
       "_description": "CLI-first: Claude/GPT/Kimi via native CLIs (subscription — no per-token cost), Gemini via Google API, GLM-5/MiniMax via OpenRouter. 10 models, max reasoning on all.",
-      "solver_models": ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro", "glm-5", "minimax-m2.5"],
-      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "solver_models": ["opus", "chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro", "glm-5", "minimax-m2.5"],
+      "debater_models": ["opus", "gpt-5.2", "chatgpt-5.4", "opus"],
       "synthesizer_model": "opus"
     },
     "multi_model": {
       "_description": "Maximum diversity — each solver is a different provider, debaters standardized at 2xOpus + 2xGPT",
-      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
-      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "solver_models":  ["opus", "chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
+      "debater_models": ["opus", "gpt-5.2", "chatgpt-5.4", "opus"],
       "synthesizer_model": "opus"
     },
     "multi_model_full": {
       "_description": "Different providers for solvers, standardized 2xOpus + 2xGPT debaters",
-      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
-      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "solver_models":  ["opus", "chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
+      "debater_models": ["opus", "gpt-5.2", "chatgpt-5.4", "opus"],
       "synthesizer_model": "opus"
     },
     "balanced": {
@@ -147,22 +155,28 @@
       "synthesizer_model": "opus"
     },
     "cost_optimized": {
-      "_description": "Cheapest — sonnet solvers, haiku debaters",
-      "solver_models":  ["sonnet", "sonnet", "sonnet", "sonnet", "sonnet"],
-      "debater_models": ["haiku", "haiku", "haiku", "haiku"],
-      "synthesizer_model": "sonnet"
+      "_description": "Cheapest — gemini-3-flash solvers, gemini-3-flash debaters",
+      "solver_models":  ["gemini-3-flash", "gemini-3-flash", "gemini-3-flash", "gemini-3-flash", "gemini-3-flash"],
+      "debater_models": ["gemini-3-flash", "gemini-3-flash", "gemini-3-flash", "gemini-3-flash"],
+      "synthesizer_model": "opus"
     },
     "max_quality": {
       "_description": "Best from each provider — 2xOpus + 2xGPT debaters for standardized intelligence",
-      "solver_models":  ["opus", "gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
-      "debater_models": ["opus", "gpt-5.2", "gpt-5.3-codex", "opus"],
+      "solver_models":  ["opus", "chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
+      "debater_models": ["opus", "gpt-5.2", "chatgpt-5.4", "opus"],
+      "synthesizer_model": "opus"
+    },
+    "grade_loop": {
+      "_description": "Grade improvement loop: full model pool with Gemini 3.1 Pro for iterative report grading",
+      "solver_models": ["opus", "chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
+      "debater_models": ["opus", "gemini-3.1-pro", "chatgpt-5.4", "opus"],
       "synthesizer_model": "opus"
     },
     "budget": {
       "_description": "Zero Claude subagents — all calls via Codex/Kimi CLI or OpenRouter API. Only the main Opus orchestrator runs Claude. Saves Claude subagent costs while maintaining multi-model diversity.",
-      "solver_models": ["gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro", "glm-5"],
-      "debater_models": ["gpt-5.3-codex", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
-      "synthesizer_model": "gpt-5.3-codex"
+      "solver_models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro", "glm-5"],
+      "debater_models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
+      "synthesizer_model": "chatgpt-5.4"
     }
   },
 
@@ -170,7 +184,7 @@
     "_description": "Aristotle formal verification layer (Step 3.5). Runs IN PARALLEL with debaters — adds zero latency to critical path.",
     "enabled": true,
     "formalizer_model": "opus",
-    "budget_formalizer_model": "gpt-5.3-codex",
+    "budget_formalizer_model": "chatgpt-5.4",
     "verifier": "aristotle",
     "max_claims_per_candidate": 1,
     "polling_interval_seconds": 10,

@@ -2,6 +2,43 @@
 
 A multi-stage research idea generation and evaluation pipeline that replaces debate-as-core with **search + ranking + calibration**.
 
+## Step 0: Model Configuration Prompt
+
+**Before executing the pipeline**, check whether the user's message already specifies model preferences (e.g., "budget mode", "opus for generators, gemini for judges"). If it does, apply those preferences directly and skip this prompt. If it does NOT, present the following using AskUserQuestion:
+
+```
+Model configuration for /geps:
+
+GENERATOR MODELS (Stage B — idea generation, 4 channels):
+  1. all available — opus, chatgpt-5.4, gpt-5.2, gemini-3-pro, kimi-2.5, glm-5, minimax-m2.5 (default)
+  2. top-tier only — opus, chatgpt-5.4, gemini-3-pro
+  3. custom — specify which models to use
+
+JUDGE POOL (Stage D — pairwise tournament):
+  Default: opus, chatgpt-5.4, gpt-5.2, gemini-3-pro, kimi-2.5, glm-5, minimax-m2.5
+  (enter custom list to override, or press Enter for default)
+
+REASONING EFFORT (optional — press Enter for defaults):
+  Claude (opus):      thinking budget → [16k tokens (default) / 32k / 64k / 128k]
+  ChatGPT (5.4/5.2):  reasoning_effort → [xhigh (default) / high / medium / low]
+
+CONTEXT WINDOW (optional — press Enter for defaults):
+  [default / specify tokens / auto (orchestrator decides based on corpus size)]
+
+Enter choice (e.g. "1", "top-tier judges=opus,gemini-3-pro,chatgpt-5.4", "custom: generators=opus,kimi-2.5"):
+```
+
+**Parsing the response:**
+- If "all available" or "1" → use `all_models` from gib-config.json
+- If "top-tier only" → filter to opus, chatgpt-5.4, gemini-3-pro
+- If "custom" → parse model lists for generators and/or judges
+- If judge pool specified → override `default_judge_pool` in gib-config.json for this run
+- If reasoning effort specified → pass overrides to `llm_runner.py` calls
+- If context window specified → apply as runtime override; if "auto", scale based on literature corpus size
+- If user presses Enter or says "defaults" → use existing gib-config.json and model-settings.json
+
+---
+
 ## Architecture
 
 7-stage pipeline:

@@ -6,6 +6,7 @@ Sources:
   2. Epoch AI — benchmark scores (GPQA, MMLU, MATH, SWE-bench, etc.)
   3. OpenRouter — pricing, context length, model metadata
   4. Artificial Analysis — Intelligence Index, speed metrics (TPS/TTFT)
+  5. Vals.ai — industry benchmarks (finance, legal, healthcare, coding agents)
 
 Quality methodology informed by BetterBench (arxiv:2411.12990, NeurIPS 2024).
 
@@ -19,12 +20,14 @@ Usage:
     python3 fetch_benchmarks.py --source epoch       # only Epoch AI
     python3 fetch_benchmarks.py --source openrouter  # only OpenRouter
     python3 fetch_benchmarks.py --source aa          # only Artificial Analysis
+    python3 fetch_benchmarks.py --source vals        # only Vals.ai (reads vals.json)
     python3 fetch_benchmarks.py --list               # show local rankings table
     python3 fetch_benchmarks.py --list --top 50      # show top 50
     python3 fetch_benchmarks.py --model opus         # show benchmarks for a model
     python3 fetch_benchmarks.py --json               # output as JSON
 
-Stdlib only — no pip dependencies.
+Note: Vals.ai requires pre-scraping with scrape_vals.py (Playwright headless).
+      Other sources are stdlib-only — no pip dependencies.
 """
 
 from __future__ import annotations
@@ -50,6 +53,7 @@ SKILL_DIR = Path.home() / ".claude" / "skills" / "llm"
 BENCHMARKS_DIR = SKILL_DIR / "benchmarks"
 RANKINGS_PATH = BENCHMARKS_DIR / "rankings.csv"
 META_PATH = BENCHMARKS_DIR / "_meta.json"
+VALS_PATH = BENCHMARKS_DIR / "vals.json"
 REGISTRY_PATH = SKILL_DIR / "settings" / "model-registry.json"
 
 DEBATE_AGENT_ENV = (
@@ -80,6 +84,16 @@ COLUMNS = [
     "context",            # Context window (tokens)
     "price_in",           # Input price ($/1M tokens)
     "price_out",          # Output price ($/1M tokens)
+    # --- Vals.ai benchmarks (scraped via scrape_vals.py) ---
+    "vals_index",         # Vals Index composite (finance/law/coding weighted by GDP, %)
+    "vals_finance",       # CorpFin v2 — credit agreement understanding (%)
+    "vals_fin_agent",     # Finance Agent — financial analyst tasks (%)
+    "vals_legal",         # CaseLaw v2 — legal QA (%)
+    "vals_medical",       # MedQA — medical question answering (%)
+    "vals_lcb",           # LiveCodeBench — Vals implementation (%)
+    "vals_swe",           # SWE-bench — Vals implementation (%)
+    "vals_terminal",      # Terminal-Bench 2.0 — terminal tasks (%)
+    "vals_aime",          # AIME — national math exam (%)
     "benchmark_quality",  # BetterBench-informed quality tier: high/medium/low
     "registry_name",      # Matching name in model-registry.json (empty if none)
     "sources",            # Comma-separated list of data sources
@@ -109,22 +123,10 @@ _TIER1_ALIASES: dict[str, list[str]] = {
         # Artificial Analysis names
         "Claude Opus 4.6",
     ],
-    "sonnet": [
-        "sonnet", "claude-sonnet-4-6", "claude sonnet 4.6",
-        "anthropic/claude-sonnet-4.6", "claude-sonnet-4.6",
-        # Epoch AI model version names (4.6 with context variants)
-        "claude-sonnet-4-6_32k", "claude-sonnet-4-6_16k",
-        # Arena (arena-catalog) names
-        "claude-sonnet-4-6-thinking-32k", "claude-sonnet-4-6-thinking-16k",
+    "chatgpt-5.4": [
+        "chatgpt-5.4", "openai/chatgpt-5.4",
         # Artificial Analysis names
-        "Claude Sonnet 4.6",
-    ],
-    "haiku": [
-        "haiku", "claude-haiku-4-5", "claude haiku 4.5",
-        "anthropic/claude-haiku-4-5-20251001", "anthropic/claude-haiku-4.5",
-        "claude-haiku-4.5", "claude-haiku-4-5-20251001",
-        # Artificial Analysis names
-        "Claude Haiku 4.5",
+        "ChatGPT-5.4", "ChatGPT 5.4",
     ],
     "gpt-5.3-codex": [
         "gpt-5.3-codex", "gpt-5.3", "openai/gpt-5.3",
@@ -598,6 +600,109 @@ def fetch_artificial_analysis() -> dict[str, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Vals.ai (reads pre-scraped vals.json from scrape_vals.py)
+# ---------------------------------------------------------------------------
+
+# Map vals.ai benchmark slugs to our CSV columns
+_VALS_COLUMN_MAP: dict[str, str] = {
+    "vals_index": "vals_index",
+    "corp_fin_v2": "vals_finance",
+    "finance_agent": "vals_fin_agent",
+    "case_law_v2": "vals_legal",
+    "medqa": "vals_medical",
+    "lcb": "vals_lcb",
+    "swebench": "vals_swe",
+    "terminal-bench-2": "vals_terminal",
+    "aime": "vals_aime",
+}
+
+# Vals.ai benchmarks that can supplement existing columns (if empty)
+_VALS_SUPPLEMENT_MAP: dict[str, str] = {
+    "gpqa": "gpqa",
+    "mmlu_pro": "mmlu",
+    "lcb": "coding",
+    "aime": "math",
+    "swebench": "swe_bench",
+}
+
+
+def fetch_vals_ai() -> dict[str, dict]:
+    """Load vals.ai benchmark data from pre-scraped vals.json.
+
+    Run scrape_vals.py first to populate vals.json:
+        ~/.claude/skills/llm/scripts/.venv/bin/python3 scrape_vals.py
+
+    Returns dict keyed by canonical model name.
+    """
+    print("  Vals.ai (local)...", end=" ", flush=True)
+
+    if not VALS_PATH.exists():
+        print("skipped (no vals.json — run scrape_vals.py first)")
+        return {}
+
+    try:
+        data = json.loads(VALS_PATH.read_text())
+        models_data = data.get("models", {})
+        results: dict[str, dict] = {}
+
+        for norm_name, mdata in models_data.items():
+            model_name = mdata.get("model", norm_name)
+            benchmarks = mdata.get("benchmarks", {})
+
+            # Use registry name as canonical key if available (ensures merge
+            # with other sources that use the same registry aliases)
+            reg_name = mdata.get("registry_name", "")
+            if reg_name:
+                canon = reg_name
+            else:
+                canon = _canonical(model_name)
+
+            row: dict[str, str] = {
+                "model": model_name,
+                "provider": "",
+                "_source": "vals",
+            }
+
+            # Map vals benchmarks to our CSV columns
+            for slug, col in _VALS_COLUMN_MAP.items():
+                bm = benchmarks.get(slug, {})
+                accuracy = bm.get("accuracy")
+                if accuracy is not None:
+                    row[col] = f"{float(accuracy):.1f}"
+
+            # Supplement existing columns with vals data (only fills empty cells)
+            for slug, col in _VALS_SUPPLEMENT_MAP.items():
+                bm = benchmarks.get(slug, {})
+                accuracy = bm.get("accuracy")
+                if accuracy is not None:
+                    row[f"_vals_supplement_{col}"] = f"{float(accuracy):.1f}"
+
+            # Multiple vals.ai models may share a registry name (e.g., different
+            # versions or thinking/non-thinking variants). Keep the one with
+            # more benchmark data, or higher vals_index score.
+            if canon in results:
+                existing_bm_count = sum(1 for k, v in results[canon].items()
+                                        if k.startswith("vals_") and v)
+                new_bm_count = sum(1 for k, v in row.items()
+                                   if k.startswith("vals_") and v)
+                if new_bm_count <= existing_bm_count:
+                    continue  # keep existing
+
+            results[canon] = row
+
+        # Report stats
+        meta = data.get("meta", {})
+        fetched = meta.get("fetched", "unknown")
+        n_benchmarks = len(meta.get("benchmarks", {}))
+        print(f"{len(results)} models from {n_benchmarks} benchmarks (scraped: {fetched[:10]})")
+        return results
+
+    except Exception as e:
+        print(f"failed ({e})")
+        return {}
+
+
+# ---------------------------------------------------------------------------
 # BetterBench quality tiers (arxiv:2411.12990)
 # ---------------------------------------------------------------------------
 
@@ -620,6 +725,8 @@ def _compute_benchmark_quality(row: dict) -> str:
     if row.get("coding"):
         signals += 1
     if row.get("aa_index"):
+        signals += 1
+    if row.get("vals_index"):
         signals += 1
 
     # "high" requires GPQA (highest BetterBench score) + at least 2 others
@@ -652,6 +759,13 @@ def merge_sources(*sources: dict[str, dict]) -> list[dict]:
                 val = data.get(key, "")
                 if val and not row.get(key):
                     row[key] = str(val)
+
+            # Apply vals supplemental data (fills empty cells in shared columns)
+            for key, val in data.items():
+                if key.startswith("_vals_supplement_") and val:
+                    target_col = key[len("_vals_supplement_"):]
+                    if target_col in COLUMNS and not row.get(target_col):
+                        row[target_col] = str(val)
 
             # Track sources
             src = data.get("_source", "")
@@ -733,9 +847,11 @@ def print_rankings(
     rows = data[:top]
 
     print(f"\n{'#':>3}  {'Model':30s}  {'Elo':>6}  {'GPQA':>5}  {'MMLU':>5}  "
-          f"{'Code':>5}  {'Math':>5}  {'AA':>5}  {'Ctx':>7}  {'$/M in':>8}  {'Q':>3}")
+          f"{'Code':>5}  {'Math':>5}  {'AA':>5}  {'Vals':>5}  {'VFin':>5}  "
+          f"{'Ctx':>7}  {'$/M in':>8}  {'Q':>3}")
     print(f"{'─' * 3}  {'─' * 30}  {'─' * 6}  {'─' * 5}  {'─' * 5}  "
-          f"{'─' * 5}  {'─' * 5}  {'─' * 5}  {'─' * 7}  {'─' * 8}  {'─' * 3}")
+          f"{'─' * 5}  {'─' * 5}  {'─' * 5}  {'─' * 5}  {'─' * 5}  "
+          f"{'─' * 7}  {'─' * 8}  {'─' * 3}")
 
     for i, r in enumerate(rows, 1):
         name = r.get("model", "?")[:30]
@@ -745,6 +861,8 @@ def print_rankings(
         code = r.get("coding", "")[:5]
         math_s = r.get("math", "")[:5]
         aa = r.get("aa_index", "")[:5]
+        vi = r.get("vals_index", "")[:5]
+        vfin = r.get("vals_finance", "")[:5]
 
         ctx = r.get("context", "")
         if ctx:
@@ -765,7 +883,8 @@ def print_rankings(
         q = bq[0].upper() if bq else ""
 
         print(f"{i:3d}  {name:30s}  {elo:>6}  {gpqa:>5}  {mmlu:>5}  "
-              f"{code:>5}  {math_s:>5}  {aa:>5}  {ctx:>7}  {price:>8}  {q:>3}")
+              f"{code:>5}  {math_s:>5}  {aa:>5}  {vi:>5}  {vfin:>5}  "
+              f"{ctx:>7}  {price:>8}  {q:>3}")
 
     total = len(data)
     if total > top:
@@ -785,13 +904,14 @@ def main() -> None:
   %(prog)s                          # fetch all sources, update rankings
   %(prog)s --source arena           # fetch only Chatbot Arena
   %(prog)s --source aa              # fetch only Artificial Analysis
+  %(prog)s --source vals            # merge vals.ai data (run scrape_vals.py first)
   %(prog)s --list                   # show local rankings table
   %(prog)s --list --top 50          # show top 50
   %(prog)s --model opus             # show benchmarks for opus
   %(prog)s --json                   # output as JSON
 """,
     )
-    parser.add_argument("--source", choices=["arena", "epoch", "openrouter", "aa", "all"],
+    parser.add_argument("--source", choices=["arena", "epoch", "openrouter", "aa", "vals", "all"],
                         default="all", help="Which source to fetch (default: all)")
     parser.add_argument("--list", action="store_true", help="Show local rankings (no fetch)")
     parser.add_argument("--model", help="Show benchmarks for a specific model (no fetch)")
@@ -853,6 +973,15 @@ def main() -> None:
         meta_sources["aa"] = {
             "status": "ok" if aa else ("skipped" if not _get_key("ARTIFICIAL_ANALYSIS_API_KEY") else "failed"),
             "models": len(aa), "fetched": now,
+        }
+
+    if args.source in ("vals", "all"):
+        vals = fetch_vals_ai()
+        if vals:
+            sources.append(vals)
+        meta_sources["vals"] = {
+            "status": "ok" if vals else ("skipped" if not VALS_PATH.exists() else "failed"),
+            "models": len(vals), "fetched": now,
         }
 
     if not any(sources):

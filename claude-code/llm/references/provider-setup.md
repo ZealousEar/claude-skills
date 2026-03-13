@@ -6,15 +6,15 @@ Authentication and setup instructions for each LLM provider supported by `/llm`.
 
 ### Claude CLI (Anthropic)
 
-**Models**: opus, sonnet, haiku
+**Models**: opus
 **Install**: `npm install -g @anthropic-ai/claude-code`
 **Auth**: `claude login` (opens browser for Anthropic account)
-**Verify**: `claude -p "Hello" --model sonnet --no-session-persistence`
+**Verify**: `claude -p "Hello" --model opus --no-session-persistence`
 **No API key needed** — uses your Claude subscription.
 
 ### Codex CLI (OpenAI)
 
-**Models**: gpt-5.3-codex, gpt-5.2
+**Models**: chatgpt-5.4, gpt-5.3-codex, gpt-5.2
 **Install**: `npm install -g @openai/codex`
 **Auth**: `codex login` (uses ChatGPT account)
 **Verify**: `codex exec -m gpt-5.2 --full-auto --skip-git-repo-check <<< "Say hello"`

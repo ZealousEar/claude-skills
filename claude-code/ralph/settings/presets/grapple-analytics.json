@@ -1,0 +1,52 @@
+{
+  "_description": "Grapple Law analytics preset — discovers funnel insights from production database via SQL execution",
+  "preset_name": "grapple-analytics",
+
+  "domain": "analytics",
+  "subdomain": "saas-funnel-optimization",
+
+  "lenses_override": "~/.claude/skills/ralph/references/grapple-lenses.yaml",
+  "schema_reference": "~/.claude/skills/ralph/references/grapple-schema.md",
+  "output_bank": "findings",
+
+  "sql_execution": true,
+  "db_name": "grapple",
+
+  "context": {
+    "company": "Grapple Law — AI-powered employment law platform. Free AI legal advice, 15% contingent fee on settlements.",
+    "funnel_stages": [
+      "1. Visitor (no DB record)",
+      "2. Registered (users.created_at)",
+      "3. First message (first session_messages row)",
+      "4. Engaged (5+ messages or 7-day return)",
+      "5. Case scored (system_type-based message with rating)",
+      "6. Plan selected (pending_plan_id or users_subscriptions created)",
+      "7. Agreement signed (users_subscriptions.status = active) — PRIMARY CONVERSION",
+      "8. First letter sent (outbound emails row)",
+      "9. Settlement achieved (external, manual)"
+    ],
+    "constraints": [
+      "GDPR: use only aggregated counts, never raw PII",
+      "Query timeout: 30 seconds per query",
+      "Max 5 SQL queries per iteration",
+      "Use aggregations (COUNT, AVG, percentile) not row-level scans",
+      "session_messages.message is JSONB in LangChain format: use message->>'content' for text, message->>'type' for sender (ai/human/system). Keys: content, type, metadata, response_metadata, additional_kwargs, tool_calls, invalid_tool_calls, llm_run_metadata",
+      "system_type ENUM values: 'email-inbound' (568 rows), 'ms-user-import-data' (84), 'user-info' (2298), NULL=regular chat (290472)",
+      "users_subscriptions.status ENUM: 'active', 'inactive', 'deleted', 'unpaid', 'past_due'",
+      "Row counts: users=1721, sessions=10670, session_messages=293422, emails=2436, users_subscriptions=1119",
+      "Actual table names: subscriptions_rels (subscription-capability join), users_roles, users_sessions (login sessions). Some tables from schema docs may not exist in dump."
+    ]
+  },
+
+  "prompt_template": {
+    "role": "You are a senior data analyst specializing in SaaS funnel optimization and user engagement analytics. You have deep expertise in PostgreSQL, cohort analysis, conversion modeling, and behavioral data science. You approach problems with scientific rigor and always ground insights in quantitative evidence.",
+    "task": "Analyze the Grapple Law database to discover actionable funnel insights.\n\n## Phase 1: Generate SQL Queries\n\nWrite 1-5 PostgreSQL queries that investigate the analytical question defined by your creative lens. Each query must:\n- Be wrapped in a ```sql code fence\n- Use only tables and columns from the schema reference\n- Return aggregated results (no SELECT * on large tables)\n- Complete within 30 seconds\n- Not expose raw PII (aggregate only)\n\n## Phase 2: Synthesize Findings\n\nAfter reviewing query results, provide your output in this exact JSON format:\n```json\n{\n  \"finding_title\": \"Concise descriptive title of the insight\",\n  \"finding_summary\": \"2-3 paragraph summary of what was discovered, with specific numbers\",\n  \"funnel_stages_affected\": [3, 4],\n  \"key_metrics\": {\"metric_name\": \"value with units\"},\n  \"sql_queries_used\": [\"SELECT ... (abbreviated)\"],\n  \"recommendation\": \"Specific, actionable recommendation for improving conversion\",\n  \"confidence\": \"high|medium|low\",\n  \"evidence_strength\": \"Description of what makes this finding reliable or uncertain\"\n}\n```\n\nIMPORTANT: Phase 1 output (SQL queries) and Phase 2 output (JSON finding) should both appear in your response. The SQL will be executed automatically and results fed back to you.",
+    "creative_lens_instruction": "Apply the following analytical lens to guide your investigation:\n\n{lens}\n\nLet this lens determine WHAT you investigate and HOW you query the data. Your queries should directly address the questions posed by the lens."
+  },
+
+  "output_parsing": {
+    "expected_format": "json",
+    "required_fields": ["finding_title", "finding_summary", "funnel_stages_affected", "key_metrics", "recommendation", "confidence"],
+    "optional_fields": ["sql_queries_used", "evidence_strength"]
+  }
+}

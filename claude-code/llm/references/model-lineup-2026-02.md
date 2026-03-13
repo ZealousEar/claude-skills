@@ -40,10 +40,11 @@ Retired: Sonnet 3.7, Haiku 3.5 — API returns errors.
 | GPT-5.1 | `gpt-5.1` | Nov 2025 | Available |
 | GPT-5.2 | `gpt-5.2` | Dec 11, 2025 | **Current flagship** (general) |
 | GPT-5.2-Codex | Codex CLI | Jan 14, 2026 | Available (coding) |
-| **GPT-5.3-Codex** | Codex CLI only | Feb 5, 2026 | **Current flagship** (coding) |
+| GPT-5.3-Codex | Codex CLI only | Feb 5, 2026 | Superseded by ChatGPT 5.4 |
+| **ChatGPT 5.4** | Codex CLI only | Mar 2026 | **Current flagship** (coding) |
 
 No standalone "GPT-5.3" exists — only GPT-5.3-Codex.
-GPT-5.3-Codex API delayed for security review.
+ChatGPT 5.4 replaces GPT-5.3-Codex as the primary coding model.
 
 ### Arena naming for GPT
 - "gpt-5.2-chat-latest-20260210" → GPT-5.2 dated snapshot
@@ -102,8 +103,7 @@ Our tier 1 models and what they map to:
 | Registry name | Actual model | Arena name (expected) | Epoch name | OpenRouter ID |
 |---|---|---|---|---|
 | opus | Claude Opus 4.6 | "Claude Opus 4.6" | claude-opus-4-6 | anthropic/claude-opus-4.6 |
-| sonnet | Claude Sonnet 4.6 | "Claude Sonnet 4.6" | claude-sonnet-4-6 | anthropic/claude-sonnet-4.6 |
-| haiku | Claude Haiku 4.5 | "Claude Haiku 4.5" | claude-haiku-4-5-20251001 | anthropic/claude-haiku-4.5 |
+| chatgpt-5.4 | ChatGPT 5.4 | N/A (Codex CLI only) | chatgpt-5.4 | openai/chatgpt-5.4 |
 | gpt-5.3-codex | GPT-5.3-Codex | N/A (Codex CLI only) | gpt-5.3-codex | openai/gpt-5.3-codex |
 | gpt-5.2 | GPT-5.2 | "gpt-5.2-chat-latest" | gpt-5.2-2025-12-11 | openai/gpt-5.2 |
 | gemini-3-pro | Gemini 3 Pro | "Gemini 3 Pro" | gemini-3-pro-preview | google/gemini-3-pro-preview |

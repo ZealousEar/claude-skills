@@ -1,0 +1,131 @@
+{
+  "_description": "External benchmark sources for the GIB multi-source aggregator. Each source has API details, weight in composite, and per-model name mappings.",
+  "sources": [
+    {
+      "id": "aa_intelligence",
+      "name": "Artificial Analysis Intelligence Index",
+      "api_type": "rest",
+      "endpoint_url": "https://artificialanalysis.ai/api/v1/intelligence",
+      "weight": 0.25,
+      "score_field": "intelligence_index",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "gpt-5.3",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro",
+        "gemini-3-flash": "gemini-3-flash",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    },
+    {
+      "id": "lmarena_elo",
+      "name": "LMArena / Chatbot Arena Elo",
+      "api_type": "huggingface",
+      "endpoint_url": "https://huggingface.co/spaces/lmarena-ai/chatbot-arena-leaderboard/resolve/main/elo_results.json",
+      "weight": 0.20,
+      "score_field": "elo_rating",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "gpt-5.3",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro-preview",
+        "gemini-3-flash": "gemini-3-flash-preview",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    },
+    {
+      "id": "aa_math",
+      "name": "Artificial Analysis Math Benchmark",
+      "api_type": "rest",
+      "endpoint_url": "https://artificialanalysis.ai/api/v1/math",
+      "weight": 0.15,
+      "score_field": "math_score",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "gpt-5.3",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro",
+        "gemini-3-flash": "gemini-3-flash",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    },
+    {
+      "id": "aa_coding",
+      "name": "Artificial Analysis Coding Benchmark",
+      "api_type": "rest",
+      "endpoint_url": "https://artificialanalysis.ai/api/v1/coding",
+      "weight": 0.15,
+      "score_field": "coding_score",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "gpt-5.3",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro",
+        "gemini-3-flash": "gemini-3-flash",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    },
+    {
+      "id": "swe_bench",
+      "name": "SWE-bench Verified",
+      "api_type": "open_data",
+      "endpoint_url": "https://raw.githubusercontent.com/swe-bench/experiments/main/evaluation/verified/results.json",
+      "weight": 0.15,
+      "score_field": "resolved_rate",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "chatgpt-5.4",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro",
+        "gemini-3-flash": "gemini-3-flash",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    },
+    {
+      "id": "epoch_eci",
+      "name": "Epoch AI ECI Composite",
+      "api_type": "downloadable",
+      "endpoint_url": "https://epoch.ai/data/eci_scores.json",
+      "weight": 0.10,
+      "score_field": "eci_score",
+      "higher_is_better": true,
+      "cache_hours": 24,
+      "model_mappings": {
+        "opus": "claude-opus-4-6",
+        "chatgpt-5.4": "gpt-5.3",
+        "gpt-5.2": "gpt-5.2",
+        "gemini-3-pro": "gemini-3-pro",
+        "gemini-3-flash": "gemini-3-flash",
+        "kimi-2.5": "kimi-2.5",
+        "glm-5": "glm-5",
+        "minimax-m2.5": "minimax-m2.5"
+      }
+    }
+  ],
+  "composite": {
+    "normalization": "z_score",
+    "missing_model_handling": "reweight_proportional",
+    "min_sources_for_ranking": 2,
+    "_note": "Models with fewer than min_sources_for_ranking available benchmarks are excluded from composite ranking."
+  }
+}

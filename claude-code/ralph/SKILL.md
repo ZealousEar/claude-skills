@@ -1,8 +1,12 @@
-# /ralph — Autonomous Fresh-Context Loop for Dissertation Idea Generation
+# /ralph — Autonomous Fresh-Context Loop
 
-Ralph is an autonomous multi-model iteration loop that generates novel research ideas across fresh LLM contexts. Each iteration independently selects a model (weighted by benchmarks), applies a creative divergence lens, calls the LLM, scores and deduplicates the output, and persists everything to disk. The loop self-terminates when ideas saturate or budget limits are hit.
+Ralph is an autonomous multi-model iteration loop that applies the fresh-context pattern to two domains: **idea generation** (dissertation research) and **analytics discovery** (SaaS funnel insights via SQL). Each iteration independently selects a model (weighted by benchmarks), applies a creative divergence lens, calls the LLM, scores and deduplicates the output, and persists everything to disk. The loop self-terminates when output quality saturates or budget limits are hit.
 
 Named after the **Ralph Wiggum Loop** pattern: instead of managing growing context, discard it entirely and restart fresh each iteration. State lives on disk, not in any model's context window.
+
+**Two modes:**
+- **Idea Generation** (`ralph.sh`) — 7-step loop producing dissertation research ideas scored on novelty + feasibility
+- **Analytics Discovery** (`ralph-analytics.sh`) — 9-step loop with SQL execution producing data-grounded funnel findings scored on novelty + actionability + evidence
 
 ---
 
@@ -23,6 +27,41 @@ Named after the **Ralph Wiggum Loop** pattern: instead of managing growing conte
 - [Prerequisites](#prerequisites)
 - [Design Decisions](#design-decisions)
 - [Examples](#examples)
+- [Analytics Variant](#analytics-variant)
+
+---
+
+## Step 0: Model Configuration Prompt
+
+**Before starting the loop**, check whether the user's message already specifies model preferences (e.g., "use opus only", "exclude kimi", "low reasoning effort"). If it does, apply those preferences directly and skip this prompt. If it does NOT, present the following using AskUserQuestion:
+
+```
+Model configuration for /ralph:
+
+MODEL POOL (choose one):
+  1. auto-weighted — all available models, weighted by domain benchmarks (default)
+  2. opus-only    — every iteration uses opus
+  3. custom       — specify which models to include/exclude
+
+Available models: opus, chatgpt-5.4, gpt-5.2, gemini-3-pro, kimi-2.5
+
+REASONING EFFORT (optional — press Enter for defaults):
+  Claude (opus):      thinking budget → [16k tokens (default) / 32k / 64k / 128k]
+  ChatGPT (5.4/5.2):  reasoning_effort → [xhigh (default) / high / medium / low]
+
+CONTEXT WINDOW (optional — press Enter for defaults):
+  [default / specify tokens / auto (let model_selector decide per iteration)]
+
+Enter choice (e.g. "1", "opus-only", "custom: include=opus,chatgpt-5.4 effort=high"):
+```
+
+**Parsing the response:**
+- If "auto-weighted" or "1" → use default `preferred_models` from ralph-config.json
+- If "opus-only" → set `preferred_models` to `["opus"]` for this session
+- If "custom" → parse include/exclude list, update `preferred_models` and `excluded_models` for this session
+- If reasoning effort specified → pass as override to `session_manager.py` calls (e.g., `--thinking-budget 32000` for opus, `--reasoning-effort high` for ChatGPT)
+- If context window specified → apply as runtime override; if "auto", let `model_selector.py` choose based on prompt size
+- If user presses Enter or says "defaults" → use existing ralph-config.json settings unchanged
 
 ---
 
@@ -37,6 +76,9 @@ Named after the **Ralph Wiggum Loop** pattern: instead of managing growing conte
 
 # Run directly via shell
 bash ~/.claude/skills/ralph/scripts/ralph.sh idea-generation 10
+
+# Analytics mode — SaaS funnel discovery with SQL execution
+bash ~/.claude/skills/ralph/scripts/ralph-analytics.sh 15
 ```
 
 The loop will:
@@ -142,28 +184,39 @@ This means every script is independently runnable and testable.
 ~/.claude/skills/ralph/
 ├── SKILL.md                           # This file
 ├── scripts/
-│   ├── ralph.sh                       # Bash loop orchestrator (calls all scripts)
+│   ├── ralph.sh                       # Bash orchestrator — idea generation (7-step)
+│   ├── ralph-analytics.sh             # Bash orchestrator — analytics discovery (9-step)
 │   ├── session_manager.py             # Session init, LLM calls, logging, reports
 │   ├── circuit_breaker.py             # 3-state per-model circuit breaker
 │   ├── model_selector.py              # Benchmark-weighted stochastic selection
-│   ├── prompt_builder.py              # Prompt assembly + 20 creative lenses
+│   ├── prompt_builder.py              # Prompt assembly + creative lenses
 │   ├── exit_evaluator.py              # Saturation detection + budget limits
 │   ├── idea_evaluator.py              # Novelty/feasibility scoring + Jaccard dedup
+│   ├── analytics_evaluator.py         # Novelty/actionability/evidence scoring (analytics)
+│   ├── sql_executor.py                # SQL execution via psql subprocess (analytics)
+│   ├── build_synthesis_prompt.py      # Combines prompt + SQL results (analytics)
+│   ├── synthesis_pass.py              # Post-loop finding aggregation (analytics)
 │   ├── memory_indexer.py              # Cross-iteration learning (4-type taxonomy)
 │   └── benchmark_sync.py              # Benchmark data freshness check + refresh
 ├── settings/
-│   ├── ralph-config.json              # Main configuration
+│   ├── ralph-config.json              # Main configuration (idea generation)
+│   ├── analytics-config.json          # Analytics configuration (extends main)
 │   ├── benchmark-profiles.json        # Symlink → debate-agent's domain weights
 │   └── presets/
-│       └── idea-generation.json       # Dissertation idea generation preset
+│       ├── idea-generation.json       # Dissertation idea generation preset
+│       └── grapple-analytics.json     # Grapple Law funnel analytics preset
 ├── references/
-│   ├── creative-lenses.yaml           # 20 curated divergence-forcing constraints
+│   ├── creative-lenses.yaml           # 20 curated lenses (idea generation)
+│   ├── grapple-lenses.yaml            # 15 tiered lenses (analytics)
+│   ├── grapple-schema.md              # PostgreSQL schema reference (analytics)
 │   └── architecture.md                # Design rationale document
 └── state/                             # Created at runtime, one dir per session
     └── <session_id>/
         ├── session.json
         ├── iterations.jsonl
-        ├── ideas-bank.json
+        ├── ideas-bank.json            # Idea generation mode
+        ├── findings-bank.json         # Analytics mode
+        ├── synthesis-report.json      # Analytics mode (post-loop)
         ├── memory.json
         └── circuit-state.json
 ```
@@ -211,7 +264,7 @@ Ralph does not duplicate LLM infrastructure. It imports from sibling skills:
     "exploration_weight": 0.3,      // Recency penalty strength (0=none, 1=max)
     "recency_penalty_window": 5,    // How many recent iterations to penalize
     "excluded_models": ["aristotle", "glm-5"],
-    "preferred_models": ["opus", "gemini-3-pro", "gpt-5.2", "gpt-5.3-codex", "kimi-2.5", "sonnet"]
+    "preferred_models": ["opus", "gemini-3-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"]
   },
   "idea_evaluation": {
     "novelty_weight": 0.55,         // Weight for novelty in combined score
@@ -291,10 +344,9 @@ Models are selected stochastically, weighted by academic domain benchmark scores
 | Model | Route | Reasoning | Approximate Weight |
 |-------|-------|-----------|-------------------|
 | `opus` | Claude CLI | Inherent extended thinking | 0.90 |
-| `sonnet` | Claude CLI | Inherent extended thinking | ~0.50 |
 | `gemini-3-pro` | Google API | `thinkingLevel=HIGH` | 1.00 |
 | `gpt-5.2` | Codex CLI | `reasoning_effort=xhigh` | 0.80 |
-| `gpt-5.3-codex` | Codex CLI | `reasoning_effort=xhigh` | 0.55 |
+| `chatgpt-5.4` | Codex CLI | `reasoning_effort=xhigh` | 0.55 |
 | `kimi-2.5` | Kimi CLI | `--thinking` | 0.65 |
 
 **Excluded by default:** `aristotle` (theorem prover, not a general LLM), `glm-5` (returns empty responses via OpenRouter).
@@ -760,6 +812,187 @@ python3 circuit_breaker.py --record-failure "timeout" --model opus --state /tmp/
 python3 circuit_breaker.py --cooldown-remaining --model opus --state /tmp/test-cb.json
 # → 298
 ```
+
+---
+
+## Analytics Variant
+
+The analytics variant (`ralph-analytics.sh`) extends the Ralph loop for **data-grounded SaaS funnel discovery**. Instead of generating abstract research ideas, each iteration generates SQL queries, executes them against a live PostgreSQL database, and synthesizes the results into evidence-backed findings.
+
+### How Analytics Mode Differs
+
+The core Ralph infrastructure is **reused unchanged** — model selection, circuit breaker, memory indexer, benchmark sync, and prompt builder all work identically. The analytics variant adds a SQL execution layer between two LLM calls per iteration:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  ralph-analytics.sh (bash)                   │
+│                                                             │
+│  for each iteration:                                        │
+│                                                             │
+│    [1] model_selector.py         → selects model (reused)   │
+│    [2] prompt_builder.py         → builds prompt (reused)   │
+│    [3] session_manager.py --run  → LLM generates SQL        │
+│    [4] sql_executor.py           → executes SQL via psql    │
+│    [5] build_synthesis_prompt.py → combines prompt + results │
+│    [6] session_manager.py --run  → LLM synthesizes findings │
+│    [7] analytics_evaluator.py    → scores finding (3D)      │
+│    [8] memory_indexer.py         → updates memory (reused)  │
+│    [9] circuit_breaker.py        → records result (reused)  │
+│                                                             │
+│  post-loop: synthesis_pass.py    → aggregates all findings  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key difference: two LLM calls per iteration.** Step 3 asks the model to generate SQL queries based on the creative lens. Step 4 executes them. Step 5-6 feeds the results back to the same model for evidence-based synthesis. This grounds every finding in actual data.
+
+### Analytics Usage
+
+```bash
+# Default: 15 iterations against the configured database
+bash ~/.claude/skills/ralph/scripts/ralph-analytics.sh
+
+# Cap at 5 iterations
+bash ~/.claude/skills/ralph/scripts/ralph-analytics.sh 5
+
+# Resume a previous session
+bash ~/.claude/skills/ralph/scripts/ralph-analytics.sh --resume ralph-analytics-20260226-123456
+```
+
+### Analytics Configuration
+
+The analytics variant uses `settings/analytics-config.json`, which extends the main config with two additional sections:
+
+```json
+{
+  "analytics_evaluation": {
+    "novelty_weight": 0.35,
+    "actionability_weight": 0.35,
+    "evidence_weight": 0.30,
+    "dedup_jaccard_threshold": 0.7,
+    "min_key_terms": 5
+  },
+  "sql_execution": {
+    "max_queries_per_iteration": 5,
+    "query_timeout_seconds": 30,
+    "max_rows_per_query": 200,
+    "db_name": "grapple"
+  }
+}
+```
+
+The `paths.creative_lenses` field points to `grapple-lenses.yaml` instead of `creative-lenses.yaml`, swapping in analytics-specific lenses.
+
+### Analytics Lenses
+
+Instead of 20 cognitive-shift lenses, analytics mode uses **15 tiered lenses** organized by analytical depth:
+
+| Tier | Lenses | Purpose |
+|------|--------|---------|
+| **Tier 1: Structural** (1-4) | Funnel Mechanics, Paywall Boundary, Case Score Effect, Time to Value | Core funnel metrics — run these first |
+| **Tier 2: Behavioral** (5-8) | Engagement Velocity, Return Patterns, Drop-off Forensics, Power User Anatomy | User behavior patterns that predict outcomes |
+| **Tier 3: Exploratory** (9-12) | Temporal Patterns, Cohort Drift, Subscription Signal, Message Content Patterns | Broader segmentation and trends |
+| **Tier 4: Stretch** (13-15) | Email Activation, Document Commitment, Sentiment Trajectory | Advanced analyses for surprising insights |
+
+Lenses are defined in `references/grapple-lenses.yaml`. Each lens provides specific SQL-oriented questions (e.g., "Calculate stage-by-stage conversion rates through all 9 funnel stages").
+
+### Analytics Scoring
+
+Findings are scored on **three dimensions** (instead of two for ideas):
+
+| Dimension | Weight | What It Measures |
+|-----------|--------|-----------------|
+| **Novelty** | 0.35 | Cross-table joins, temporal patterns, segment comparisons |
+| **Actionability** | 0.35 | Specificity of recommendation, metric clarity, implementation feasibility |
+| **Evidence** | 0.30 | Data freshness, query reliability, sample size |
+
+**Combined**: `0.35 * novelty + 0.35 * actionability + 0.30 * evidence`
+
+Deduplication uses a stricter Jaccard threshold (0.7 vs 0.6 for ideas) since analytics findings tend to have more overlapping terminology.
+
+### Analytics Output
+
+#### Findings Bank: `state/<session_id>/findings-bank.json`
+
+```json
+{
+  "finding_id": "finding-003",
+  "source_model": "gemini-3-pro",
+  "iteration": 3,
+  "finding_title": "Paywall hit users who return within 48h convert at 3.2x rate",
+  "finding_summary": "Analysis of 1,721 users shows...",
+  "funnel_stages_affected": [4, 5, 6],
+  "key_metrics": {"return_conversion_rate": "18.4%", "non_return_rate": "5.7%"},
+  "sql_queries_used": ["SELECT ... (abbreviated)"],
+  "recommendation": "Add a reminder email 24h after paywall hit",
+  "confidence": "high",
+  "evidence_strength": "Based on 847 users who hit paywall, 312 returned",
+  "novelty_score": 0.72,
+  "actionability_score": 0.85,
+  "evidence_score": 0.78,
+  "combined_score": 0.78,
+  "is_duplicate": false,
+  "key_terms": ["paywall", "return", "conversion", "48h"]
+}
+```
+
+#### Synthesis Report: `state/<session_id>/synthesis-report.json`
+
+Generated by `synthesis_pass.py` after the loop completes. Groups findings by funnel stage, identifies cross-cutting themes, and ranks the top 10 recommendations.
+
+### Analytics-Specific Scripts
+
+#### `sql_executor.py` — SQL Execution via psql
+
+```bash
+python3 sql_executor.py --response result.json --output sql-results.json \
+    --db grapple --config analytics-config.json
+```
+
+Extracts SQL from fenced code blocks in LLM responses, executes via `psql` subprocess with per-query timeout (30s) and row limit (200). Returns structured results with columns, rows, and error information.
+
+#### `analytics_evaluator.py` — 3D Finding Scorer
+
+```bash
+python3 analytics_evaluator.py --result synth-result.json \
+    --findings-bank findings-bank.json --config analytics-config.json
+```
+
+Scores findings on novelty, actionability, and evidence. Uses keyword-based heuristics (cross-table keywords boost novelty, specific metrics boost actionability, sample sizes boost evidence).
+
+#### `build_synthesis_prompt.py` — Prompt + SQL Combiner
+
+```bash
+python3 build_synthesis_prompt.py --prompt-file prompt.txt \
+    --sql-results sql-results.json --output synth-prompt.txt
+```
+
+Takes the original prompt and appends formatted SQL query results, creating the input for the second LLM call (Phase 2: synthesis).
+
+#### `synthesis_pass.py` — Post-Loop Aggregation
+
+```bash
+python3 synthesis_pass.py --findings-bank findings-bank.json \
+    --output synthesis-report.json
+```
+
+Runs after the loop completes. Groups findings by funnel stage, extracts cross-cutting themes via term frequency analysis, and produces a ranked list of actionable recommendations.
+
+### Analytics Prerequisites
+
+In addition to the base prerequisites:
+
+- **PostgreSQL** — `psql` must be on PATH (checks `/opt/homebrew/opt/postgresql@17/bin/psql` and standard locations)
+- **Local database** — the configured database (default: `grapple`) must be accessible locally via `psql`
+- **Database schema reference** — `references/grapple-schema.md` is injected into every prompt
+
+### Creating a New Analytics Preset
+
+To apply the analytics loop to a different database:
+
+1. Copy `settings/presets/grapple-analytics.json` and update the context, funnel stages, and constraints
+2. Create a new lenses YAML file in `references/` with domain-specific analytical questions
+3. Create a schema reference markdown file for your database
+4. Update `settings/analytics-config.json` to point `paths.creative_lenses` at your lenses file and set `sql_execution.db_name`
 
 ---
 

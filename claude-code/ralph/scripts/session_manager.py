@@ -71,7 +71,7 @@ def _fail(msg: str) -> None:
 def cmd_init(session_id: str, preset_name: str, state_dir: Path) -> None:
     """Initialize a new session with empty state files."""
     state_dir.mkdir(parents=True, exist_ok=True)
-    load_preset(preset_name)  # validate preset exists
+    preset = load_preset(preset_name)  # validate preset exists
     config = load_config()
     loop_cfg = config.get("loop", {})
 
@@ -103,6 +103,7 @@ def cmd_init(session_id: str, preset_name: str, state_dir: Path) -> None:
     print(
         f"Session '{session_id}' initialized.\n"
         f"  Preset : {preset_name}\n"
+        f"  Bank   : ideas-bank.json\n"
         f"  State  : {state_dir}\n"
         f"  Files  : session.json, ideas-bank.json, memory.json, "
         f"circuit-state.json, iterations.jsonl"
@@ -243,11 +244,11 @@ def cmd_report(session_id: str, state_dir: Path) -> None:
             if line.strip():
                 iterations.append(json.loads(line))
 
-    ideas_bank: dict = {}
-    ideas_path = state_dir / "ideas-bank.json"
-    if ideas_path.exists():
-        ideas_bank = json.loads(ideas_path.read_text())
-    stats = ideas_bank.get("stats", {})
+    bank: dict = {}
+    bank_path = state_dir / "ideas-bank.json"
+    if bank_path.exists():
+        bank = json.loads(bank_path.read_text())
+    stats = bank.get("stats", {})
 
     total = len(iterations)
     successful = sum(1 for it in iterations if it.get("success"))

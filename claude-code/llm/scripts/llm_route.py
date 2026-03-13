@@ -6,7 +6,7 @@ OpenRouter for everything else. Stdlib only — no pip dependencies.
 
 Usage:
     python3 llm_route.py --model opus --prompt "Say hello in 3 words"
-    python3 llm_route.py --model gpt-5.3-codex --prompt-file prompt.txt --system "You are..."
+    python3 llm_route.py --model chatgpt-5.4 --prompt-file prompt.txt --system "You are..."
     python3 llm_route.py --model gemini-3-pro --prompt "Explain X" --json
     python3 llm_route.py --model opus --prompt "Hello" --route openrouter
     python3 llm_route.py --list-models [--all] [--tier 1]
@@ -221,6 +221,7 @@ def resolve_model(
         "thinking": model_cfg.get("thinking"),
         "reasoning": model_cfg.get("reasoning"),
         "grounding": model_cfg.get("grounding"),
+        "codex_config": model_cfg.get("codex_config"),
     }
 
 
@@ -381,10 +382,12 @@ def call_codex(
     system: str | None = None,
     timeout: int = DEFAULT_CLI_TIMEOUT,
     reasoning_effort: str | None = None,
+    codex_config: dict | None = None,
 ) -> str:
     """Call an OpenAI model via the locally installed Codex CLI.
 
     Uses `codex exec` in non-interactive mode. No API key needed.
+    codex_config: optional dict of -c key=value overrides (e.g. model_context_window).
     """
     codex_bin = shutil.which("codex")
     if not codex_bin:
@@ -415,6 +418,12 @@ def call_codex(
         ]
         if reasoning_effort:
             cmd.extend(["-c", f'reasoning_effort="{reasoning_effort}"'])
+        # Apply codex_config overrides (e.g. model_context_window for 1M context)
+        if codex_config:
+            for key, value in codex_config.items():
+                if key.startswith("_"):
+                    continue  # skip metadata keys like _note
+                cmd.extend(["-c", f"{key}={value}"])
 
         result = subprocess.run(
             cmd,
@@ -592,6 +601,7 @@ def _find_fallback_route(model_name: str, registry: dict) -> dict | None:
         "thinking": model_cfg.get("thinking"),
         "reasoning": model_cfg.get("reasoning"),
         "grounding": model_cfg.get("grounding"),
+        "codex_config": model_cfg.get("codex_config"),
     }
 
 
@@ -660,6 +670,7 @@ def call_model(
                 return call_codex(
                     api_model, prompt, system, timeout=cli_timeout,
                     reasoning_effort=model_config.get("reasoning_effort"),
+                    codex_config=model_config.get("codex_config"),
                 )
             elif api_style == "kimi-cli":
                 return call_kimi(
@@ -792,7 +803,7 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
   %(prog)s --model opus --prompt "Say hello in 3 words"
-  %(prog)s --model gpt-5.3-codex --prompt-file prompt.txt --system "You are a poet"
+  %(prog)s --model chatgpt-5.4 --prompt-file prompt.txt --system "You are a poet"
   %(prog)s --model gemini-3-pro --prompt "Explain X" --json
   %(prog)s --model opus --prompt "Hello" --route openrouter
   %(prog)s --list-models
@@ -800,7 +811,7 @@ def main() -> None:
   %(prog)s --list-providers
 """,
     )
-    parser.add_argument("--model", "-m", help="Model name (e.g., opus, gpt-5.3-codex, gemini-3-pro)")
+    parser.add_argument("--model", "-m", help="Model name (e.g., opus, chatgpt-5.4, gemini-3-pro)")
     parser.add_argument("--prompt", "-p", help="The prompt to send")
     parser.add_argument("--prompt-file", type=Path, help="Read prompt from file")
     parser.add_argument("--system", "-s", help="System prompt")

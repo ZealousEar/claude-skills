@@ -21,8 +21,8 @@ import sys
 # Defaults
 # ---------------------------------------------------------------------------
 
-VAULT_ROOT = os.environ.get("VAULT_ROOT", os.getcwd())
-DEFAULT_COOKIE_FILE = os.environ.get("SSRN_COOKIE_FILE", os.path.join(VAULT_ROOT, ".credentials", "cookies", "ssrn-cookies.txt"))
+VAULT_ROOT = "/Users/farhad/Code/Agentic Obsidian Vault/Agentic"
+DEFAULT_COOKIE_FILE = os.path.join(VAULT_ROOT, ".credentials", "cookies", "ssrn-cookies.txt")
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "

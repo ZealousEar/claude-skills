@@ -7,9 +7,7 @@
       "api_style": "claude-cli",
       "prefer_cli": true,
       "cli_model_map": {
-        "anthropic/claude-opus-4-6": "opus",
-        "anthropic/claude-sonnet-4-5-20250929": "sonnet",
-        "anthropic/claude-haiku-4-5-20251001": "haiku"
+        "anthropic/claude-opus-4-6": "opus"
       },
       "_note": "Anthropic models route to Claude CLI (subscription). CLI uses short aliases."
     },
@@ -19,6 +17,7 @@
       "api_style": "codex",
       "prefer_cli": true,
       "cli_model_map": {
+        "openai/chatgpt-5.4": "chatgpt-5.4",
         "openai/gpt-5.3": "gpt-5.3-codex",
         "openai/gpt-5.2": "gpt-5.2"
       },
