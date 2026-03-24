@@ -38,7 +38,7 @@
     "exploration_weight": 0.3,
     "recency_penalty_window": 5,
     "excluded_models": ["aristotle", "glm-5"],
-    "preferred_models": ["opus", "sonnet", "chatgpt-5.4", "gemini-3-pro", "kimi-2.5"],
+    "preferred_models": ["opus", "sonnet", "chatgpt-5.4", "gemini-3.1-pro", "kimi-2.5"],
     "_preferred_models_note": "opus and sonnet are always available via Claude Code. Others require additional CLIs or API keys — the model selector skips unavailable models automatically."
   },
 

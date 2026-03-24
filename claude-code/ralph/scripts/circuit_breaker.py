@@ -162,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
     action.add_argument("--record-failure", metavar="REASON", type=str, default=None,
                         help="Record a failed call with the given reason")
 
-    p.add_argument("--model", required=True, help="Model name (e.g. opus, gemini-3-pro)")
+    p.add_argument("--model", required=True, help="Model name (e.g. opus, gemini-3.1-pro)")
     p.add_argument("--state", required=True, help="Path to circuit-state.json")
     return p
 

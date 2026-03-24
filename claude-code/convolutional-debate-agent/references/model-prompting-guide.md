@@ -92,7 +92,7 @@ Machine-readable config: `settings/model-prompting.json`. Auto-applied by `llm_r
 ## Gemini (3 Pro, 3 Flash)
 
 **Sources:**
-- https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/gemini-3-prompting-guide
+- https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/gemini-3.1-prompting-guide
 - https://ai.google.dev/gemini-api/docs/prompting-strategies
 - https://ai.google.dev/gemini-api/docs/gemini-3
 

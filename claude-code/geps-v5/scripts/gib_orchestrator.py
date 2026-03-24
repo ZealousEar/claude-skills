@@ -12,7 +12,7 @@ Usage:
 
     python3 gib_orchestrator.py \\
         --mode full \\
-        --models "opus,chatgpt-5.4,gpt-5.2,gemini-3-pro,gemini-3-flash,kimi-2.5,glm-5,minimax-m2.5" \\
+        --models "opus,chatgpt-5.4,gpt-5.2,gemini-3.1-pro,gemini-3-flash,kimi-2.5,glm-5,minimax-m2.5" \\
         --output-dir ./gib-full/ --seed 42 --pretty --summary
 """
 

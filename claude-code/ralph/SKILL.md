@@ -248,7 +248,7 @@ Ralph does not duplicate LLM infrastructure. It imports from sibling skills:
     "exploration_weight": 0.3,      // Recency penalty strength (0=none, 1=max)
     "recency_penalty_window": 5,    // How many recent iterations to penalize
     "excluded_models": ["aristotle", "glm-5"],
-    "preferred_models": ["opus", "gemini-3-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"]
+    "preferred_models": ["opus", "gemini-3.1-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"]
   },
   "idea_evaluation": {
     "novelty_weight": 0.55,         // Weight for novelty in combined score
@@ -328,7 +328,7 @@ Models are selected stochastically, weighted by academic domain benchmark scores
 | Model | Route | Reasoning | Approximate Weight |
 |-------|-------|-----------|-------------------|
 | `opus` | Claude CLI | Inherent extended thinking | 0.90 |
-| `gemini-3-pro` | Google API | `thinkingLevel=HIGH` | 1.00 |
+| `gemini-3.1-pro` | Google API | `thinkingLevel=HIGH` | 1.00 |
 | `gpt-5.2` | Codex CLI | `reasoning_effort=xhigh` | 0.80 |
 | `chatgpt-5.4` | Codex CLI | `reasoning_effort=xhigh` | 0.55 |
 | `kimi-2.5` | Kimi CLI | `--thinking` | 0.65 |

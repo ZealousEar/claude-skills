@@ -10,12 +10,12 @@ A multi-stage research idea generation and evaluation pipeline that replaces deb
 Model configuration for /geps:
 
 GENERATOR MODELS (Stage B — idea generation, 4 channels):
-  1. all available — opus, chatgpt-5.4, gpt-5.2, gemini-3-pro, kimi-2.5, glm-5, minimax-m2.5 (default)
-  2. top-tier only — opus, chatgpt-5.4, gemini-3-pro
+  1. all available — opus, chatgpt-5.4, gpt-5.2, gemini-3.1-pro, kimi-2.5, glm-5, minimax-m2.5 (default)
+  2. top-tier only — opus, chatgpt-5.4, gemini-3.1-pro
   3. custom — specify which models to use
 
 JUDGE POOL (Stage D — pairwise tournament):
-  Default: opus, chatgpt-5.4, gpt-5.2, gemini-3-pro, kimi-2.5, glm-5, minimax-m2.5
+  Default: opus, chatgpt-5.4, gpt-5.2, gemini-3.1-pro, kimi-2.5, glm-5, minimax-m2.5
   (enter custom list to override, or press Enter for default)
 
 REASONING EFFORT (optional — press Enter for defaults):
@@ -25,12 +25,12 @@ REASONING EFFORT (optional — press Enter for defaults):
 CONTEXT WINDOW (optional — press Enter for defaults):
   [default / specify tokens / auto (orchestrator decides based on corpus size)]
 
-Enter choice (e.g. "1", "top-tier judges=opus,gemini-3-pro,chatgpt-5.4", "custom: generators=opus,kimi-2.5"):
+Enter choice (e.g. "1", "top-tier judges=opus,gemini-3.1-pro,chatgpt-5.4", "custom: generators=opus,kimi-2.5"):
 ```
 
 **Parsing the response:**
 - If "all available" or "1" → use `all_models` from gib-config.json
-- If "top-tier only" → filter to opus, chatgpt-5.4, gemini-3-pro
+- If "top-tier only" → filter to opus, chatgpt-5.4, gemini-3.1-pro
 - If "custom" → parse model lists for generators and/or judges
 - If judge pool specified → override `default_judge_pool` in gib-config.json for this run
 - If reasoning effort specified → pass overrides to `llm_runner.py` calls

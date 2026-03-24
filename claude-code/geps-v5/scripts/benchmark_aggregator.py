@@ -7,7 +7,7 @@ and produces a weighted composite ranking across all configured models.
 Usage:
     python3 benchmark_aggregator.py \\
         --sources benchmark-sources.json \\
-        --models "opus,chatgpt-5.4,gpt-5.2,gemini-3-pro,gemini-3-flash,kimi-2.5,glm-5,minimax-m2.5" \\
+        --models "opus,chatgpt-5.4,gpt-5.2,gemini-3.1-pro,gemini-3-flash,kimi-2.5,glm-5,minimax-m2.5" \\
         --output composite_ranking.json \\
         --pretty --summary
 """

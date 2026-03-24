@@ -31,7 +31,7 @@
       "system_preamble": "Follow the CTCO framework: provide Context, then Task, then Constraints, then Output format.",
       "system_suffix": null
     },
-    "gemini-3-pro": {
+    "gemini-3.1-pro": {
       "temperature": 1.0,
       "format": "xml",
       "system_preamble": "Place critical constraints after data context. Structure output with XML-style section tags.",

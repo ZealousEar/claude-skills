@@ -55,7 +55,7 @@ REASONING EFFORT (optional — press Enter for defaults):
 CONTEXT WINDOW (optional — press Enter for defaults):
   [default / specify tokens / auto (orchestrator decides per task)]
 
-Enter choice (e.g. "1", "budget", "custom: solvers=opus,opus,chatgpt-5.4,kimi-2.5,gemini-3-pro debaters=opus,gpt-5.2,chatgpt-5.4,opus"):
+Enter choice (e.g. "1", "budget", "custom: solvers=opus,opus,chatgpt-5.4,kimi-2.5,gemini-3.1-pro debaters=opus,gpt-5.2,chatgpt-5.4,opus"):
 ```
 
 **Parsing the response:**
@@ -129,12 +129,12 @@ Configured in `settings/model-settings.json`. Seven profiles:
 
 | Profile           | Solver A        | Solver B          | Solver C        | Solver D  | Solver E      | Debaters (fallback)       | Synthesizer    |
 |-------------------|-----------------|-------------------|-----------------|-----------|---------------|---------------------------|----------------|
-| multi_model       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | opus (static)             | opus           |
-| multi_model_full  | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
+| multi_model       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3.1-pro  | opus (static)             | opus           |
+| multi_model_full  | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3.1-pro  | mixed (static)            | opus           |
 | balanced          | opus            | opus              | opus            | opus      | opus          | opus (static)             | opus           |
 | cost_optimized    | gemini-3-flash  | gemini-3-flash    | gemini-3-flash  | gemini-3-flash | gemini-3-flash | gemini-3-flash (static)  | opus           |
-| max_quality       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3-pro  | mixed (static)            | opus           |
-| **budget**        | chatgpt-5.4   | gpt-5.2           | kimi-2.5        | gemini-3-pro | glm-5      | 2×GPT + Kimi + Gemini    | chatgpt-5.4  |
+| max_quality       | opus            | chatgpt-5.4    | gpt-5.2         | kimi-2.5  | gemini-3.1-pro  | mixed (static)            | opus           |
+| **budget**        | chatgpt-5.4   | gpt-5.2           | kimi-2.5        | gemini-3.1-pro | glm-5      | 2×GPT + Kimi + Gemini    | chatgpt-5.4  |
 
 **Standardized debater assignment:** All debaters use exactly **2 Opus + 2 ChatGPT** models to eliminate intelligence gaps between evaluators. When a domain is detected (Step 1.5), the debater assignment from `benchmark-profiles.json` overrides profile defaults, but all domains now use the standardized 2+2 split:
 
@@ -152,13 +152,13 @@ Configured in `settings/model-settings.json`. Seven profiles:
 
 | Domain   | D1 (Consistency)       | D2 (Counterexample)    | D3 (Constraint)        | D4 (Evidence)    |
 |----------|------------------------|------------------------|------------------------|------------------|
-| coding   | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
-| math     | gemini-3-pro           | gpt-5.2                | chatgpt-5.4          | kimi-2.5         |
-| finance  | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
-| legal    | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
-| academic | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
-| strategy | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3-pro     |
-| general  | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3-pro     |
+| coding   | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3.1-pro     |
+| math     | gemini-3.1-pro           | gpt-5.2                | chatgpt-5.4          | kimi-2.5         |
+| finance  | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3.1-pro     |
+| legal    | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3.1-pro     |
+| academic | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3.1-pro     |
+| strategy | gpt-5.2                | chatgpt-5.4          | kimi-2.5               | gemini-3.1-pro     |
+| general  | chatgpt-5.4          | gpt-5.2                | kimi-2.5               | gemini-3.1-pro     |
 
 ### Supported Providers
 
@@ -166,7 +166,7 @@ Configured in `settings/model-settings.json`. Seven profiles:
 |------------|-------------------|-------------------------------------------|--------------------|
 | claude-code| Native Task tool  | opus                                      | None needed        |
 | codex      | Codex CLI         | chatgpt-5.4, chatgpt-5.2, gpt-5.2 | None (uses `codex login`) |
-| google     | Generative AI API | gemini-3-pro                              | GOOGLE_API_KEY     |
+| google     | Generative AI API | gemini-3.1-pro                              | GOOGLE_API_KEY     |
 | moonshot   | OpenAI-compatible | kimi-2.5                                  | MOONSHOT_API_KEY   |
 | openrouter | OpenAI-compatible | all models (fallback route)               | OPENROUTER_API_KEY |
 | anthropic  | Messages API      | claude-api                                | ANTHROPIC_API_KEY  |
@@ -349,7 +349,7 @@ This ensures debate evidence survives context compaction and can be reviewed acr
    - Updated all Gemini guidance strings to use XML-style section tags (`<analysis>`, `<evidence>`, etc.)
    - Added explicit "provide DETAILED reasoning" instruction (Gemini defaults to concise)
    - Added "Based on the entire problem context above..." anchoring for multi-document synthesis
-   - Source: [Google Gemini 3 Prompting Guide](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/gemini-3-prompting-guide)
+   - Source: [Google Gemini 3 Prompting Guide](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/gemini-3.1-prompting-guide)
 
 **6. Complete output display** — Added mandatory Step 7 to `debate.md`. The complete debate output (answer, reasoning, scores, error margins, raw score table) MUST be displayed to the user as a single consolidated block before the skill exits. No more truncated or missing final outputs.
 

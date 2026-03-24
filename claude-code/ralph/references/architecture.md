@@ -53,7 +53,7 @@ The Ralph Loop solves the "malloc/free problem" of LLM context windows. Instead 
 **Implication**: `ralph.sh` is a simple sequential loop that calls scripts via `python3 script.py --args`. Temporary files for prompt/result transfer.
 
 ### 8. Circuit Breaker: Per-Model (not global)
-**Why**: A global circuit breaker would stop the entire loop when one model fails. Per-model breakers allow the loop to continue with remaining healthy models. If opus times out 3 times, the breaker opens for opus but gemini-3-pro continues.
+**Why**: A global circuit breaker would stop the entire loop when one model fails. Per-model breakers allow the loop to continue with remaining healthy models. If opus times out 3 times, the breaker opens for opus but gemini-3.1-pro continues.
 
 **Implication**: `circuit-state.json` has one entry per model. `model_selector.py` checks breaker state before including a model in the selection pool.
 

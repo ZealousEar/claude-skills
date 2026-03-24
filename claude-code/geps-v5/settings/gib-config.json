@@ -64,6 +64,6 @@
     "model_pricing": "~/.claude/skills/geps-v5/settings/model_pricing.json",
     "prompts_dir": "~/.claude/skills/geps-v5/prompts/"
   },
-  "default_judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
-  "all_models": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "gemini-3-flash", "kimi-2.5", "glm-5", "minimax-m2.5"]
+  "default_judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3.1-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
+  "all_models": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3.1-pro", "gemini-3-flash", "kimi-2.5", "glm-5", "minimax-m2.5"]
 }
