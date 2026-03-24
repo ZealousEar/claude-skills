@@ -161,15 +161,26 @@ def extract_idea_json(response_text: str) -> dict | None:
     except json.JSONDecodeError:
         pass
 
-    # Try to find a JSON object anywhere in the text
-    brace_pattern = r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}"
-    for m in re.finditer(brace_pattern, response_text, re.DOTALL):
-        try:
-            obj = json.loads(m.group())
-            if "title" in obj or "research_question" in obj:
-                return obj
-        except json.JSONDecodeError:
-            continue
+    # Balanced-brace parser (Rule 5) — handles arbitrarily nested JSON
+    # including Opus extended-thinking preambles
+    start = response_text.find("{")
+    while start != -1:
+        depth = 0
+        for i, c in enumerate(response_text[start:], start):
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            if depth == 0:
+                try:
+                    obj = json.loads(response_text[start:i + 1])
+                    if "title" in obj or "research_question" in obj:
+                        return obj
+                except json.JSONDecodeError:
+                    pass
+                break
+        # Try next opening brace
+        start = response_text.find("{", start + 1)
 
     return None
 
@@ -397,18 +408,30 @@ def main() -> int:
         print(json.dumps(summary))
         return 0  # parse failure is not a fatal error
 
-    # 5. Score novelty
-    novelty = score_novelty(idea)
+    # 5-7. Score via LLM judge (fallback to heuristics if judge unavailable)
+    judge_result = None
+    try:
+        from ralph_judge import judge_idea as _judge_idea
+        judge_result = _judge_idea(idea)
+    except Exception as e:
+        print(f"WARNING: LLM judge failed ({e}), falling back to heuristics", file=sys.stderr)
 
-    # 6. Score feasibility
-    feasibility = score_feasibility(idea)
-
-    # 7. Combined score
-    combined = (
-        config["novelty_weight"] * novelty
-        + config["feasibility_weight"] * feasibility
-    )
-    combined = round(combined, 4)
+    if judge_result and judge_result.get("composite") is not None:
+        # LLM judge scores are already on 0-5 scale; normalize to 0-1 for
+        # compatibility with combined_score consumers
+        novelty = judge_result["novelty"] / 5.0
+        feasibility = judge_result["feasibility"] / 5.0
+        combined = judge_result["composite"] / 5.0
+        combined = round(combined, 4)
+    else:
+        # Heuristic fallback (produces 0-1 scores)
+        novelty = score_novelty(idea)
+        feasibility = score_feasibility(idea)
+        combined = (
+            config["novelty_weight"] * novelty
+            + config["feasibility_weight"] * feasibility
+        )
+        combined = round(combined, 4)
 
     # 8. Extract key terms
     key_terms = extract_key_terms(idea)
@@ -444,6 +467,15 @@ def main() -> int:
     }
     if duplicate_of is not None:
         entry["duplicate_of"] = duplicate_of
+
+    # Store judge metadata if LLM judge was used
+    if judge_result and judge_result.get("composite") is not None:
+        entry["judge_scores"] = judge_result.get("judge_scores", [])
+        entry["judge_models"] = judge_result.get("judge_models", [])
+        entry["low_confidence"] = judge_result.get("low_confidence", False)
+        entry["scoring_method"] = "llm_judge"
+    else:
+        entry["scoring_method"] = "heuristic_fallback"
 
     # 11. Append and update
     bank["ideas"].append(entry)
