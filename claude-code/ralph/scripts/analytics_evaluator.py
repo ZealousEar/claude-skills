@@ -35,7 +35,7 @@ STOPWORDS: set[str] = {
     "this", "these", "those", "which", "what", "who", "whom", "when",
     "where", "how", "all", "each", "every", "both", "few", "more", "most",
     "other", "some", "such", "than", "data", "table", "query", "select",
-    "count", "users", "user", "grapple",
+    "count", "users", "user",
 }
 
 # Keywords that signal cross-table analysis (higher novelty)

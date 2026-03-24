@@ -1,5 +1,5 @@
 {
-  "_description": "Analytics config for Grapple Law — overrides creative_lenses path and adds SQL/analytics sections. Used by ralph-analytics.sh without modifying the original ralph-config.json.",
+  "_description": "Analytics config — overrides creative_lenses path and adds SQL/analytics sections. Used by ralph-analytics.sh without modifying the original ralph-config.json.",
   "version": "1.0.0",
 
   "paths": {
@@ -8,7 +8,7 @@
     "rankings_csv": "~/.claude/skills/llm/benchmarks/rankings.csv",
     "model_registry": "~/.claude/skills/llm/settings/model-registry.json",
     "benchmark_profiles": "~/.claude/skills/ralph/settings/benchmark-profiles.json",
-    "creative_lenses": "~/.claude/skills/ralph/references/grapple-lenses.yaml",
+    "creative_lenses": "~/.claude/skills/ralph/references/creative-lenses.yaml",
     "state_dir": "~/.claude/skills/ralph/state"
   },
 
@@ -38,7 +38,7 @@
     "exploration_weight": 0.3,
     "recency_penalty_window": 5,
     "excluded_models": ["aristotle", "glm-5"],
-    "preferred_models": ["opus", "gemini-3-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"]
+    "preferred_models": ["opus", "sonnet", "chatgpt-5.4", "gemini-3-pro", "kimi-2.5"]
   },
 
   "idea_evaluation": {
@@ -66,6 +66,6 @@
     "max_queries_per_iteration": 5,
     "query_timeout_seconds": 30,
     "max_rows_per_query": 200,
-    "db_name": "grapple"
+    "db_name": ""
   }
 }

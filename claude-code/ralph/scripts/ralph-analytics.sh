@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ralph-analytics.sh — Standalone analytics loop for Grapple Law
+# ralph-analytics.sh — Standalone analytics loop for database-driven discovery
 #
 # Reuses unchanged Ralph infrastructure scripts (model_selector, session_manager --run,
 # circuit_breaker, memory_indexer, benchmark_sync) without modifying any original files.
@@ -34,10 +34,10 @@ set -euo pipefail
 RALPH_DIR="$HOME/.claude/skills/ralph"
 SCRIPTS="$RALPH_DIR/scripts"
 CONFIG="$RALPH_DIR/settings/analytics-config.json"
-PRESET="grapple-analytics"
+PRESET="${RALPH_ANALYTICS_PRESET:-analytics}"
 PRESET_FILE="$RALPH_DIR/settings/presets/${PRESET}.json"
-SCHEMA_REF="$RALPH_DIR/references/grapple-schema.md"
-OUTPUT_DIR="$HOME/Code/180/ralph-analytics"
+SCHEMA_REF="${RALPH_SCHEMA_REF:-}"
+OUTPUT_DIR="${RALPH_ANALYTICS_OUTPUT:-$RALPH_DIR/state}"
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -93,7 +93,7 @@ print(c.get('model_selection', {}).get('domain', 'academic'))
 DB_NAME=$(python3 -c "
 import json, pathlib
 c = json.loads(pathlib.Path('$CONFIG').read_text())
-print(c.get('sql_execution', {}).get('db_name', 'grapple'))
+print(c.get('sql_execution', {}).get('db_name', 'analytics'))
 ")
 
 # ---------------------------------------------------------------------------
@@ -230,7 +230,7 @@ while [[ $ITERATION -lt $MAX_ITERATIONS ]]; do
 
     # ------------------------------------------------------------------
     # Step 2: Build prompt (reuses unchanged prompt_builder.py with analytics-config.json)
-    # Uses analytics-config.json which points creative_lenses to grapple-lenses.yaml
+    # Uses analytics-config.json which points creative_lenses to analytics-lenses.yaml
     # Then appends schema reference to the system prompt file
     # ------------------------------------------------------------------
     echo -n "[2/9] Building prompt... "

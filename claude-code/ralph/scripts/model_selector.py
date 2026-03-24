@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import subprocess
 import sys
 from pathlib import Path
 
@@ -103,6 +104,44 @@ def load_circuit_state(path: Path | None) -> dict[str, str]:
 def is_circuit_open(states: dict[str, str], model: str) -> bool:
     """Return True if the model's circuit breaker is OPEN (skip it)."""
     return states.get(model, "CLOSED") == "OPEN"
+
+
+# ---------------------------------------------------------------------------
+# Model availability
+# ---------------------------------------------------------------------------
+
+# Models always available via Claude Code (no extra setup needed)
+ALWAYS_AVAILABLE = {"opus", "sonnet"}
+
+
+def discover_available_models(llm_route_path: Path) -> set[str]:
+    """Query llm_route.py --list-models to find which models are routable.
+
+    Returns a set of model names. Falls back to ALWAYS_AVAILABLE on error.
+    """
+    if not llm_route_path.exists():
+        return set(ALWAYS_AVAILABLE)
+    try:
+        result = subprocess.run(
+            [sys.executable, str(llm_route_path), "--list-models"],
+            capture_output=True, text=True, timeout=15,
+        )
+        if result.returncode != 0:
+            return set(ALWAYS_AVAILABLE)
+        # Parse model names from the table output (second column-ish)
+        available = set(ALWAYS_AVAILABLE)
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            # Skip header/separator lines
+            if not line or line.startswith("Tier") or line.startswith("Name") or "─" in line:
+                continue
+            # First whitespace-delimited token is the model name
+            parts = line.split()
+            if parts and not parts[0].startswith("("):
+                available.add(parts[0])
+        return available
+    except (subprocess.TimeoutExpired, OSError):
+        return set(ALWAYS_AVAILABLE)
 
 
 # ---------------------------------------------------------------------------
@@ -218,6 +257,7 @@ def select_model(
     domain: str,
     circuit_states: dict[str, str],
     recent_models: list[str],
+    available_models: set[str] | None = None,
 ) -> str:
     """Run the full selection algorithm and return a single model name."""
 
@@ -229,11 +269,17 @@ def select_model(
     # Step 1: Start with preferred models, remove excluded
     candidates = [m for m in preferred if m not in excluded]
 
+    # Step 1b: Filter to models that are actually available on this machine
+    if available_models is not None:
+        candidates = [m for m in candidates if m in available_models]
+
     # Step 2: Remove circuit-OPEN models
     candidates = [m for m in candidates if not is_circuit_open(circuit_states, m)]
 
     if not candidates:
-        fatal("No eligible models: all are excluded or circuit-broken")
+        fatal("No eligible models: all are excluded, circuit-broken, or unavailable.\n"
+              "  Run: python3 ~/.claude/skills/llm/scripts/llm_route.py --list-models\n"
+              "  to see which models are configured on your machine.")
 
     # Step 3: Compute weights
     weights = compute_weights(
@@ -355,8 +401,17 @@ def main() -> None:
         log_debug(f"circuit_states={circuit_states}")
         log_debug(f"recent_models (window={recency_window})={recent_models}")
 
+    # --- Discover available models ---
+    llm_route_path = expand_path(
+        config.get("paths", {}).get("llm_route", "~/.claude/skills/llm/scripts/llm_route.py")
+    )
+    available_models = discover_available_models(llm_route_path)
+
+    if args.debug:
+        log_debug(f"available_models={sorted(available_models)}")
+
     # --- Select ---
-    chosen = select_model(config, profiles, domain, circuit_states, recent_models)
+    chosen = select_model(config, profiles, domain, circuit_states, recent_models, available_models)
 
     # --- Debug: show weights ---
     if args.debug:
