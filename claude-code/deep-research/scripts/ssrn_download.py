@@ -21,8 +21,23 @@ import sys
 # Defaults
 # ---------------------------------------------------------------------------
 
-VAULT_ROOT = "/Users/farhad/Code/Agentic Obsidian Vault/Agentic"
-DEFAULT_COOKIE_FILE = os.path.join(VAULT_ROOT, ".credentials", "cookies", "ssrn-cookies.txt")
+def _detect_vault_root() -> str:
+    """Resolve vault root from VAULT_ROOT env var or by walking up from CWD."""
+    env = os.environ.get("VAULT_ROOT")
+    if env:
+        return os.path.expanduser(env)
+    d = os.path.abspath(os.getcwd())
+    for _ in range(10):
+        if os.path.isdir(os.path.join(d, ".obsidian")):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    return ""
+
+VAULT_ROOT = _detect_vault_root()
+DEFAULT_COOKIE_FILE = os.path.join(VAULT_ROOT, ".credentials", "cookies", "ssrn-cookies.txt") if VAULT_ROOT else ""
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -108,9 +123,16 @@ def main():
     parser.add_argument("--output", required=True, help="Output PDF path")
     args = parser.parse_args()
 
-    if not os.path.isfile(args.cookie_file):
-        sys.exit(f"Cookie file not found: {args.cookie_file}\n"
-                 "Export cookies from browser while logged into SSRN (papers.ssrn.com).")
+    if not args.cookie_file or not os.path.isfile(args.cookie_file):
+        msg = f"Cookie file not found: {args.cookie_file or '(none)'}\n"
+        if not VAULT_ROOT:
+            msg += ("Could not detect vault root. Either:\n"
+                    "  1. Set VAULT_ROOT environment variable\n"
+                    "  2. Run from within an Obsidian vault directory\n"
+                    "  3. Pass --cookie-file explicitly\n")
+        else:
+            msg += "Export cookies from browser while logged into SSRN (papers.ssrn.com)."
+        sys.exit(msg)
 
     ok = download_pdf(args.ssrn_id, args.cookie_file, args.output)
     if not ok:

@@ -57,9 +57,9 @@ Obsidian research note, validate syntax, and write to the vault.
 
 ## Vault Details
 
-- **Path**: `/Users/farhad/Code/Agentic Obsidian Vault/Agentic/`
-- **Credentials**: `.credentials/dissertation-research/.env` (Mathpix keys)
-- **SSRN cookies**: `.credentials/cookies/ssrn-cookies.txt`
+- **Path**: Auto-detected from CWD (walks up looking for `.obsidian/`), or set `VAULT_ROOT` env var
+- **Credentials**: `$VAULT_ROOT/.credentials/dissertation-research/.env` (Mathpix keys)
+- **SSRN cookies**: `$VAULT_ROOT/.credentials/cookies/ssrn-cookies.txt`
 
 ---
 
@@ -253,7 +253,7 @@ AskUserQuestion:
 | Mathpix `.env` | `.credentials/dissertation-research/.env` | `MATHPIX_APP_ID`, `MATHPIX_APP_KEY` |
 | SSRN cookies | `.credentials/cookies/ssrn-cookies.txt` | Netscape format, expires fast |
 
-All paths relative to vault root: `/Users/farhad/Code/Agentic Obsidian Vault/Agentic/`
+All paths relative to vault root (set `VAULT_ROOT` env var or run from within your vault directory)
 
 ---
 
