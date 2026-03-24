@@ -501,22 +501,34 @@ def main() -> int:
         print(json.dumps(summary))
         return 0
 
-    # 5. Score novelty
-    novelty = score_novelty(finding)
+    # 5-8. Score via LLM judge (fallback to heuristics if judge unavailable)
+    judge_result = None
+    scoring_method = "heuristic_fallback"
+    try:
+        from analytics_judge import judge_finding as _judge_finding
+        judge_result = _judge_finding(finding)
+    except Exception as e:
+        print(f"WARNING: LLM judge failed ({e}), falling back to heuristics", file=sys.stderr)
 
-    # 6. Score actionability
-    actionability = score_actionability(finding)
-
-    # 7. Score evidence
-    evidence = score_evidence(finding)
-
-    # 8. Combined score
-    combined = (
-        config["novelty_weight"] * novelty
-        + config["actionability_weight"] * actionability
-        + config["evidence_weight"] * evidence
-    )
-    combined = round(combined, 4)
+    if judge_result and judge_result.get("composite") is not None:
+        # LLM judge scores are on 0-5 scale; normalize to 0-1
+        novelty = judge_result["novelty"] / 5.0
+        actionability = judge_result["actionability"] / 5.0
+        evidence = judge_result["evidence"] / 5.0
+        combined = judge_result["composite"] / 5.0
+        combined = round(combined, 4)
+        scoring_method = "llm_judge"
+    else:
+        # Heuristic fallback (produces 0-1 scores)
+        novelty = score_novelty(finding)
+        actionability = score_actionability(finding)
+        evidence = score_evidence(finding)
+        combined = (
+            config["novelty_weight"] * novelty
+            + config["actionability_weight"] * actionability
+            + config["evidence_weight"] * evidence
+        )
+        combined = round(combined, 4)
 
     # 9. Extract key terms
     key_terms = extract_key_terms(finding)
@@ -553,6 +565,13 @@ def main() -> int:
     }
     if duplicate_of is not None:
         entry["duplicate_of"] = duplicate_of
+
+    # Store judge metadata
+    entry["scoring_method"] = scoring_method
+    if judge_result and judge_result.get("composite") is not None:
+        entry["judge_scores"] = judge_result.get("judge_scores", [])
+        entry["judge_models"] = judge_result.get("judge_models", [])
+        entry["low_confidence"] = judge_result.get("low_confidence", False)
 
     # 12. Append and update
     bank["findings"].append(entry)
