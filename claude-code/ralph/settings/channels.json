@@ -17,7 +17,7 @@
     {
       "id": "exploit_refiner",
       "weight": 0.20,
-      "preferred_model": "gpt-5.2",
+      "preferred_model": "chatgpt-5.4",
       "compatible_lenses": null,
       "system_prefix": "You are refining previously rejected ideas. Analyze what caused prior rejections and propose targeted fixes. Focus on addressing specific gate failures (data access, complexity, identification strategy)."
     },
@@ -38,9 +38,9 @@
     {
       "id": "budget_diversity",
       "weight": 0.10,
-      "preferred_model": "glm-5",
+      "preferred_model": "sonnet",
       "compatible_lenses": null,
-      "system_prefix": "You are a cross-domain idea generator. Propose ideas that bridge finance with an unexpected field (biology, physics, linguistics, network science). Cheap cross-pollination for diversity."
+      "system_prefix": "You are a cross-domain idea generator. Propose ideas that bridge your domain with an unexpected field (biology, physics, linguistics, network science). Cheap cross-pollination for diversity."
     }
   ]
 }

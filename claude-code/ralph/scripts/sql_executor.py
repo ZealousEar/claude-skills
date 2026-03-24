@@ -8,7 +8,7 @@ Usage:
     python sql_executor.py \
         --response /path/to/result.json \
         --output /path/to/sql-results.json \
-        --db grapple \
+        --db mydb \
         --config /path/to/ralph-config.json
 """
 
@@ -50,7 +50,7 @@ def load_sql_config(config_path: str) -> dict:
         "max_queries_per_iteration": 5,
         "query_timeout_seconds": 30,
         "max_rows_per_query": 200,
-        "db_name": "grapple",
+        "db_name": "",
     }
     try:
         with open(config_path, "r") as f:
