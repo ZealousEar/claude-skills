@@ -26,15 +26,21 @@ git clone https://github.com/ZealousEar/claude-skills.git
 cd claude-skills
 ```
 
-**Step 2:** Copy the skill to your skills directory:
+**Step 2:** Install all skills (symlink method — recommended):
 
 ```bash
-# Copy a single skill
-cp -r claude-code-skills/aristotle-prover ~/.claude/skills/
-
-# Or copy all Claude Code skills
-cp -r claude-code-skills/* ~/.claude/skills/
+bash install.sh
 ```
+
+Or install a single skill manually:
+
+```bash
+cp -r claude-code/aristotle-prover ~/.claude/skills/
+```
+
+> **Note:** Some skills depend on others (e.g. `ralph` requires `llm`). The install script
+> handles this by installing everything. If installing manually, check each skill's SKILL.md
+> for dependencies.
 
 **Step 3:** Verify it's recognized:
 
@@ -100,7 +106,7 @@ The `obsidian` Claude Code skill and `obsidian-cli` Spawner skill are designed t
 **Step 1:** Install the Claude Code skill:
 
 ```bash
-cp -r claude-code-skills/obsidian ~/.claude/skills/
+cp -r claude-code/obsidian ~/.claude/skills/
 ```
 
 **Step 2:** Install the Spawner skill:

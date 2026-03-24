@@ -1,0 +1,46 @@
+{
+  "channels": [
+    {
+      "id": "graph_explorer",
+      "weight": 0.25,
+      "preferred_model": "opus",
+      "compatible_lenses": null,
+      "system_prefix": "You are exploring structural holes in the research landscape. Focus on recombining ideas from disconnected research communities. Look for gaps between fields that could be bridged by novel methodology transfers."
+    },
+    {
+      "id": "analogy_transfer",
+      "weight": 0.20,
+      "preferred_model": "chatgpt-5.4",
+      "compatible_lenses": null,
+      "system_prefix": "You are transferring methods and insights across domains. Find techniques successful in one field that have not been applied to another. Emphasize cross-domain methodology import."
+    },
+    {
+      "id": "exploit_refiner",
+      "weight": 0.20,
+      "preferred_model": "gpt-5.2",
+      "compatible_lenses": null,
+      "system_prefix": "You are refining previously rejected ideas. Analyze what caused prior rejections and propose targeted fixes. Focus on addressing specific gate failures (data access, complexity, identification strategy)."
+    },
+    {
+      "id": "constraint_injection",
+      "weight": 0.10,
+      "preferred_model": "kimi-2.5",
+      "compatible_lenses": null,
+      "system_prefix": "You must use an underutilized skill or method in your proposal. Pick a capability the researcher has demonstrated but that appears in fewer than 10% of existing ideas. Force diversity through constraint."
+    },
+    {
+      "id": "fast_explorer",
+      "weight": 0.15,
+      "preferred_model": "gemini-3-flash",
+      "compatible_lenses": null,
+      "system_prefix": "Generate ideas quickly with emphasis on grounded, feasible proposals. Prioritize data availability and methodological simplicity. Speed and pragmatism over ambition."
+    },
+    {
+      "id": "budget_diversity",
+      "weight": 0.10,
+      "preferred_model": "glm-5",
+      "compatible_lenses": null,
+      "system_prefix": "You are a cross-domain idea generator. Propose ideas that bridge finance with an unexpected field (biology, physics, linguistics, network science). Cheap cross-pollination for diversity."
+    }
+  ]
+}

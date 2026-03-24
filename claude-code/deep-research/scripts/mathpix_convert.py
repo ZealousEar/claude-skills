@@ -25,8 +25,23 @@ import time
 # Defaults
 # ---------------------------------------------------------------------------
 
-VAULT_ROOT = "/Users/farhad/Code/Agentic Obsidian Vault/Agentic"
-DEFAULT_ENV = os.path.join(VAULT_ROOT, ".credentials", "dissertation-research", ".env")
+def _detect_vault_root() -> str:
+    """Resolve vault root from VAULT_ROOT env var or by walking up from CWD."""
+    env = os.environ.get("VAULT_ROOT")
+    if env:
+        return os.path.expanduser(env)
+    d = os.path.abspath(os.getcwd())
+    for _ in range(10):
+        if os.path.isdir(os.path.join(d, ".obsidian")):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    return ""
+
+VAULT_ROOT = _detect_vault_root()
+DEFAULT_ENV = os.path.join(VAULT_ROOT, ".credentials", "dissertation-research", ".env") if VAULT_ROOT else ""
 MATHPIX_BASE = "https://api.mathpix.com/v3/pdf"
 POLL_INTERVAL = 5   # seconds
 POLL_TIMEOUT = 300   # seconds
@@ -39,7 +54,13 @@ POLL_TIMEOUT = 300   # seconds
 def load_credentials(env_path: str = DEFAULT_ENV) -> tuple[str, str]:
     """Read MATHPIX_APP_ID and MATHPIX_APP_KEY from a .env file."""
     creds = {}
-    if not os.path.isfile(env_path):
+    if not env_path or not os.path.isfile(env_path):
+        if not VAULT_ROOT:
+            sys.exit("Error: Could not detect vault root for credentials.\n"
+                     "Either:\n"
+                     "  1. Set VAULT_ROOT environment variable\n"
+                     "  2. Run from within an Obsidian vault directory\n"
+                     "  3. Pass --env /path/to/.env explicitly")
         sys.exit(f"Error: credentials file not found at {env_path}")
 
     with open(env_path) as f:

@@ -53,6 +53,15 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 1
 fi
 
+# Validate llm skill dependency
+if [[ ! -f "$HOME/.claude/skills/llm/scripts/llm_route.py" ]]; then
+    echo "ERROR: /llm skill not found at ~/.claude/skills/llm/" >&2
+    echo "Ralph requires the llm skill for model routing." >&2
+    echo "Install it from the same repo: bash install.sh" >&2
+    echo "Or manually: cp -r claude-code/llm ~/.claude/skills/" >&2
+    exit 1
+fi
+
 PRESET_FILE="$RALPH_DIR/settings/presets/${PRESET}.json"
 if [[ ! -f "$PRESET_FILE" ]]; then
     echo "ERROR: Preset not found: $PRESET_FILE" >&2
