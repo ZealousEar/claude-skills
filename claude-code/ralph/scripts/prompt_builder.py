@@ -251,22 +251,61 @@ def build_memory_context(memory: dict) -> str:
 # Prompt assembly
 # ---------------------------------------------------------------------------
 
+def build_literature_context(lit_data: dict) -> str:
+    """Format literature gaps data into a prompt section.
+
+    lit_data: parsed JSON from gap_extractor.py --papers-db output.
+    """
+    sections = []
+
+    # Gap directives with related literature
+    gaps = lit_data.get("gaps", [])
+    if gaps:
+        gap_lines = []
+        for g in gaps[:15]:  # Cap to avoid prompt bloat
+            line = f"- {g.get('directive', '')}"
+            related = g.get("related_literature", [])
+            if related:
+                line += f" (related: {', '.join(related[:3])})"
+            gap_lines.append(line)
+        sections.append("Portfolio gap directives:\n" + "\n".join(gap_lines))
+
+    # Literature coverage gaps
+    lit_gaps = lit_data.get("literature_gaps", [])
+    if lit_gaps:
+        lit_lines = []
+        for lg in lit_gaps[:10]:
+            lit_lines.append(
+                f"- {lg['method']} × {lg['domain']}: {lg['paper_count']} papers"
+            )
+        sections.append(
+            "Under-studied method×domain intersections in the literature corpus:\n"
+            + "\n".join(lit_lines)
+        )
+
+    return "\n\n".join(sections) if sections else ""
+
+
 def build_system_prompt(
     preset: dict,
     anti_rep_context: str,
     memory_context: str,
     max_length: int,
+    literature_context: str = "",
 ) -> str:
-    """Assemble the system prompt from preset role, anti-repetition, and memory."""
+    """Assemble the system prompt from preset role, anti-repetition, memory, and literature."""
     template = preset["prompt_template"]
     parts = [template["role"]]
 
-    # Calculate budget for anti-repetition after accounting for role + memory
+    # Calculate budget for anti-repetition after accounting for role + memory + literature
     base_len = len(parts[0])
     memory_section = ""
     if memory_context:
         memory_section = f"\n\n## Context from Prior Iterations\n{memory_context}"
-    overhead = base_len + len(memory_section) + 200  # 200 chars buffer for headers
+    lit_section = ""
+    if literature_context:
+        lit_section = f"\n\n## Literature-Grounded Gap Directives\n{literature_context}"
+    overhead = base_len + len(memory_section) + len(lit_section) + 200  # 200 chars buffer
 
     if anti_rep_context:
         header = "\n\n## Anti-Repetition — Existing Ideas\nThe following ideas have already been generated. You MUST NOT repeat or closely paraphrase any of them:\n"
@@ -282,6 +321,9 @@ def build_system_prompt(
                 truncated += "\n[... truncated for length]"
             parts.append(header + truncated)
         # else: skip anti-repetition entirely if no room
+
+    if lit_section:
+        parts.append(lit_section)
 
     if memory_section:
         parts.append(memory_section)
@@ -334,6 +376,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Path to write user prompt (system prompt written to <output>.system)")
     p.add_argument("--config", default=str(DEFAULT_CONFIG_PATH),
                    help="Path to ralph-config.json")
+    p.add_argument("--literature-context", default=None,
+                   help="Path to pre-computed literature gaps JSON (from gap_extractor.py)")
     return p
 
 
@@ -374,8 +418,19 @@ def main() -> int:
     # 7. Build memory context (optional)
     memory_context = build_memory_context(memory)
 
+    # 7b. Build literature context (optional)
+    literature_context = ""
+    lit_path = args.literature_context or os.environ.get("RALPH_LITERATURE_CONTEXT")
+    if lit_path and os.path.isfile(lit_path):
+        lit_data = load_json(lit_path)
+        if lit_data:
+            literature_context = build_literature_context(lit_data)
+
     # 8. Build system prompt
-    system_prompt = build_system_prompt(preset, anti_rep_context, memory_context, max_system_len)
+    system_prompt = build_system_prompt(
+        preset, anti_rep_context, memory_context, max_system_len,
+        literature_context=literature_context,
+    )
 
     # 9. Build user prompt
     user_prompt = build_user_prompt(preset, lens, args.iteration)
