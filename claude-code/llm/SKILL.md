@@ -33,7 +33,7 @@ python3 ~/.claude/skills/llm/scripts/llm_route.py --model opus --prompt "Say hel
 python3 ~/.claude/skills/llm/scripts/llm_route.py --model chatgpt-5.4 --prompt "Write fizzbuzz" --system "You are a Python expert"
 
 # From files
-python3 ~/.claude/skills/llm/scripts/llm_route.py --model gemini-3-pro --prompt-file prompt.txt --system-file system.txt
+python3 ~/.claude/skills/llm/scripts/llm_route.py --model gemini-3.1-pro --prompt-file prompt.txt --system-file system.txt
 
 # Force a different provider
 python3 ~/.claude/skills/llm/scripts/llm_route.py --model opus --prompt "Hello" --route openrouter
@@ -65,7 +65,7 @@ Models are routed to providers in this priority order:
 | Anthropic (opus) | Claude CLI | Subscription (free) | `claude login` |
 | OpenAI (gpt-5.2, chatgpt-5.4) | Codex CLI | Subscription (free) | `codex login` |
 | Moonshot (kimi-2.5) | Kimi CLI | Subscription (free) | `kimi login` |
-| Google (gemini-3-pro, gemini-3-flash) | Google GenAI API | Free tier | `GOOGLE_API_KEY` |
+| Google (gemini-3.1-pro, gemini-3-flash) | Google GenAI API | Free tier | `GOOGLE_API_KEY` |
 | Everything else | OpenRouter | Per-token | `OPENROUTER_API_KEY` |
 
 Use `--route <provider>` to override the default route for any model. For example, `--route openrouter` forces a CLI model through OpenRouter instead.
@@ -92,7 +92,7 @@ Use `--route <provider>` to override the default route for any model. For exampl
 | opus | Claude CLI | Claude Opus 4.6 — most capable, 1M context |
 | chatgpt-5.4 | Codex CLI | GPT-5.3 — best for code, reasoning_effort=xhigh |
 | gpt-5.2 | Codex CLI | GPT-5.2 — strong general purpose |
-| gemini-3-pro | Google API | Gemini 3 Pro — thinkingLevel=HIGH |
+| gemini-3.1-pro | Google API | Gemini 3 Pro — thinkingLevel=HIGH |
 | gemini-3-flash | Google API | Gemini 3 Flash — fast + grounded |
 | kimi-2.5 | Kimi CLI | Kimi 2.5 — --thinking flag |
 | glm-5 | OpenRouter | GLM-5 — ZhipuAI, built-in thinking |
@@ -123,7 +123,7 @@ Per-model temperature and system prompt wrapping is applied automatically from `
 
 - **Claude** (opus): XML format preferred, no temperature override
 - **GPT** (gpt-5.2/chatgpt-5.4): CTCO framework preamble, temperature not overridden (reasoning model)
-- **Gemini** (gemini-3-pro/gemini-3-flash): Forced temperature=1.0, concise preamble
+- **Gemini** (gemini-3.1-pro/gemini-3-flash): Forced temperature=1.0, concise preamble
 - **Kimi** (kimi-2.5): temperature=1.0
 - **MiniMax** (minimax-m2.5): temperature=1.0
 
@@ -201,7 +201,7 @@ python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --list --top 50
 
 # Look up a specific model
 python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --model opus
-python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --model gemini-3-pro --json
+python3 ~/.claude/skills/llm/scripts/fetch_benchmarks.py --model gemini-3.1-pro --json
 ```
 
 ### CSV Schema (`benchmarks/rankings.csv`)

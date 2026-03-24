@@ -3,7 +3,7 @@
     "opus": {"rho": 1.0},
     "chatgpt-5.4": {"rho": 1.0},
     "gpt-5.2": {"rho": 1.0},
-    "gemini-3-pro": {"rho": 1.0},
+    "gemini-3.1-pro": {"rho": 1.0},
     "gemini-3-flash": {"rho": 1.0},
     "kimi-2.5": {"rho": 1.0},
     "glm-5": {"rho": 1.0},

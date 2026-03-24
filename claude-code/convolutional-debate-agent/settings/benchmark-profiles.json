@@ -22,7 +22,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SWE-bench #1, logical bug detection), D2=GPT-5.2 (IOI-class edge cases), D3=GPT-5.3 (code-specialized spec compliance), D4=Opus (broad comparison with deepest reasoning)"
       },
       "budget_debater_models": {
-        "models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+        "models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.3 (code-specialized, strongest non-Claude for SWE), D2=GPT-5.2 (IOI-class edge cases), D3=Kimi (long-context constraint checking), D4=Gemini (broad comparison)."
       },
       "models": {
@@ -46,7 +46,7 @@
           "benchmarks": ["SWE-bench (listed)", "Known for long-context code understanding"],
           "guidance": "Leverage your long-context strength for code understanding. Emphasize testable, production-quality solutions with proper error handling and edge cases."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 0.65,
           "benchmarks": ["IOI (38.83%)", "Terminal-Bench 2.0 #2"],
           "guidance": "You bring cross-domain knowledge to coding (Terminal-Bench 2.0 #2). Emphasize testable, production-quality solutions with proper error handling and edge cases."
@@ -75,7 +75,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (ProofBench #2, formal logic), D2=GPT-5.2 (quantitative reasoning, MMMU), D3=GPT-5.3 (computational verification), D4=Opus (broadest math reasoning for comparison)"
       },
       "budget_debater_models": {
-        "models": ["gemini-3-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"],
+        "models": ["gemini-3.1-pro", "gpt-5.2", "chatgpt-5.4", "kimi-2.5"],
         "_rationale": "Budget mode: no Claude. D1=Gemini (AIME #1, strongest math model), D2=GPT-5.2 (quantitative reasoning), D3=GPT-5.3 (computational verification), D4=Kimi (clarity and simplification)."
       },
       "models": {
@@ -99,7 +99,7 @@
           "benchmarks": ["Limited math benchmark coverage"],
           "guidance": "Focus on clarity of mathematical exposition. Lead with mathematical rigor, show complete derivations, and verify boundary conditions."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 1.00,
           "benchmarks": ["AIME #1 (96.68%)", "MMLU Pro #1 (90.10%)"],
           "guidance": "You are the strongest math model (AIME #1, 96.68%). Lead with mathematical rigor, show complete derivations, and verify boundary conditions."
@@ -128,7 +128,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (Finance Agent #1, financial logic), D2=GPT-5.2 (adversarial risk thinking), D3=GPT-5.3 (regulatory constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
       },
       "budget_debater_models": {
-        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3-pro"],
+        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (Poker Agent #1, strategic risk thinking), D2=GPT-5.3 (regulatory constraint checking), D3=Kimi (CorpFin coverage), D4=Gemini (MortgageTax #1, broad evidence)."
       },
       "models": {
@@ -152,7 +152,7 @@
           "benchmarks": ["CorpFin v2 (listed)"],
           "guidance": "Focus on clear communication of financial concepts (CorpFin v2). Ground your analysis in economic theory and empirical evidence, cite regulatory frameworks, and quantify risks with specific metrics."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 0.75,
           "benchmarks": ["MortgageTax #1 (69.08%)", "MMLU Pro #1 (covers economics)"],
           "guidance": "Leverage your document analysis strength (MortgageTax #1, 69.08%). Ground your analysis in economic theory and empirical evidence, cite regulatory frameworks, and quantify risks with specific metrics."
@@ -181,7 +181,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (TaxEval #1, legal logic), D2=GPT-5.2 (adversarial regulatory reasoning), D3=GPT-5.3 (risk analysis, constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
       },
       "budget_debater_models": {
-        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3-pro"],
+        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (strong reasoning), D2=GPT-5.3 (risk analysis), D3=Kimi (clarity), D4=Gemini (LegalBench #1, strongest legal model)."
       },
       "models": {
@@ -205,7 +205,7 @@
           "benchmarks": ["Limited legal benchmark coverage"],
           "guidance": "Focus on clarity of legal communication. Cover issue-spotting, rule-recall, rule-application, and interpretation. Cite relevant legal principles and provide explicit reasoning chains."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 1.00,
           "benchmarks": ["LegalBench #1 (87.04%)"],
           "guidance": "You are the top legal reasoning model (LegalBench #1, 87.04%). Cover issue-spotting, rule-recall, rule-application, and interpretation. Cite relevant legal principles and provide explicit reasoning chains."
@@ -234,7 +234,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (SAGE #1, methodology compliance), D2=GPT-5.2 (MMMU cross-domain counterexamples), D3=GPT-5.3 (literature constraint checking), D4=Opus (deepest reasoning for evidence synthesis)"
       },
       "budget_debater_models": {
-        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3-pro"],
+        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (MMMU cross-domain), D2=GPT-5.3 (literature constraint checking), D3=Kimi (long-context synthesis), D4=Gemini (MMLU Pro #1, broadest academic coverage)."
       },
       "models": {
@@ -258,7 +258,7 @@
           "benchmarks": ["Long-context strength for literature review"],
           "guidance": "Leverage your long-context strength. Ground your answer in established academic frameworks, cite relevant fields, and identify important prior work."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 1.00,
           "benchmarks": ["MMLU Pro #1 (90.10%)", "MMMU (87.51%)", "LegalBench #1 (87.04%)"],
           "guidance": "You have the broadest academic knowledge base (MMLU Pro #1, 90.10%). Ground your answer in established academic frameworks, cite relevant fields, and identify important prior work."
@@ -287,7 +287,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=GPT-5.2 (strategic logic, Poker-class reasoning), D2=Opus (adversarial decision analysis), D3=GPT-5.3 (constraint checking), D4=Opus (deepest reasoning for evidence comparison)"
       },
       "budget_debater_models": {
-        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3-pro"],
+        "models": ["gpt-5.2", "chatgpt-5.4", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.2 (Poker Agent #1, strategic reasoning), D2=GPT-5.3 (constraint checking), D3=Kimi (decision matrix clarity), D4=Gemini (historical precedent and broad knowledge)."
       },
       "models": {
@@ -311,7 +311,7 @@
           "benchmarks": ["Poker Agent (listed)"],
           "guidance": "Present a clear decision matrix with explicit trade-offs (Poker Agent listed). Identify key assumptions, evaluate risk-reward trade-offs, and consider game-theoretic dynamics and decision-making under uncertainty."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 0.70,
           "benchmarks": ["Poker Agent (conservative strategies)", "Broad knowledge base"],
           "guidance": "Bring historical precedent and cross-domain strategic analogies (Poker Agent, broad knowledge). Identify key assumptions, evaluate risk-reward trade-offs, and consider game-theoretic dynamics and decision-making under uncertainty."
@@ -340,7 +340,7 @@
         "_rationale": "Standardized 2×Opus + 2×ChatGPT. D1=Opus (strongest overall reasoning), D2=GPT-5.2 (adversarial capability), D3=GPT-5.3 (constraint compliance), D4=Opus (deepest reasoning for evidence comparison)"
       },
       "budget_debater_models": {
-        "models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3-pro"],
+        "models": ["chatgpt-5.4", "gpt-5.2", "kimi-2.5", "gemini-3.1-pro"],
         "_rationale": "Budget mode: no Claude. D1=GPT-5.3 (strongest non-Claude overall), D2=GPT-5.2 (adversarial capability), D3=Kimi (constraint checking), D4=Gemini (broad evidence)."
       },
       "models": {
@@ -364,7 +364,7 @@
           "benchmarks": ["Moderate general coverage"],
           "guidance": "Moderate general coverage. Apply first-principles reasoning and identify failure modes and edge cases."
         },
-        "gemini-3-pro": {
+        "gemini-3.1-pro": {
           "weight": 0.85,
           "benchmarks": ["Strong across math, academic, legal"],
           "guidance": "Strong across math, academic, and legal. Apply first-principles reasoning and identify failure modes and edge cases."

@@ -78,7 +78,7 @@
   },
   "tournament": {
     "rounds": 6,
-    "judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
+    "judge_pool": ["opus", "chatgpt-5.4", "gpt-5.2", "gemini-3.1-pro", "kimi-2.5", "glm-5", "minimax-m2.5"],
     "max_same_provider_per_match": 1,
     "position_swap_fraction": 0.3,
     "judge_schedule": "judging_schedule.json",
@@ -102,7 +102,7 @@
     "free_mad_style": true,
     "bracket": "round_robin",
     "bracket_star_threshold": 7,
-    "verifier_models": ["opus", "chatgpt-5.4", "gemini-3-pro"],
+    "verifier_models": ["opus", "chatgpt-5.4", "gemini-3.1-pro"],
     "use_aristotle": false
   },
   "portfolio": {

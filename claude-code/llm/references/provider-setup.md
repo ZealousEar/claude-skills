@@ -32,7 +32,7 @@ Authentication and setup instructions for each LLM provider supported by `/llm`.
 
 ### Google Generative AI API
 
-**Models**: gemini-3-pro, gemini-3-flash
+**Models**: gemini-3.1-pro, gemini-3-flash
 **Env var**: `GOOGLE_API_KEY`
 **Get key**: https://aistudio.google.com/apikey
 **Features**: thinkingLevel (HIGH/MEDIUM/LOW), Google Search grounding

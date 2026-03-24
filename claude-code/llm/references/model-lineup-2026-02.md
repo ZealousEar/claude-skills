@@ -56,7 +56,7 @@ ChatGPT 5.4 replaces GPT-5.3-Codex as the primary coding model.
 |---|---|---|---|
 | Gemini 2.5 Pro | `gemini-2.5-pro` | ~May 2025 | Deprecation path |
 | Gemini 2.5 Flash | `gemini-2.5-flash` | ~2025 | Deprecation path |
-| **Gemini 3 Pro** | `gemini-3-pro-preview` | Nov 18, 2025 | **Current** (reasoning) |
+| **Gemini 3 Pro** | `gemini-3.1-pro-preview` | Nov 18, 2025 | **Current** (reasoning) |
 | **Gemini 3 Flash** | `gemini-3-flash-preview` | Jan 7, 2026 | **Current** (fast) |
 | **Gemini 3.1 Pro** | `gemini-3.1-pro-preview` | Feb 19, 2026 | **Latest** (77.1% ARC-AGI-2) |
 
@@ -106,7 +106,7 @@ Our tier 1 models and what they map to:
 | chatgpt-5.4 | ChatGPT 5.4 | N/A (Codex CLI only) | chatgpt-5.4 | openai/chatgpt-5.4 |
 | gpt-5.3-codex | GPT-5.3-Codex | N/A (Codex CLI only) | gpt-5.3-codex | openai/gpt-5.3-codex |
 | gpt-5.2 | GPT-5.2 | "gpt-5.2-chat-latest" | gpt-5.2-2025-12-11 | openai/gpt-5.2 |
-| gemini-3-pro | Gemini 3 Pro | "Gemini 3 Pro" | gemini-3-pro-preview | google/gemini-3-pro-preview |
+| gemini-3.1-pro | Gemini 3 Pro | "Gemini 3 Pro" | gemini-3.1-pro-preview | google/gemini-3.1-pro-preview |
 | gemini-3-flash | Gemini 3 Flash | "Gemini 3 Flash" | gemini-3-flash-preview | google/gemini-3-flash-preview |
 | kimi-2.5 | Kimi K2.5 | N/A | kimi-k2.5 | moonshotai/kimi-k2.5 |
 | glm-5 | GLM-5 | N/A | glm-5 | z-ai/glm-5 |

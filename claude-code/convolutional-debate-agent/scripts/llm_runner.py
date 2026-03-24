@@ -6,7 +6,7 @@ and returns the response text. Uses only Python stdlib — no pip dependencies.
 
 Usage:
     python3 llm_runner.py --model chatgpt-5.2 --prompt "Your prompt here"
-    python3 llm_runner.py --model gemini-3-pro --prompt-file prompt.txt --system "You are..."
+    python3 llm_runner.py --model gemini-3.1-pro --prompt-file prompt.txt --system "You are..."
     python3 llm_runner.py --model kimi-2.5 --prompt "..." --temperature 0.7
     python3 llm_runner.py --list-models
 """

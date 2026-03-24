@@ -65,13 +65,13 @@
       },
       "_note": "GPT-5.2. Primary route: Codex CLI (subscription, reasoning_effort=xhigh). OpenRouter fallback with reasoning.effort=xhigh."
     },
-    "gemini-3-pro": {
+    "gemini-3.1-pro": {
       "route": "google",
       "thinking_level": "HIGH",
       "reasoning": {"effort": "xhigh"},
       "routes": {
-        "google":       { "api_model": "gemini-3-pro-preview" },
-        "openrouter":   { "api_model": "google/gemini-3-pro-preview" }
+        "google":       { "api_model": "gemini-3.1-pro-preview" },
+        "openrouter":   { "api_model": "google/gemini-3.1-pro-preview" }
       },
       "_note": "Gemini 3 Pro. Primary route: Google API (thinkingLevel=HIGH). OpenRouter fallback with reasoning.effort=xhigh."
     },
