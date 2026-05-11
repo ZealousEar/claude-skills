@@ -1,12 +1,12 @@
 # Architecture
 
-The 17 skills in this repo split across two systems that serve fundamentally different purposes. Understanding the split is the key to using them well.
+The 17 skills in this repo split across two systems that serve fundamentally different purposes. Understanding the split is the key to using them well. The dependency graph further down highlights the core relationships; standalone skills (`codex-code`, `deep-research`, `llm`, `ralph`, `online-research`) are documented in [Claude Code Skills](Claude-Code-Skills.md) and [Spawner Skills](Spawner-Skills.md).
 
 ## Two Systems, One Goal
 
 **Claude Code skills** are executable workflows. They have a `SKILL.md` that tells Claude what to do, `scripts/` that run code, `settings/` that configure behavior, and `references/` that provide context. When you type `/prove` or `/debate`, Claude reads the skill and executes a multi-step procedure -- calling APIs, launching agents, parsing outputs, writing files.
 
-**Spawner skills** are domain knowledge packs. They have 4 YAML files encoding structured expertise and 4 Markdown files with narrative depth. They don't execute anything. Claude reads them as reference material to avoid known pitfalls, follow proven patterns, and make better decisions within a domain.
+**Spawner skills** are domain knowledge packs. The richer ones (like `obsidian-cli`) have up to 4 YAML files encoding structured expertise plus 4 Markdown files with narrative depth; smaller ones (like `arxiv-pdf-reader` or `ssrn-pdf-reader`) ship with just `skill.yaml` plus a `README.md`. They don't execute anything. Claude reads them as reference material to avoid known pitfalls, follow proven patterns, and make better decisions within a domain.
 
 The distinction matters because trying to use one system for the other's job produces bad results. Putting execution logic in a Spawner skill means it never runs. Putting domain knowledge in a Claude Code SKILL.md means it bloats the execution context and doesn't get the structured format (sharp edges, validations, collaboration rules) that makes knowledge actually useful.
 
@@ -89,7 +89,6 @@ flowchart TD
     style AP fill:#e1f5fe
     style GEPS fill:#e1f5fe
     style OBS_CC fill:#e1f5fe
-    style CODEX fill:#e1f5fe
     style OBS_SP fill:#fff3e0
     style LNS fill:#fff3e0
     style MT fill:#fff3e0

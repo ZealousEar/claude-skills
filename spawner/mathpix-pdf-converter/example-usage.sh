@@ -5,10 +5,11 @@
 
 set -e  # Exit on error
 
-# Check if .env file exists
-ENV_FILE="${HOME}/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault 2/.env"
+# Check if .env file exists. Override the default with: export MATHPIX_ENV_FILE=/path/to/.env
+ENV_FILE="${MATHPIX_ENV_FILE:-./.env}"
 if [ ! -f "$ENV_FILE" ]; then
     echo "Error: .env file not found at $ENV_FILE"
+    echo "Hint: set MATHPIX_ENV_FILE to point at your .env (must contain MATHPIX_APP_ID and MATHPIX_APP_KEY)."
     exit 1
 fi
 

@@ -10,7 +10,7 @@ A collection of 17 custom AI agent skills built for two complementary systems: *
 
 ## Quick Navigation
 
-- [Claude Code Skills](Claude-Code-Skills.md) -- Deep dive on the 8 executable skills
+- [Claude Code Skills](Claude-Code-Skills.md) -- Deep dive on the 9 executable skills
 - [Spawner Skills](Spawner-Skills.md) -- Deep dive on the 8 knowledge packs
 - [Architecture](Architecture.md) -- How the two systems work together
 - [Getting Started](Getting-Started.md) -- Installation and usage guide

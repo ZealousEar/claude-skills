@@ -327,7 +327,7 @@ Characters that must be encoded in URIs:
 # Python one-liner to properly encode and open
 python3 -c "
 import urllib.parse, subprocess
-vault = 'Agentic'
+vault = '<your-vault>'
 filepath = '03 Resources/Machine Learning Basics'
 encoded = urllib.parse.quote(filepath, safe='')
 subprocess.run(['open', f'obsidian://open?vault={vault}&file={encoded}'])

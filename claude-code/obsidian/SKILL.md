@@ -9,7 +9,7 @@ platform: claude-code
 
 # Obsidian Vault Expert
 
-The definitive skill for managing the Agentic Obsidian vault. Combines direct file
+The definitive skill for managing an Obsidian vault. Combines direct file
 operations (always available) with Obsidian CLI v1.12 (indexed graph queries) for
 a system that is both reliable and intelligent.
 

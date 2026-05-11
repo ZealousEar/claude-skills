@@ -58,7 +58,7 @@ They're invoked as slash commands in Claude Code (e.g., `/prove`, `/debate`, `/r
 
 **Example invocation:**
 ```
-/codex Build a REST API with auth, CRUD endpoints for users and posts,
+/CodexCode Build a REST API with auth, CRUD endpoints for users and posts,
        comprehensive tests, and API documentation
 ```
 

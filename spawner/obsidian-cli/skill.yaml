@@ -1085,8 +1085,8 @@ anti_patterns:
 
   - name: hardcoded-vault-paths
     description: |
-      Hardcoding absolute vault paths like "~/Code/Agentic Obsidian
-      Vault/Agentic" directly into templates, scripts, or configuration. This
+      Hardcoding absolute vault paths (e.g., "~/Code/MyVault") directly
+      into templates, scripts, or configuration. This
       breaks portability and creates maintenance overhead.
     why: |
       Hardcoded paths break when the vault moves, when accessed from different

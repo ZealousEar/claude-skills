@@ -7,8 +7,8 @@ sharp_edges:
     severity: high
     situation: |
       When constructing obsidian:// URIs programmatically, spaces in vault names,
-      folder paths, or note titles are left unencoded. The vault name "Agentic" has
-      no spaces, but paths like "00 Inbox/My Note" contain spaces that must be
+      folder paths, or note titles are left unencoded. A single-word vault name
+      needs no encoding for itself, but paths like "00 Inbox/My Note" contain spaces that must be
       percent-encoded. The URI silently fails to open the correct note or opens
       nothing at all — with no error message from Obsidian.
     why: |
@@ -30,7 +30,7 @@ sharp_edges:
         Bad:  obsidian://open?vault="$VAULT_NAME"&file=00 Inbox/My Note
         Good: obsidian://open?vault="$VAULT_NAME"&file=00%20Inbox%2FMy%20Note
 
-      Note: The vault name "Agentic" needs no encoding, but always encode
+      Note: A single-word vault name needs no encoding, but always encode
       folder names from the PARA structure (00 Inbox, 01 Projects, etc.)
       since they all contain spaces.
     symptoms:
@@ -610,7 +610,7 @@ sharp_edges:
     situation: |
       You execute a CLI command with vault= placed after the command keyword:
       /Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault="$VAULT_NAME"
-      The command either targets the default vault instead of Agentic, returns
+      The command either targets the default vault instead of the intended one, returns
       results from the wrong vault, or fails to find notes that clearly exist.
     why: |
       The Obsidian CLI parser treats the first positional parameter as the vault

@@ -21,3 +21,6 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
+
+# Runtime logs
+*.log

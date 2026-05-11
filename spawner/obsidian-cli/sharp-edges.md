@@ -27,7 +27,7 @@ The PARA folder structure makes this especially common because folders like
 ### How to Detect
 - Search for `obsidian://` strings that contain literal spaces
 - Pattern: `obsidian://[^"'\s]*\s+[^"'\s]*`
-- Test: if a URI works for `Agentic` (no spaces) but fails for a subfolder path
+- Test: if a URI works for a single-word vault name but fails for a subfolder path
 
 ### How to Fix
 

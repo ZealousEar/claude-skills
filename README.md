@@ -63,7 +63,7 @@ I use two skill systems because they solve different problems. Claude Code skill
 ### Claude Code skills
 
 Copy or symlink `claude-code/<skill-name>/` into your Claude Code skills directory.  
-Run the skill by name from Claude Code (for example, `/codex-code`).  
+Run the skill by name from Claude Code (for example, `/CodexCode`).  
 The skill's `SKILL.md` defines the execution workflow and any helper files it can use.
 
 ### Spawner skills
