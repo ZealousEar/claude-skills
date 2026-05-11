@@ -1,6 +1,6 @@
 # Architecture
 
-The 14 skills in this repo split across two systems that serve fundamentally different purposes. Understanding the split is the key to using them well.
+The 17 skills in this repo split across two systems that serve fundamentally different purposes. Understanding the split is the key to using them well.
 
 ## Two Systems, One Goal
 

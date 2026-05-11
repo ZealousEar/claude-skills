@@ -27,8 +27,8 @@ sharp_edges:
         entire URI including the scheme and parameter separators
 
       Example:
-        Bad:  obsidian://open?vault=Agentic&file=00 Inbox/My Note
-        Good: obsidian://open?vault=Agentic&file=00%20Inbox%2FMy%20Note
+        Bad:  obsidian://open?vault="$VAULT_NAME"&file=00 Inbox/My Note
+        Good: obsidian://open?vault="$VAULT_NAME"&file=00%20Inbox%2FMy%20Note
 
       Note: The vault name "Agentic" needs no encoding, but always encode
       folder names from the PARA structure (00 Inbox, 01 Projects, etc.)
@@ -440,8 +440,8 @@ sharp_edges:
          - If absent, do not use obsidian://advanced-uri? URIs
 
       2. Use built-in URI schemes instead:
-         - obsidian://open?vault=Agentic&file=path/to/note
-         - obsidian://new?vault=Agentic&file=path/to/note&content=text
+         - obsidian://open?vault="$VAULT_NAME"&file=path/to/note
+         - obsidian://new?vault="$VAULT_NAME"&file=path/to/note&content=text
          - These work without any plugins
 
       3. For operations that Advanced URI would provide:
@@ -564,7 +564,7 @@ sharp_edges:
     severity: high
     situation: |
       You execute an Obsidian CLI command like
-      /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+      /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
       and the command hangs indefinitely or returns no output. No error message
       is produced. The agent waits for a response that never comes, wasting time
       and blocking the workflow.
@@ -592,7 +592,7 @@ sharp_edges:
 
       Recommended pattern:
         if pgrep -x Obsidian > /dev/null; then
-          /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+          /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
         else
           echo "Obsidian not running — falling back to file ops"
           # fallback grep-based orphan detection
@@ -609,7 +609,7 @@ sharp_edges:
     severity: medium
     situation: |
       You execute a CLI command with vault= placed after the command keyword:
-      /Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault=Agentic
+      /Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault="$VAULT_NAME"
       The command either targets the default vault instead of Agentic, returns
       results from the wrong vault, or fails to find notes that clearly exist.
     why: |
@@ -623,16 +623,16 @@ sharp_edges:
       Always structure CLI commands with vault= as the first parameter:
 
       Correct:
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="test"
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="test"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all
 
       Wrong:
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian search vault=Agentic query="test"
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian orphans vault=Agentic
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian search vault="$VAULT_NAME" query="test"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian orphans vault="$VAULT_NAME"
 
       Recommended: Set a shell alias to avoid mistakes:
-        alias obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic'
+        alias obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME"'
         obs orphans
         obs search query="test"
     symptoms:
@@ -661,18 +661,18 @@ sharp_edges:
       For vault-wide queries, always include the 'all' flag:
 
       Correct (vault-wide):
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all
 
       Correct (file-scoped):
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks file="01 Projects/MyProject.md"
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags path="03 Resources/"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks file="01 Projects/MyProject.md"
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags path="03 Resources/"
 
       Wrong (no scope — returns empty):
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags
-        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags
+        /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties
     symptoms:
       - "Empty output from tasks/tags/properties command"
       - "No results when vault clearly has matching content"

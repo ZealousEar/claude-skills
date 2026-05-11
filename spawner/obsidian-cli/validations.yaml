@@ -346,7 +346,7 @@ validations:
       3. Values must not contain raw: spaces, &, =, #, ?, [, ], %
          (unless already properly percent-encoded)
       4. The vault name and file path parameters are the most common
-         offenders — e.g. "Agentic Obsidian Vault" must be encoded
+         offenders — e.g. any vault name containing spaces must be encoded
       5. Verify the overall URI structure:
          obsidian://open?vault=<encoded>&file=<encoded>
     severity: warning
@@ -377,11 +377,11 @@ validations:
       1. Verify Obsidian process is running: pgrep -x Obsidian
          - If empty, Obsidian is not running — CLI unavailable
       2. Test CLI responsiveness with a fast command:
-         /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic version
+         /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" version
          - Expected: version string like "1.12.1" within 2 seconds
          - If no response in 3 seconds, CLI is not functional
       3. Verify vault targeting:
-         - vault=Agentic must be the first parameter after binary path
+         - vault="$VAULT_NAME" must be the first parameter after binary path
          - Wrong parameter order causes wrong vault targeting
       4. If either check fails, all CLI commands are unavailable
       5. Fall back to direct file operations (Tier 1) for all vault work
@@ -394,8 +394,8 @@ validations:
 
       If Obsidian is running but CLI does not respond:
         1. Verify Obsidian version is 1.12+ (CLI was added in v1.12)
-        2. Verify vault name: vault=Agentic (case-sensitive, must match)
-        3. Ensure vault=Agentic is the FIRST parameter after binary path
+        2. Verify vault name: vault="$VAULT_NAME" (case-sensitive, must match)
+        3. Ensure vault="$VAULT_NAME" is the FIRST parameter after binary path
         4. Try restarting Obsidian
 
       Fallback operations when CLI is unavailable:

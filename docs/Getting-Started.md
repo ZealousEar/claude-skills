@@ -71,10 +71,10 @@ Spawner skills are reference material, not executable commands. You don't "insta
 ```bash
 # Copy to the standard Spawner location
 mkdir -p ~/.spawner/skills/creative
-cp -r spawner-skills/arxiv-pdf-reader ~/.spawner/skills/creative/
+cp -r spawner/arxiv-pdf-reader ~/.spawner/skills/creative/
 
 # Or put them anywhere -- they're just files
-cp -r spawner-skills/arxiv-pdf-reader ~/my-skills/
+cp -r spawner/arxiv-pdf-reader ~/my-skills/
 ```
 
 **Step 2:** Tell Claude to read the skill when you need its knowledge. You can do this explicitly:
@@ -113,7 +113,7 @@ cp -r claude-code/obsidian ~/.claude/skills/
 
 ```bash
 mkdir -p ~/.spawner/skills/creative
-cp -r spawner-skills/obsidian-cli ~/.spawner/skills/creative/
+cp -r spawner/obsidian-cli ~/.spawner/skills/creative/
 ```
 
 **Step 3:** The Claude Code skill already references the Spawner skill in its SKILL.md:

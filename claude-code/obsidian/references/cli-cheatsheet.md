@@ -1,7 +1,7 @@
 # Obsidian CLI v1.12 Cheatsheet
 
 Binary: `/Applications/Obsidian.app/Contents/MacOS/Obsidian`
-Vault: `vault=Agentic` (MUST be first parameter)
+Vault: `vault="$VAULT_NAME"` (MUST be first parameter)
 
 ## Pre-flight
 
@@ -10,13 +10,13 @@ Vault: `vault=Agentic` (MUST be first parameter)
 pgrep -x Obsidian > /dev/null && echo "ready" || echo "start Obsidian first"
 
 # Verify CLI
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic version
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" version
 ```
 
 ## Discovery
 
 ```bash
-obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic'
+obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME"'
 
 # Search
 $obs search query="machine learning" limit=10
@@ -83,7 +83,7 @@ $obs template:read name="Research Note v1" resolve title="Quantum Computing"
 
 ## Gotchas
 
-1. `vault=Agentic` MUST be first param — wrong order = wrong vault
+1. `vault="$VAULT_NAME"` MUST be first param — wrong order = wrong vault
 2. `tasks`/`tags`/`properties` need `all` flag for vault-wide queries
 3. CLI requires Obsidian running — falls back to file ops if not
 4. Paths with spaces need quotes: `path="03 Resources/Note.md"`

@@ -1,10 +1,10 @@
 {
   "local_corpus": {
     "enabled": true,
-    "papers_dir": "~/Code/Agentic Obsidian Vault/Agentic/10 School/Dissertation Research/papers/",
-    "abstracts_cache": "~/Code/Agentic Obsidian Vault/Agentic/10 School/Dissertation Research/papers/abstracts_cache.json",
+    "papers_dir": "${GEPS_PAPERS_DIR:-~/papers}",
+    "abstracts_cache": "${GEPS_PAPERS_DIR:-~/papers}/abstracts_cache.json",
     "bibtex_file": null,
-    "note": "MVP mode: scan local paper files (JSON/markdown with title, abstract, keywords)"
+    "note": "MVP mode: scan local paper files (JSON/markdown with title, abstract, keywords). Override defaults by setting GEPS_PAPERS_DIR, or pass --corpus-dir to literature_retrieval.py."
   },
   "semantic_scholar": {
     "enabled": false,

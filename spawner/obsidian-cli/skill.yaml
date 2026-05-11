@@ -387,27 +387,27 @@ patterns:
       file operations that do not require UI interaction.
     example: |
       # --- Open a note in Obsidian ---
-      # obsidian://open?vault=Agentic&file=01%20Projects%2FMy%20Project
+      # obsidian://open?vault="$VAULT_NAME"&file=01%20Projects%2FMy%20Project
       # Note: file path is relative to vault root, without .md extension
       # Note: all paths and values must be URI-encoded
 
       # Bash execution:
-      # open "obsidian://open?vault=Agentic&file=01%20Projects%2FMy%20Project"
+      # open "obsidian://open?vault="$VAULT_NAME"&file=01%20Projects%2FMy%20Project"
 
       # --- Create a new note via URI ---
-      # obsidian://new?vault=Agentic&file=00%20Inbox%2FQuick%20Note&content=Hello%20World
+      # obsidian://new?vault="$VAULT_NAME"&file=00%20Inbox%2FQuick%20Note&content=Hello%20World
       # This creates the note AND opens it in Obsidian
       # For notes that do not need immediate display, prefer Write tool instead
 
       # --- Search in Obsidian ---
-      # obsidian://search?vault=Agentic&query=tag%3Aproject%20status%3Aactive
+      # obsidian://search?vault="$VAULT_NAME"&query=tag%3Aproject%20status%3Aactive
       # Opens the Obsidian search panel with the query pre-filled
 
       # --- Advanced URI plugin (if installed) ---
       # Check first: Grep .obsidian/community-plugins.json for "obsidian-advanced-uri"
-      # obsidian://adv-uri?vault=Agentic&filepath=01%20Projects%2FNote.md&heading=Section
-      # obsidian://adv-uri?vault=Agentic&daily=true
-      # obsidian://adv-uri?vault=Agentic&commandid=templater-obsidian%3Ainsert-template
+      # obsidian://adv-uri?vault="$VAULT_NAME"&filepath=01%20Projects%2FNote.md&heading=Section
+      # obsidian://adv-uri?vault="$VAULT_NAME"&daily=true
+      # obsidian://adv-uri?vault="$VAULT_NAME"&commandid=templater-obsidian%3Ainsert-template
 
       # --- URI encoding helper ---
       # Spaces   → %20
@@ -592,11 +592,11 @@ patterns:
       # 3. Replace tp.file.title with "2026-02-12"
       # 4. Write to: {vault}/00 Inbox/2026-02-12.md
       # 5. Optionally open in Obsidian:
-      #    open "obsidian://open?vault=Agentic&file=00%20Inbox%2F2026-02-12"
+      #    open "obsidian://open?vault="$VAULT_NAME"&file=00%20Inbox%2F2026-02-12"
 
       # --- Triggering Templater via UI (alternative) ---
       # If you need Templater's dynamic features (user prompts, system commands):
-      # obsidian://adv-uri?vault=Agentic&commandid=templater-obsidian%3Ainsert-template
+      # obsidian://adv-uri?vault="$VAULT_NAME"&commandid=templater-obsidian%3Ainsert-template
       # Requires Advanced URI plugin to be installed
 
   - name: dataview-ready-notes
@@ -869,35 +869,35 @@ patterns:
       1.12+ to be running. Falls back to Grep/Glob if Obsidian is not available.
     example: |
       # --- Binary path and invocation ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic [command] [options]
-      # IMPORTANT: vault=Agentic MUST be the first parameter after the binary
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" [command] [options]
+      # IMPORTANT: vault="$VAULT_NAME" MUST be the first parameter after the binary
 
       # --- Search (indexed, 0.32s vs 1.6s ripgrep) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="machine learning"
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="status: active" limit=10
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="transformer" format=json
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="machine learning"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="status: active" limit=10
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="transformer" format=json
 
       # --- Orphan detection (0.26s vs 15.6s bash) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans total
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans total
 
       # --- Dead-end detection (notes with no outgoing links) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends total
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends total
 
       # --- Unresolved link detection ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved total
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved counts
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved verbose
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved total
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved counts
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved verbose
 
       # --- Tags (native aggregation) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all counts sort=count
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all counts sort=count
 
       # --- Properties (native aggregation) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all total sort=count counts
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all total sort=count counts
 
   - name: cli-graph-intelligence
     description: |
@@ -910,13 +910,13 @@ patterns:
       metadata including word count, creation date, and modification date.
     example: |
       # --- Backlinks (what links TO this note) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic backlinks path="03 Resources/Machine Learning Basics.md"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" backlinks path="03 Resources/Machine Learning Basics.md"
 
       # --- Outgoing links (what this note links TO) ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic links path="03 Resources/Machine Learning Basics.md"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" links path="03 Resources/Machine Learning Basics.md"
 
       # --- File metadata ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic file path="03 Resources/Machine Learning Basics.md"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" file path="03 Resources/Machine Learning Basics.md"
       # Returns: size, created, modified, word count, link count
 
   - name: cli-vault-management
@@ -930,20 +930,20 @@ patterns:
       via the CLI, or manage bookmarks.
     example: |
       # --- Plugin management ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic plugins enabled filter=community versions
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic plugin:install id=dataview enable
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" plugins enabled filter=community versions
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" plugin:install id=dataview enable
 
       # --- Tasks across vault ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all todo
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all done total
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all todo
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all done total
 
       # --- Daily note operations ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic daily:append content="- New task for today"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" daily:append content="- New task for today"
 
       # --- Template-based note creation ---
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic create name="New Research" path="03 Resources" template="Research Note v1"
-      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic template:read name="Research Note v1" resolve title="New Research"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" create name="New Research" path="03 Resources" template="Research Note v1"
+      # /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" template:read name="Research Note v1" resolve title="New Research"
 
   - name: cli-tool-selection
     description: |

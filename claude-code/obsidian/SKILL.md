@@ -62,20 +62,35 @@ User: /obsidian [command] [args]
      |       → Tier 2: Obsidian CLI v1.12
      |       → Pre-check: pgrep -x Obsidian (must be running)
      |       → Binary: /Applications/Obsidian.app/Contents/MacOS/Obsidian
-     |       → IMPORTANT: vault=Agentic MUST be first parameter
+     |       → IMPORTANT: vault="$VAULT_NAME" MUST be first parameter
      |       → Fallback: Tier 1 (slower but functional)
      |
      +---> UI control (open note, trigger search panel)?
              → Tier 3: obsidian:// URI scheme
-             → open "obsidian://open?vault=Agentic&file=..."
+             → open "obsidian://open?vault="$VAULT_NAME"&file=..."
 ```
 
-## Vault Details
+## Vault Configuration
 
-- **Path**: `/Users/farhad/Code/Agentic Obsidian Vault/Agentic/`
-- **PARA folders**: 00 Inbox, 01 Projects, 02 Areas, 03 Resources, 09 Systems, 10 School, 99 Archive
-- **Templates** (12): in `09 Systems/Templates/` — Daily Note, Weekly Review, Project, Research Note, Literature Note, Company Research, Job Application, Learning Plan, Networking Log, Quant Prep, Skill Log, Template Index
-- **Installed plugins**: terminal, calendar, templater-obsidian
+Every CLI command below uses `vault="$VAULT_NAME"`, a shell variable you set once.
+Resolve the vault name and path with this order:
+
+1. If `$VAULT_NAME` is already set in the environment, use it.
+2. Otherwise, run `obsidian vault list` and prompt the user to pick one. Export
+   `VAULT_NAME` in the current shell so subsequent commands work.
+3. For the absolute vault path, set `$VAULT_PATH` to the directory that contains
+   the `.obsidian/` folder, or walk up from the current working directory until
+   you find one.
+
+The example "Vault Details" block below describes one possible vault layout — your
+PARA folder names, templates, and installed plugins will differ.
+
+## Vault Details (example)
+
+- **Path**: `$VAULT_PATH` (set via env var, or detect by locating the `.obsidian/` folder)
+- **PARA folders** (example layout): 00 Inbox, 01 Projects, 02 Areas, 03 Resources, 09 Systems, 10 School, 99 Archive
+- **Templates** (example, 12): in `09 Systems/Templates/` — Daily Note, Weekly Review, Project, Research Note, Literature Note, Company Research, Job Application, Learning Plan, Networking Log, Quant Prep, Skill Log, Template Index
+- **Installed plugins** (example): terminal, calendar, templater-obsidian
 - **CLI version**: 1.12.1
 
 ## Domain Knowledge
@@ -106,15 +121,15 @@ The canonical hybrid workflow. Uses CLI for fast discovery, file ops for fixes.
 ```
 Step 1: Pre-flight checks
   - Verify Obsidian is running: pgrep -x Obsidian
-  - Verify CLI responds: obsidian vault=Agentic version
+  - Verify CLI responds: obsidian vault="$VAULT_NAME" version
   - If CLI unavailable, warn user and fall back to file-ops-only mode
 
 Step 2: Discovery via CLI (Tier 2)
-  - obsidian vault=Agentic orphans total        → count orphan notes
-  - obsidian vault=Agentic deadends total       → count dead-end notes
-  - obsidian vault=Agentic unresolved total     → count unresolved links
-  - obsidian vault=Agentic tags all counts      → tag distribution
-  - obsidian vault=Agentic tasks all todo total → open task count
+  - obsidian vault="$VAULT_NAME" orphans total        → count orphan notes
+  - obsidian vault="$VAULT_NAME" deadends total       → count dead-end notes
+  - obsidian vault="$VAULT_NAME" unresolved total     → count unresolved links
+  - obsidian vault="$VAULT_NAME" tags all counts      → tag distribution
+  - obsidian vault="$VAULT_NAME" tasks all todo total → open task count
 
 Step 3: Structural analysis via file ops (Tier 1)
   - Glob each PARA folder to count notes per folder
@@ -136,7 +151,7 @@ Step 5: Fix (if user approves)
 
 ```
 Step 1: CLI discovery
-  obsidian vault=Agentic orphans
+  obsidian vault="$VAULT_NAME" orphans
   → List of notes with no incoming links
 
 Step 2: For each orphan, analyze with file ops
@@ -179,7 +194,7 @@ Step 5: Optionally open in Obsidian via URI
 
 ```
 Step 1: If CLI available:
-  obsidian vault=Agentic search query="[query]" limit=20
+  obsidian vault="$VAULT_NAME" search query="[query]" limit=20
   → Fast indexed results in <0.5s
 
 Step 2: If CLI unavailable, fall back:
@@ -191,11 +206,11 @@ Step 2: If CLI unavailable, fall back:
 
 ```
 Step 1: CLI query
-  obsidian vault=Agentic backlinks path="[path]"
+  obsidian vault="$VAULT_NAME" backlinks path="[path]"
   → All notes linking TO this note
 
 Step 2: Optionally get outgoing links too
-  obsidian vault=Agentic links path="[path]"
+  obsidian vault="$VAULT_NAME" links path="[path]"
   → All notes this note links TO
 
 Step 3: Present as a link map
@@ -204,7 +219,7 @@ Step 3: Present as a link map
 ### /obsidian tags — Tag Overview
 
 ```
-obsidian vault=Agentic tags all counts sort=count
+obsidian vault="$VAULT_NAME" tags all counts sort=count
 → All tags sorted by frequency
 ```
 
@@ -222,9 +237,9 @@ Step 4: Optionally open in Obsidian
 
 ```
 Step 1: Search for notes related to the topic
-  - CLI: obsidian vault=Agentic search query="[topic]"
+  - CLI: obsidian vault="$VAULT_NAME" search query="[topic]"
   - Grep: pattern="[topic]" glob="**/*.md"
-  - Check existing tags: obsidian vault=Agentic tags all
+  - Check existing tags: obsidian vault="$VAULT_NAME" tags all
 
 Step 2: Read matched notes to categorize them
 
@@ -238,18 +253,18 @@ Step 3: Create or update the MOC note
 ### /obsidian plugins — Plugin Management
 
 ```
-obsidian vault=Agentic plugins enabled filter=community versions
+obsidian vault="$VAULT_NAME" plugins enabled filter=community versions
 → List of installed community plugins with versions
 
 To install a new plugin:
-  obsidian vault=Agentic plugin:install id=[plugin-id] enable
+  obsidian vault="$VAULT_NAME" plugin:install id=[plugin-id] enable
 ```
 
 ## CLI Quick Reference
 
 All commands use this base invocation:
 ```
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic [command]
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" [command]
 ```
 
 | Command | Purpose |
@@ -273,7 +288,7 @@ All commands use this base invocation:
 
 ## Critical Rules
 
-1. **vault=Agentic is ALWAYS first** — immediately after the binary path, before any command
+1. **vault="$VAULT_NAME" is ALWAYS first** — immediately after the binary path, before any command
 2. **Check before write** — always Glob before Write to prevent overwriting existing notes
 3. **Frontmatter is mandatory** — every note gets `tags`, `date`, `type` at minimum
 4. **PARA placement** — never create notes in vault root; file to the correct folder

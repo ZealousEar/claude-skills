@@ -10,7 +10,7 @@ Each edge includes real-world scenarios, root causes, detection, fixes, and prev
 ## 1. uri-encoding-spaces (HIGH)
 
 ### What Happens
-You construct an `obsidian://open?vault=Agentic&file=00 Inbox/Research Note` URI
+You construct an `obsidian://open?vault="$VAULT_NAME"&file=00 Inbox/Research Note` URI
 and execute it. One of two things occurs: Obsidian opens the wrong file, or nothing
 happens at all. No error is shown. The URI silently breaks at the first unencoded space.
 
@@ -33,30 +33,30 @@ The PARA folder structure makes this especially common because folders like
 
 Bad:
 ```
-obsidian://open?vault=Agentic&file=00 Inbox/Research Note
+obsidian://open?vault="$VAULT_NAME"&file=00 Inbox/Research Note
 ```
 
 Good:
 ```
-obsidian://open?vault=Agentic&file=00%20Inbox/Research%20Note
+obsidian://open?vault="$VAULT_NAME"&file=00%20Inbox/Research%20Note
 ```
 
 In code:
 ```javascript
 // JavaScript
-const uri = `obsidian://open?vault=Agentic&file=${encodeURIComponent(filePath)}`;
+const uri = `obsidian://open?vault="$VAULT_NAME"&file=${encodeURIComponent(filePath)}`;
 ```
 
 ```python
 # Python
 from urllib.parse import quote
-uri = f"obsidian://open?vault=Agentic&file={quote(file_path)}"
+uri = f"obsidian://open?vault="$VAULT_NAME"&file={quote(file_path)}"
 ```
 
 ```bash
 # Bash — use printf or sed
 encoded=$(echo "00 Inbox/Research Note" | sed 's/ /%20/g')
-open "obsidian://open?vault=Agentic&file=${encoded}"
+open "obsidian://open?vault="$VAULT_NAME"&file=${encoded}"
 ```
 
 ### How to Prevent
@@ -624,7 +624,7 @@ grep -ohr '\[\[[^]|#]*' "/path/to/vault/" \
 ### What Happens
 A script or automation tries to use the Advanced URI plugin:
 ```
-obsidian://advanced-uri?vault=Agentic&commandid=templater:create-new-note
+obsidian://advanced-uri?vault="$VAULT_NAME"&commandid=templater:create-new-note
 ```
 Nothing happens. No error dialog, no notification, no log entry. The URI is
 silently dropped by Obsidian because the `advanced-uri` plugin is not installed.
@@ -660,9 +660,9 @@ Use basic `obsidian://` URIs that work without any plugins:
 
 | Advanced URI action | Basic equivalent |
 |---|---|
-| Open file | `obsidian://open?vault=Agentic&file=path/to/note` |
-| Create new note | `obsidian://new?vault=Agentic&file=path/to/note&content=...` |
-| Search | `obsidian://search?vault=Agentic&query=search+term` |
+| Open file | `obsidian://open?vault="$VAULT_NAME"&file=path/to/note` |
+| Create new note | `obsidian://new?vault="$VAULT_NAME"&file=path/to/note&content=...` |
+| Search | `obsidian://search?vault="$VAULT_NAME"&query=search+term` |
 | Open daily note | Create the file directly via filesystem, then `obsidian://open` |
 | Run command | No basic equivalent — use filesystem operations instead |
 | Write to file | Direct filesystem write, no URI needed |
@@ -859,7 +859,7 @@ After renaming, update all wiki-links that referenced the old filename.
 ## 13. cli-requires-obsidian-running (HIGH)
 
 ### What Happens
-You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans` and the command hangs. No output appears. After 30 seconds or more, you give up — nothing happened. Or worse, Obsidian launches in full GUI mode instead of processing the CLI command.
+You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans` and the command hangs. No output appears. After 30 seconds or more, you give up — nothing happened. Or worse, Obsidian launches in full GUI mode instead of processing the CLI command.
 
 ### Why It Happens
 The Obsidian CLI binary at `/Applications/Obsidian.app/Contents/MacOS/Obsidian` IS the Obsidian application itself. CLI commands communicate with an already-running Obsidian process via IPC (inter-process communication). When Obsidian is not running, there is no process to receive the command. The binary may attempt to start a new Obsidian instance in GUI mode, or it may hang waiting for an IPC connection that never establishes.
@@ -871,7 +871,7 @@ pgrep -x Obsidian
 # Returns PID if running, empty if not
 
 # Quick test: version command should return instantly
-timeout 3 /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic version
+timeout 3 /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" version
 # Should return "1.12.1" within 1 second
 ```
 
@@ -884,13 +884,13 @@ if ! pgrep -x Obsidian > /dev/null; then
 fi
 
 # Now CLI commands will work
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
 ```
 
 Fallback when Obsidian cannot be started:
 ```bash
 # Search fallback: use Grep instead of CLI search
-# Instead of: obsidian vault=Agentic search query="machine learning"
+# Instead of: obsidian vault="$VAULT_NAME" search query="machine learning"
 Grep: pattern="machine learning" path="/path/to/vault" glob="*.md"
 
 # Orphan fallback: manual link scanning (60x slower but works)
@@ -911,35 +911,35 @@ Grep: pattern="^tags:" glob="**/*.md" -A=5
 ## 14. cli-vault-parameter-first (MEDIUM)
 
 ### What Happens
-You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault=Agentic` and get results from a different vault, or no results at all. The search worked, but on the wrong vault.
+You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault="$VAULT_NAME"` and get results from a different vault, or no results at all. The search worked, but on the wrong vault.
 
 ### Why It Happens
 The CLI parser requires `vault=` as the very first parameter after the binary path. It uses positional parsing — the first argument is always the vault selector. When `vault=` appears after a command keyword like `search`, the parser may:
 - Use the default vault (usually the last opened vault)
-- Interpret `vault=Agentic` as an option to the `search` command
+- Interpret `vault="$VAULT_NAME"` as an option to the `search` command
 - Silently target the wrong vault
 
 ### How to Detect
 - Compare CLI results with direct file searches on the same vault
 - If results seem wrong or empty when they shouldn't be, check parameter order
-- Run `obsidian vault=Agentic version` to confirm you can target the vault
+- Run `obsidian vault="$VAULT_NAME" version` to confirm you can target the vault
 
 ### How to Fix
-Always put `vault=Agentic` immediately after the binary:
+Always put `vault="$VAULT_NAME"` immediately after the binary:
 
 ```bash
 # CORRECT — vault= first
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="test"
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic backlinks path="note.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="test"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" backlinks path="note.md"
 
 # WRONG — vault= after command
-/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault=Agentic
-/Applications/Obsidian.app/Contents/MacOS/Obsidian orphans vault=Agentic
+/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault="$VAULT_NAME"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian orphans vault="$VAULT_NAME"
 ```
 
 ### How to Prevent
-- Define a shell alias: `alias obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic'`
+- Define a shell alias: `alias obs='/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME"'`
 - Then use: `obs search query="test"`, `obs orphans`, `obs backlinks path="note.md"`
 - In documentation and patterns, always show the full command with vault= first
 - Never construct CLI commands by appending vault= at the end
@@ -949,7 +949,7 @@ Always put `vault=Agentic` immediately after the binary:
 ## 15. cli-scope-without-all-flag (MEDIUM)
 
 ### What Happens
-You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks` expecting to see all tasks in the vault. The command returns empty output — no tasks listed, no error, nothing.
+You run `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks` expecting to see all tasks in the vault. The command returns empty output — no tasks listed, no error, nothing.
 
 ### Why It Happens
 Several CLI commands (`tasks`, `tags`, `properties`) operate in two modes:
@@ -966,19 +966,19 @@ Without either a file target or the `all` flag, the command has no scope to work
 ### How to Fix
 ```bash
 # CORRECT — vault-wide with 'all'
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all todo
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all counts sort=count
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all todo
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all counts sort=count
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all total
 
 # CORRECT — file-scoped
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks file="01 Projects/MyProject.md"
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags path="03 Resources/"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks file="01 Projects/MyProject.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags path="03 Resources/"
 
 # WRONG — no scope (returns empty)
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties
 ```
 
 ### How to Prevent

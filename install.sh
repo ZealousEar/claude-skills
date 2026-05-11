@@ -57,7 +57,8 @@ for skill_dir in "$REPO_DIR"/claude-code/*/; do
             echo "  $skill_name — directory exists, overwriting (--force)"
             rm -rf "$target"
         else
-            echo "  $skill_name — directory exists, skipping (use --force to overwrite)"
+            echo "  $skill_name — directory exists (NOT a symlink to this repo). Skipping."
+            echo "      Future 'git pull' will NOT update this skill. Re-run with --force to replace it with a symlink."
             skipped=$((skipped + 1))
             continue
         fi
@@ -70,6 +71,12 @@ done
 
 echo ""
 echo "Done. $installed installed, $skipped skipped."
+if [[ $skipped -gt 0 ]]; then
+    echo ""
+    echo "WARNING: $skipped skill(s) skipped because the target was a real directory, not a symlink."
+    echo "  Those skills will NOT receive updates when you 'git pull' this repo."
+    echo "  Re-run 'bash install.sh --force' to replace them with symlinks."
+fi
 echo ""
 echo "Next steps:"
 echo "  1. Set API keys for the skills you want to use (see docs/Getting-Started.md)"

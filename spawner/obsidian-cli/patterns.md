@@ -262,7 +262,7 @@ invoked with the `open` command.
 
 ```bash
 # Open a note by file path (spaces must be %20-encoded)
-open "obsidian://open?vault=Agentic&file=03%20Resources%2FMachine%20Learning%20Basics"
+open "obsidian://open?vault="$VAULT_NAME"&file=03%20Resources%2FMachine%20Learning%20Basics"
 
 # Note: file path is relative to vault root, without .md extension
 ```
@@ -271,20 +271,20 @@ open "obsidian://open?vault=Agentic&file=03%20Resources%2FMachine%20Learning%20B
 
 ```bash
 # Create and open a new note with content
-open "obsidian://new?vault=Agentic&file=00%20Inbox%2FQuick%20Capture&content=---%0Atitle%3A%20Quick%20Capture%0Adate%3A%202026-02-12%0A---%0A%0A%23%20Quick%20Capture%0A%0AContent%20here"
+open "obsidian://new?vault="$VAULT_NAME"&file=00%20Inbox%2FQuick%20Capture&content=---%0Atitle%3A%20Quick%20Capture%0Adate%3A%202026-02-12%0A---%0A%0A%23%20Quick%20Capture%0A%0AContent%20here"
 
 # Overwrite if exists (default is false, which appends)
-open "obsidian://new?vault=Agentic&file=00%20Inbox%2FQuick%20Capture&content=New%20content&overwrite=true"
+open "obsidian://new?vault="$VAULT_NAME"&file=00%20Inbox%2FQuick%20Capture&content=New%20content&overwrite=true"
 
 # Append to existing note
-open "obsidian://new?vault=Agentic&file=00%20Inbox%2FQuick%20Capture&content=%0A-%20New%20item&append=true"
+open "obsidian://new?vault="$VAULT_NAME"&file=00%20Inbox%2FQuick%20Capture&content=%0A-%20New%20item&append=true"
 ```
 
 #### Search the Vault
 
 ```bash
 # Open Obsidian search with a query
-open "obsidian://search?vault=Agentic&query=machine%20learning"
+open "obsidian://search?vault="$VAULT_NAME"&query=machine%20learning"
 ```
 
 #### Advanced URI Plugin (If Installed)
@@ -294,16 +294,16 @@ installed in this vault, but if added:
 
 ```bash
 # Write data to a specific heading
-open "obsidian://advanced-uri?vault=Agentic&filepath=03%20Resources%2FNote.md&heading=Notes&data=New%20content%20under%20heading"
+open "obsidian://advanced-uri?vault="$VAULT_NAME"&filepath=03%20Resources%2FNote.md&heading=Notes&data=New%20content%20under%20heading"
 
 # Write to frontmatter
-open "obsidian://advanced-uri?vault=Agentic&filepath=03%20Resources%2FNote.md&frontmatterkey=status&data=complete"
+open "obsidian://advanced-uri?vault="$VAULT_NAME"&filepath=03%20Resources%2FNote.md&frontmatterkey=status&data=complete"
 
 # Open daily note
-open "obsidian://advanced-uri?vault=Agentic&daily=true"
+open "obsidian://advanced-uri?vault="$VAULT_NAME"&daily=true"
 
 # Execute a command by ID
-open "obsidian://advanced-uri?vault=Agentic&commandid=graph%3Aopen"
+open "obsidian://advanced-uri?vault="$VAULT_NAME"&commandid=graph%3Aopen"
 ```
 
 ### URL Encoding Reference
@@ -1583,14 +1583,14 @@ START: What do I need to do?
   |    aggregate tags/properties, search indexed content?
   |      |
   |      YES --> Tier 2: Obsidian CLI v1.12
-  |              - /Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic [command]
+  |              - /Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" [command]
   |              - Requires Obsidian 1.12+ running
   |              - If Obsidian not running → fall back to Tier 1 (slower)
   |
   +--> Open a note in Obsidian UI, trigger a search panel, invoke a command?
          |
          YES --> Tier 3: obsidian:// URI Scheme
-                 - open "obsidian://open?vault=Agentic&file=..."
+                 - open "obsidian://open?vault="$VAULT_NAME"&file=..."
                  - Requires Obsidian running
 ```
 
@@ -1637,9 +1637,9 @@ The most effective workflows combine multiple patterns:
 
 ```
 1. Commit current state     (Pattern 7: git-vault-sync)
-2. Detect orphan notes      (CLI: obsidian vault=Agentic orphans)
-3. Detect dead-end notes    (CLI: obsidian vault=Agentic deadends)
-4. Check unresolved links   (CLI: obsidian vault=Agentic unresolved)
+2. Detect orphan notes      (CLI: obsidian vault="$VAULT_NAME" orphans)
+3. Detect dead-end notes    (CLI: obsidian vault="$VAULT_NAME" deadends)
+4. Check unresolved links   (CLI: obsidian vault="$VAULT_NAME" unresolved)
 5. Fix issues via file ops  (Pattern 1: vault-file-crud)
 6. Refresh dashboard stats  (Pattern 8: agentic-dashboard)
 7. Update MOCs              (Pattern 9: auto-link-tag)
@@ -1684,8 +1684,8 @@ Obsidian v1.12 includes a native CLI accessible at `/Applications/Obsidian.app/C
 ### Prerequisites
 
 - Obsidian 1.12+ must be installed and running
-- Verify with: `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic version`
-- `vault=Agentic` MUST be the first parameter after the binary path
+- Verify with: `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" version`
+- `vault="$VAULT_NAME"` MUST be the first parameter after the binary path
 
 ### When to Use
 
@@ -1697,129 +1697,129 @@ Use the CLI for **discovery and intelligence** operations — finding orphans, q
 
 ```bash
 # Basic search
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="machine learning"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="machine learning"
 
 # Limited results
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="transformer" limit=5
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="transformer" limit=5
 
 # JSON output
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="status: active" format=json
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="status: active" format=json
 ```
 
 #### Orphan Detection
 
 ```bash
 # List all orphan notes (no incoming links)
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
 
 # Get total count only
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans total
 ```
 
 #### Dead-End Detection
 
 ```bash
 # List notes with no outgoing links
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends
 
 # Total count
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends total
 ```
 
 #### Unresolved Links
 
 ```bash
 # List all unresolved [[links]]
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved
 
 # Total count
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved total
 
 # With per-file counts
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved counts
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved counts
 
 # Verbose: show which files contain each unresolved link
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved verbose
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved verbose
 ```
 
 #### Tags
 
 ```bash
 # List all tags in vault
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all
 
 # With counts, sorted by frequency
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all counts sort=count
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all counts sort=count
 ```
 
 #### Properties
 
 ```bash
 # List all frontmatter properties
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all
 
 # With totals and counts, sorted
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all total sort=count counts
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all total sort=count counts
 ```
 
 #### Backlinks
 
 ```bash
 # Find all notes linking TO a specific note
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic backlinks path="03 Resources/Machine Learning Basics.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" backlinks path="03 Resources/Machine Learning Basics.md"
 ```
 
 #### Outgoing Links
 
 ```bash
 # Find all notes a specific note links TO
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic links path="03 Resources/Machine Learning Basics.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" links path="03 Resources/Machine Learning Basics.md"
 ```
 
 #### File Metadata
 
 ```bash
 # Get detailed metadata for a note (size, dates, word count, link count)
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic file path="03 Resources/Machine Learning Basics.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" file path="03 Resources/Machine Learning Basics.md"
 ```
 
 #### Tasks
 
 ```bash
 # All tasks across vault
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all
 
 # Only incomplete tasks
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all todo
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all todo
 
 # Only completed tasks
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all done
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all done
 
 # Total count
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tasks all total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tasks all total
 ```
 
 #### Plugin Management
 
 ```bash
 # List enabled community plugins with versions
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic plugins enabled filter=community versions
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" plugins enabled filter=community versions
 
 # Install and enable a plugin
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic plugin:install id=dataview enable
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" plugin:install id=dataview enable
 ```
 
 #### Note Creation via CLI
 
 ```bash
 # Create a note from a template
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic create name="New Research Note" path="03 Resources" template="Research Note v1"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" create name="New Research Note" path="03 Resources" template="Research Note v1"
 
 # Append to daily note
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic daily:append content="- New task added by Claude"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" daily:append content="- New task added by Claude"
 
 # Read and resolve a template
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic template:read name="Research Note v1" resolve title="Quantum Computing"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" template:read name="Research Note v1" resolve title="Quantum Computing"
 ```
 
 ### Hybrid Workflow Example: Vault Health Check
@@ -1828,13 +1828,13 @@ This is the canonical example of the 3-tier hybrid architecture in action:
 
 ```
 # Step 1: CLI discovers problems (Tier 2)
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
 # Output: list of orphan notes
 
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends
 # Output: list of dead-end notes
 
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved
 # Output: list of unresolved links
 
 # Step 2: Direct file ops fix the problems (Tier 1)
@@ -1843,12 +1843,12 @@ This is the canonical example of the 3-tier hybrid architecture in action:
 # For each unresolved link: Create the missing note or fix the link text
 
 # Step 3: URI opens the results for review (Tier 3)
-# open "obsidian://open?vault=Agentic&file=09%20Systems%2FAgent%20Dashboard"
+# open "obsidian://open?vault="$VAULT_NAME"&file=09%20Systems%2FAgent%20Dashboard"
 ```
 
 ### Tips
 
-- **vault= is always first** — `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic search query="test"` (correct) vs `/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault=Agentic` (wrong vault)
+- **vault= is always first** — `/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" search query="test"` (correct) vs `/Applications/Obsidian.app/Contents/MacOS/Obsidian search query="test" vault="$VAULT_NAME"` (wrong vault)
 - **Paths use quotes** — `path="03 Resources/Note.md"` not `path=03 Resources/Note.md`
 - **CLI for discovery, file ops for CRUD** — Never use CLI to create notes when Write tool is available. CLI note creation is for template-based creation only.
 - **Fallback ready** — If Obsidian is not running, all CLI operations fall back to Glob/Grep (slower but functional for most queries). Backlinks have no file-op fallback.

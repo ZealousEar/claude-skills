@@ -345,7 +345,7 @@ Write("/path/to/vault/01 Projects/MyProject/new.md", content)
 
 # Even worse: inconsistent path styles
 Read("/path/to/vault/01 Projects/MyProject/notes.md")
-Read("~/Code/Agentic Obsidian Vault/Agentic/01 Projects/MyProject/other.md")
+Read("$VAULT_PATH/01 Projects/MyProject/other.md")
 # These may resolve differently depending on the tool
 ```
 
@@ -604,7 +604,7 @@ WHERE !completed
 
 # Assumes Advanced URI is installed -- it is NOT
 Write(f"{VAULT}/00 Inbox/quick-link.md", """
-Open the dashboard: [Click here](obsidian://advanced-uri?vault=Agentic&filepath=dashboard)
+Open the dashboard: [Click here](obsidian://advanced-uri?vault="$VAULT_NAME"&filepath=dashboard)
 """)
 # Result: Link does nothing when clicked.
 
@@ -663,7 +663,7 @@ SORT date DESC
 
 # Example: Creating links
 if has_plugin("advanced-uri", installed_plugins):
-    link = "[Open dashboard](obsidian://advanced-uri?vault=Agentic&filepath=dashboard)"
+    link = "[Open dashboard](obsidian://advanced-uri?vault="$VAULT_NAME"&filepath=dashboard)"
 else:
     # Fallback to standard Obsidian wiki link
     link = "[[dashboard|Open dashboard]]"
@@ -740,28 +740,28 @@ grep -rl "\[\[Machine Learning Basics\]\]" \
 
 ```bash
 # Detecting orphans — 60x faster, accurate
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans
 # 0.26 seconds, handles all link types including aliases
 
 # With count
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic orphans total
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" orphans total
 
 # Aggregating tags — native, sorted
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic tags all counts sort=count
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" tags all counts sort=count
 # Instant, includes inline tags, correct counts
 
 # Finding backlinks — complete results
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic backlinks path="03 Resources/Machine Learning Basics.md"
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" backlinks path="03 Resources/Machine Learning Basics.md"
 # Returns ALL linking notes, including aliased and heading links
 
 # Dead-end notes (no outgoing links)
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic deadends
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" deadends
 
 # Unresolved links
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic unresolved
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" unresolved
 
 # Properties overview
-/Applications/Obsidian.app/Contents/MacOS/Obsidian vault=Agentic properties all counts sort=count
+/Applications/Obsidian.app/Contents/MacOS/Obsidian vault="$VAULT_NAME" properties all counts sort=count
 ```
 
 ### When Grep IS Still Appropriate

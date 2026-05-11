@@ -1,10 +1,10 @@
 # Claude Skills Collection
 
-A collection of 16 custom AI agent skills built for two complementary systems: **Claude Code** (executable slash-command workflows) and **Spawner** (YAML+MD domain knowledge packs). These aren't toy examples -- they're production skills I use daily for formal theorem proving, multi-model debates, portfolio research, vault automation, deep research, academic paper processing, and more.
+A collection of 17 custom AI agent skills built for two complementary systems: **Claude Code** (executable slash-command workflows) and **Spawner** (YAML+MD domain knowledge packs). These aren't toy examples -- they're production skills I use daily for formal theorem proving, multi-model debates, portfolio research, vault automation, deep research, academic paper processing, and more.
 
 ## What's Here
 
-**8 Claude Code skills** -- executable workflows invoked via slash commands (`/prove`, `/debate`, `/research`, `/llm`, etc.). Each one has a `SKILL.md`, supporting scripts, config files, and reference docs. They do things: call APIs, orchestrate agents, manipulate files, run tournaments.
+**9 Claude Code skills** -- executable workflows invoked via slash commands (`/prove`, `/debate`, `/research`, `/llm`, etc.). Each one has a `SKILL.md`, supporting scripts, config files, and reference docs. They do things: call APIs, orchestrate agents, manipulate files, run tournaments.
 
 **8 Spawner skills** -- domain knowledge packs that Claude reads as reference context. They don't execute anything themselves. Instead, they encode expertise about what works, what breaks, and how tools fit together. Think of them as the institutional memory that prevents you from making the same mistake twice.
 
@@ -15,19 +15,20 @@ A collection of 16 custom AI agent skills built for two complementary systems: *
 - [Architecture](Architecture.md) -- How the two systems work together
 - [Getting Started](Getting-Started.md) -- Installation and usage guide
 
-## All 16 Skills at a Glance
+## All 17 Skills at a Glance
 
 ### Claude Code Skills (Executable)
 
 | Skill | Slash Command | What It Does |
 |-------|--------------|--------------|
 | **aristotle-prover** | `/prove` | Translates math into Lean 4 formal proofs via Harmonic API |
-| **codex-code** | `/codex` | Orchestrates parallel Codex CLI agents as a coding swarm |
+| **codex-code** | `/CodexCode` | Orchestrates parallel Codex CLI agents as a coding swarm |
 | **convolutional-debate-agent** | `/debate` | 5 solver drafts, 4 adversarial reviews, reliability-weighted scoring |
 | **deep-research** | `/research` | Multi-source extraction (YouTube, arXiv, SSRN, PDF, web) + synthesis into research notes |
 | **geps-v5** | `/geps` | Graph-guided evolutionary search for portfolio strategies |
 | **llm** | `/llm` | Universal model router — CLI-first, auto-discovery, benchmark tracking |
 | **obsidian** | `/obsidian` | 3-tier vault automation (file ops + CLI + URIs) |
+| **ralph** | `/ralph` | Autonomous fresh-context loop for multi-model idea generation |
 | **system-augmentor** | `/improve` | Self-improvement agent that audits gaps and installs solutions |
 
 ### Spawner Skills (Knowledge Packs)
